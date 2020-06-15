@@ -1,4 +1,4 @@
-package dataengine.pipelines.spark;
+package dataengine.pipelines.sources;
 
 import dataengine.pipelines.DataSource;
 import org.apache.spark.sql.Encoders;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class SparkDataSourceTest {
+class SparkSourceTest {
 
     static SparkSession sparkSession;
 
@@ -29,13 +29,13 @@ class SparkDataSourceTest {
 
     @Test
     void getTestDatasetAsText() {
-        DataSource<String> ds = SparkEncoderDataSource.builder().text().path("src/test/resources/datasets/testDataset.json").build();
+        DataSource<String> ds = SparkSource.builder().text().path("src/test/resources/datasets/testDataset.json").batch().build();
         Assertions.assertEquals(6, ds.get().count());
     }
 
     @Test
     void getTestDatasetAsJson() {
-        DataSource<Row> ds = SparkRowDataSource.builder().json().path("src/test/resources/datasets/testDataset.json").build();
+        DataSource<Row> ds = SparkSource.builder().json().path("src/test/resources/datasets/testDataset.json").batch().build();
         List<Integer> is = ds.get().sort("num").select("num").as(Encoders.DECIMAL()).collectAsList().stream().map(bi -> bi.intValue()).collect(Collectors.toList());
         Assertions.assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6), is);
     }
