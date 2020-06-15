@@ -31,7 +31,7 @@ class DataPipeTest {
     void readAndWritePipeline() {
         List<String> data = new LinkedList<>();
 
-        DataSource<String> dataSource = () -> SparkSession.builder().master("local").getOrCreate().createDataset(Arrays.asList("a", "aa", "aaa"), Encoders.STRING());
+        DataSource<String> dataSource = () -> sparkSession.createDataset(Arrays.asList("a", "aa", "aaa"), Encoders.STRING());
         DataSink<String> dataSink = d -> data.addAll(d.collectAsList());
 
 
