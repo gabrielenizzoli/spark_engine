@@ -16,7 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class TransformationTest extends SparkSessionTest {
+class SqlTransformationsTest extends SparkSessionTest {
 
     @Test
     void testSql() {
@@ -26,8 +26,8 @@ class TransformationTest extends SparkSessionTest {
         DataSource<Integer> dataSource = () -> sparkSession.createDataset(Arrays.asList(1, 2, 3, 4, 5, 6), Encoders.INT());
         DataSink<BigDecimal> dataSink = d -> data.addAll(d.collectAsList().stream().map(BigDecimal::intValue).collect(Collectors.toList()));
 
-        DataTransformation<Integer, Row> tx1 = Transformation.sql("source", "select value*2 as value from source");
-        DataTransformation<Row, Row> tx2 = Transformation.sql("source2", "select sum(value) as sumValue from source2");
+        DataTransformation<Integer, Row> tx1 = SqlTransformations.sql("source", "select value*2 as value from source");
+        DataTransformation<Row, Row> tx2 = SqlTransformations.sql("source2", "select sum(value) as sumValue from source2");
 
         DataPipe.read(dataSource)
                 .transformation(tx1)
@@ -58,12 +58,12 @@ class TransformationTest extends SparkSessionTest {
 
         DataSink<TestBean> dataSink = d -> data.addAll(d.collectAsList());
 
-        DataBiTransformation<Integer, TestBean, TestBean> tx = Transformation
+        Data2Transformation<Integer, TestBean, TestBean> tx = SqlTransformations
                 .<Integer, TestBean>sqlMerge("s1", "s2", "select * from (select b.value+1 as value, b.reference as reference from s1 as a join s2 as b on a.value = b.value) where value > 2")
                 .andThenEncode(Encoders.bean(TestBean.class));
 
         // when
-        DataPipe.mergeAll(DataPipe.read(dataSource1), DataPipe.read(dataSource2), tx).write(dataSink);
+        DataPipes.mergeAll(DataPipe.read(dataSource1), DataPipe.read(dataSource2), tx).write(dataSink);
 
         // then
         Assertions.assertEquals(Collections.singletonList(TestBean.of(7, "six")), data);

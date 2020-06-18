@@ -1,6 +1,6 @@
 package dataengine.pipelines;
 
-import dataengine.pipelines.transformations.Transformation;
+import dataengine.pipelines.transformations.Transformations;
 import org.apache.spark.sql.Encoders;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ class DataPipeTest extends SparkSessionTest {
         DataSource<String> dataSource = () -> sparkSession.createDataset(Arrays.asList("a", "aa", "aaa"), Encoders.STRING());
         DataSink<String> dataSink = d -> data.addAll(d.collectAsList());
 
-        DataTransformation<String, String> tx = Transformation.map(s -> s + s.length(), Encoders.STRING());
+        DataTransformation<String, String> tx = Transformations.map(s -> s + s.length(), Encoders.STRING());
 
         DataPipe.read(dataSource)
                 .transformation(tx)
