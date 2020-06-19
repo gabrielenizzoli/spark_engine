@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
 import org.apache.spark.sql.DataFrameWriter;
-import org.apache.spark.sql.sources.v2.DataSourceOptions;
 import org.apache.spark.sql.streaming.DataStreamWriter;
 
 import javax.annotation.Nonnull;
@@ -27,7 +26,7 @@ public class SinkFormat<T> {
     public static class Builder<T> {
 
         public Builder<T> path(String path) {
-            return option(DataSourceOptions.PATH_KEY, path);
+            return option("path", path);
         }
 
     }

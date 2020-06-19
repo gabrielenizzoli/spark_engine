@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
 import org.apache.spark.sql.*;
-import org.apache.spark.sql.sources.v2.DataSourceOptions;
 import org.apache.spark.sql.types.StructType;
 
 import javax.annotation.Nonnull;
@@ -57,7 +56,7 @@ public class SparkSource<T> implements DataSource<T> {
         }
 
         public Builder<T> path(String path) {
-            return option(DataSourceOptions.PATH_KEY, path);
+            return option("path", path);
         }
 
         public Dataset<T> getDataset() {

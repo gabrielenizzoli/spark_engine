@@ -11,6 +11,7 @@ import org.apache.spark.sql.streaming.Trigger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 
 @Value
 @Builder
@@ -32,7 +33,11 @@ public class SparkStreamSink<T> implements DataSink<T> {
 
         DataStreamWriter<T> writer = format.configureStream(dataset.writeStream()).queryName(queryName).trigger(trigger);
         Optional.ofNullable(outputMode).ifPresent(o -> writer.outputMode(outputMode));
-        writer.start();
+        try {
+            writer.start();
+        } catch (TimeoutException e) {
+            throw new IllegalStateException("error starting stream", e);
+        }
     }
 
 }

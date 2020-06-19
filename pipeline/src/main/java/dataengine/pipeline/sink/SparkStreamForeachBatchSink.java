@@ -12,6 +12,7 @@ import org.apache.spark.sql.streaming.Trigger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 
 @Value
 @Builder
@@ -47,7 +48,11 @@ public class SparkStreamForeachBatchSink<T> implements DataSink<T> {
 
         });
 
-        writer.start();
+        try {
+            writer.start();
+        } catch (TimeoutException e) {
+            throw new IllegalStateException("error starting stream", e);
+        }
     }
 
 }

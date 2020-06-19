@@ -16,10 +16,10 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <jsr305.version>3.0.2</jsr305.version>
-        <spark.version>2.4.6</spark.version>
-        <scala.version>2.11</scala.version>
+        <spark.version>3.0.0-preview2</spark.version>
+        <scala.version>2.12</scala.version>
         <scalacompat.version>0.9.1</scalacompat.version>
-        <fasterxml.version>2.11.0</fasterxml.version>
+        <fasterxml.jackson.version>2.10.0</fasterxml.jackson.version>
 
         <junit.version>5.6.2</junit.version>
         <lombok.version>1.18.12</lombok.version>
@@ -70,12 +70,12 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-yaml</artifactId>
-                <version>${fasterxml.version}</version>
+                <version>${fasterxml.jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${fasterxml.version}</version>
+                <version>${fasterxml.jackson.version}</version>
             </dependency>
 
         </dependencies>
