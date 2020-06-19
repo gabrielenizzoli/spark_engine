@@ -1,0 +1,54 @@
+steps:
+  source1:
+    type: batchSource
+    format: json
+    options: { a: b, path: 'there/file.json' }
+    as: { type: STRING }
+  source2:
+    type: streamSource
+    format: kafka
+    options: { a: b, path: 'there/file.json' }
+    as: { schema: bean, ofClass: "a.b.C" }
+  txTest:
+    type: encode
+    using: source1
+    as: { schema: tuple, of: [{ type: STRING }, { type: BINARY }] }
+  tx:
+    type: encode
+    using: source1
+    as: { type: INT }
+  tx2:
+    type: sqlMerge
+    using: [ tx, source2 ]
+    sql: "select * from tx as t join fileIn2 as f on t.id = f.id"
+
+sinks:
+
+  out1:
+    type: batch
+    using: tx
+    format: parquet
+    options: { path: 'abc' }
+    mode: OVERWRITE
+
+  out2:
+    type: stream
+    name: out2
+    using: tx
+    format: kafka
+    options: { path: 'abc' }
+    trigger: { milliseconds: 60 }
+    mode: APPEND
+
+  out3:
+    type: streamForeachBatch
+    name: out3
+    using: tx
+    trigger: { milliseconds: 60 }
+    mode: APPEND
+    batches:
+      - source: src
+        steps:
+          tx: { type: encode, using: fileIn, as: { type: INT } }
+        sink: { type: batch, using: tx, format: parquet, options: { path: 'abc' }, mode: OVERWRITE }
+

@@ -44,7 +44,7 @@
          * @return output dataset after the encoding
          */
         default <D2> Data{{number}}Transformation<{{#i}}{{^-first}}, {{/-first}}S{{this}}{{/i}}, D2> andThenEncode(Encoder<D2> encoder) {
-            return andThen(Transformation.encode(encoder));
+            return andThen(Transformations.encode(encoder));
         }
 
     }
@@ -53,22 +53,21 @@
      * Applies a merge transformation to all the input DataPipes.
      *
      {{#i}}
-     * @param pipe{{this}}  input DataPipe #{{this}}
+     * @param source{{this}}  input DataSource #{{this}}
      {{/i}}
      * @param merger transformation to apply
      {{#i}}
-     * @param <S{{this}}>   type of the input DataPipe #{{this}}
+     * @param <S{{this}}>   type of the input DataSource #{{this}}
      {{/i}}
-     * @param <D>    type of the output DataPipe
+     * @param <D>    type of the output DataSource
      * @return outcome of the merge operation
      */
-    public static <{{#i}}{{^-first}}, {{/-first}}S{{this}}{{/i}}, D> DataPipe<D> mergeAll(
+    public static <{{#i}}{{^-first}}, {{/-first}}S{{this}}{{/i}}, D> DataSource<D> mergeAll(
     {{#i}}
-           DataPipe<S{{this}}> pipe{{this}},
+           DataSource<S{{this}}> source{{this}},
     {{/i}}
             Data{{number}}Transformation<{{#i}}{{^-first}}, {{/-first}}S{{this}}{{/i}}, D> merger) {
-        Dataset<D> mergedDataset = merger.apply({{#i}}{{^-first}}, {{/-first}}pipe{{this}}.dataset{{/i}});
-        return new DataPipe<>(mergedDataset);
+        return () -> merger.apply({{#i}}{{^-first}}, {{/-first}}source{{this}}.get(){{/i}});
     }
 
 {{/merges}}
