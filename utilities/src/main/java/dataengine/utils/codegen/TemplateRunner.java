@@ -19,8 +19,8 @@ public class TemplateRunner {
     int end;
 
     public void run() throws IOException {
-        final File templateDir = new File("codeGenerationTemplates/src/main/resources");
-        final File outDir = new File("codeGenerationTemplates/target");
+        final File templateDir = new File("utilities/src/main/resources");
+        final File outDir = new File("utilities/target");
         @Cleanup final Writer out = new FileWriter(new File(outDir, name + ".txt"));
 
         Mustache.Compiler c = Mustache.compiler().withLoader(n -> new FileReader(new File(templateDir, n + ".mustache")));
