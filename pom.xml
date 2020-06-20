@@ -28,9 +28,10 @@
 
     <modules>
         <module>utilities</module>
-        <module>pipeline</module>
+        <module>spark-extensions</module>
+        <module>pipeline-core</module>
         <module>pipeline-model</module>
-        <module>pipeline-builder</module>
+        <module>pipeline-model-builder</module>
     </modules>
 
     <dependencyManagement>
