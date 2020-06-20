@@ -53,7 +53,7 @@ public class SqlTransformations {
      * @param <S3>        type of the input dataset #3
      * @return outcome of the merge operation
      */
-    public static <S1, S2, S3> MergeTransformations.Data3Transformation<S1, S2, S3, Row> sqlMerge(
+    public static <S1, S2, S3> Merge.Data3Transformation<S1, S2, S3, Row> sqlMerge(
             @Nonnull String sourceName1,
             @Nonnull String sourceName2,
             @Nonnull String sourceName3,
@@ -82,7 +82,7 @@ public class SqlTransformations {
      * @param <S4>        type of the input dataset #4
      * @return outcome of the merge operation
      */
-    public static <S1, S2, S3, S4> MergeTransformations.Data4Transformation<S1, S2, S3, S4, Row> sqlMerge(
+    public static <S1, S2, S3, S4> Merge.Data4Transformation<S1, S2, S3, S4, Row> sqlMerge(
             @Nonnull String sourceName1,
             @Nonnull String sourceName2,
             @Nonnull String sourceName3,
@@ -115,7 +115,7 @@ public class SqlTransformations {
      * @param <S5>        type of the input dataset #5
      * @return outcome of the merge operation
      */
-    public static <S1, S2, S3, S4, S5> MergeTransformations.Data5Transformation<S1, S2, S3, S4, S5, Row> sqlMerge(
+    public static <S1, S2, S3, S4, S5> Merge.Data5Transformation<S1, S2, S3, S4, S5, Row> sqlMerge(
             @Nonnull String sourceName1,
             @Nonnull String sourceName2,
             @Nonnull String sourceName3,
@@ -152,7 +152,7 @@ public class SqlTransformations {
      * @param <S6>        type of the input dataset #6
      * @return outcome of the merge operation
      */
-    public static <S1, S2, S3, S4, S5, S6> MergeTransformations.Data6Transformation<S1, S2, S3, S4, S5, S6, Row> sqlMerge(
+    public static <S1, S2, S3, S4, S5, S6> Merge.Data6Transformation<S1, S2, S3, S4, S5, S6, Row> sqlMerge(
             @Nonnull String sourceName1,
             @Nonnull String sourceName2,
             @Nonnull String sourceName3,
@@ -193,7 +193,7 @@ public class SqlTransformations {
      * @param <S7>        type of the input dataset #7
      * @return outcome of the merge operation
      */
-    public static <S1, S2, S3, S4, S5, S6, S7> MergeTransformations.Data7Transformation<S1, S2, S3, S4, S5, S6, S7, Row> sqlMerge(
+    public static <S1, S2, S3, S4, S5, S6, S7> Merge.Data7Transformation<S1, S2, S3, S4, S5, S6, S7, Row> sqlMerge(
             @Nonnull String sourceName1,
             @Nonnull String sourceName2,
             @Nonnull String sourceName3,
@@ -238,7 +238,7 @@ public class SqlTransformations {
      * @param <S8>        type of the input dataset #8
      * @return outcome of the merge operation
      */
-    public static <S1, S2, S3, S4, S5, S6, S7, S8> MergeTransformations.Data8Transformation<S1, S2, S3, S4, S5, S6, S7, S8, Row> sqlMerge(
+    public static <S1, S2, S3, S4, S5, S6, S7, S8> Merge.Data8Transformation<S1, S2, S3, S4, S5, S6, S7, S8, Row> sqlMerge(
             @Nonnull String sourceName1,
             @Nonnull String sourceName2,
             @Nonnull String sourceName3,
@@ -287,7 +287,7 @@ public class SqlTransformations {
      * @param <S9>        type of the input dataset #9
      * @return outcome of the merge operation
      */
-    public static <S1, S2, S3, S4, S5, S6, S7, S8, S9> MergeTransformations.Data9Transformation<S1, S2, S3, S4, S5, S6, S7, S8, S9, Row> sqlMerge(
+    public static <S1, S2, S3, S4, S5, S6, S7, S8, S9> Merge.Data9Transformation<S1, S2, S3, S4, S5, S6, S7, S8, S9, Row> sqlMerge(
             @Nonnull String sourceName1,
             @Nonnull String sourceName2,
             @Nonnull String sourceName3,
@@ -340,7 +340,7 @@ public class SqlTransformations {
      * @param <S10>        type of the input dataset #10
      * @return outcome of the merge operation
      */
-    public static <S1, S2, S3, S4, S5, S6, S7, S8, S9, S10> MergeTransformations.Data10Transformation<S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, Row> sqlMerge(
+    public static <S1, S2, S3, S4, S5, S6, S7, S8, S9, S10> Merge.Data10Transformation<S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, Row> sqlMerge(
             @Nonnull String sourceName1,
             @Nonnull String sourceName2,
             @Nonnull String sourceName3,

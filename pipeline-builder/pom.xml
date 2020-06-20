@@ -5,15 +5,25 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>pipeline-builder</artifactId>
-    <version>0.1</version>
 
     <parent>
         <groupId>dataengine</groupId>
         <artifactId>parent</artifactId>
-        <version>0.1</version>
+        <version>${revision}</version>
     </parent>
 
     <dependencies>
+
+        <dependency>
+            <groupId>dataengine</groupId>
+            <artifactId>pipeline</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>dataengine</groupId>
+            <artifactId>pipeline-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -28,7 +38,6 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
         </dependency>
 
     </dependencies>

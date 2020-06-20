@@ -3,14 +3,18 @@ package dataengine.pipeline.transformation;
 import dataengine.pipeline.Data2Transformation;
 import dataengine.pipeline.DataSource;
 import dataengine.pipeline.DataTransformation;
-import dataengine.pipeline.transformation.Transformations;
+import lombok.Builder;
+import lombok.Value;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoder;
 
-public class MergeTransformations {
+import javax.annotation.Nonnull;
+
+public class Merge {
 
     public static <S1, S2, D> DataSource<D> mergeAll(
-            DataSource<S1> source1, DataSource<S2> source2,
+            DataSource<S1> source1,
+            DataSource<S2> source2,
             Data2Transformation<S1, S2, D> merger) {
         return source1.mergeWith(source2, merger);
     }
@@ -66,7 +70,38 @@ public class MergeTransformations {
     }
 
     /**
-     * Applies a merge transformation to all the input DataPipes.
+     * DataSource that stores information needed to perform a custom-defined operation on 3 input DataSources
+     *
+     * @param <S1> type of the input DataSource #1
+     * @param <S2> type of the input DataSource #2
+     * @param <S3> type of the input DataSource #3
+     * @param <D>  type of the output DataSource
+     */
+    @Value
+    @Builder
+    public static class DataSource3<S1, S2, S3, D> implements DataSource<D> {
+
+        @Nonnull
+        DataSource<S1> parentDataSource1;
+        @Nonnull
+        DataSource<S2> parentDataSource2;
+        @Nonnull
+        DataSource<S3> parentDataSource3;
+        @Nonnull
+        Data3Transformation<S1, S2, S3, D> transformation;
+
+        @Override
+        public Dataset<D> get() {
+            return transformation.apply(
+                    parentDataSource1.get(),
+                    parentDataSource2.get(),
+                    parentDataSource3.get()
+            );
+        }
+    }
+
+    /**
+     * Creates a DataSource that performs an on-demand merge transformation between all the input DataSources.
      *
      * @param source1  input DataSource #1
      * @param source2  input DataSource #2
@@ -83,7 +118,12 @@ public class MergeTransformations {
             DataSource<S2> source2,
             DataSource<S3> source3,
             Data3Transformation<S1, S2, S3, D> merger) {
-        return () -> merger.apply(source1.get(), source2.get(), source3.get());
+        return DataSource3.<S1, S2, S3, D>builder()
+                .parentDataSource1(source1)
+                .parentDataSource2(source2)
+                .parentDataSource3(source3)
+                .transformation(merger)
+                .build();
     }
 
     /**
@@ -138,7 +178,42 @@ public class MergeTransformations {
     }
 
     /**
-     * Applies a merge transformation to all the input DataPipes.
+     * DataSource that stores information needed to perform a custom-defined operation on 4 input DataSources
+     *
+     * @param <S1> type of the input DataSource #1
+     * @param <S2> type of the input DataSource #2
+     * @param <S3> type of the input DataSource #3
+     * @param <S4> type of the input DataSource #4
+     * @param <D>  type of the output DataSource
+     */
+    @Value
+    @Builder
+    public static class DataSource4<S1, S2, S3, S4, D> implements DataSource<D> {
+
+        @Nonnull
+        DataSource<S1> parentDataSource1;
+        @Nonnull
+        DataSource<S2> parentDataSource2;
+        @Nonnull
+        DataSource<S3> parentDataSource3;
+        @Nonnull
+        DataSource<S4> parentDataSource4;
+        @Nonnull
+        Data4Transformation<S1, S2, S3, S4, D> transformation;
+
+        @Override
+        public Dataset<D> get() {
+            return transformation.apply(
+                    parentDataSource1.get(),
+                    parentDataSource2.get(),
+                    parentDataSource3.get(),
+                    parentDataSource4.get()
+            );
+        }
+    }
+
+    /**
+     * Creates a DataSource that performs an on-demand merge transformation between all the input DataSources.
      *
      * @param source1  input DataSource #1
      * @param source2  input DataSource #2
@@ -158,7 +233,13 @@ public class MergeTransformations {
             DataSource<S3> source3,
             DataSource<S4> source4,
             Data4Transformation<S1, S2, S3, S4, D> merger) {
-        return () -> merger.apply(source1.get(), source2.get(), source3.get(), source4.get());
+        return DataSource4.<S1, S2, S3, S4, D>builder()
+                .parentDataSource1(source1)
+                .parentDataSource2(source2)
+                .parentDataSource3(source3)
+                .parentDataSource4(source4)
+                .transformation(merger)
+                .build();
     }
 
     /**
@@ -216,7 +297,46 @@ public class MergeTransformations {
     }
 
     /**
-     * Applies a merge transformation to all the input DataPipes.
+     * DataSource that stores information needed to perform a custom-defined operation on 5 input DataSources
+     *
+     * @param <S1> type of the input DataSource #1
+     * @param <S2> type of the input DataSource #2
+     * @param <S3> type of the input DataSource #3
+     * @param <S4> type of the input DataSource #4
+     * @param <S5> type of the input DataSource #5
+     * @param <D>  type of the output DataSource
+     */
+    @Value
+    @Builder
+    public static class DataSource5<S1, S2, S3, S4, S5, D> implements DataSource<D> {
+
+        @Nonnull
+        DataSource<S1> parentDataSource1;
+        @Nonnull
+        DataSource<S2> parentDataSource2;
+        @Nonnull
+        DataSource<S3> parentDataSource3;
+        @Nonnull
+        DataSource<S4> parentDataSource4;
+        @Nonnull
+        DataSource<S5> parentDataSource5;
+        @Nonnull
+        Data5Transformation<S1, S2, S3, S4, S5, D> transformation;
+
+        @Override
+        public Dataset<D> get() {
+            return transformation.apply(
+                    parentDataSource1.get(),
+                    parentDataSource2.get(),
+                    parentDataSource3.get(),
+                    parentDataSource4.get(),
+                    parentDataSource5.get()
+            );
+        }
+    }
+
+    /**
+     * Creates a DataSource that performs an on-demand merge transformation between all the input DataSources.
      *
      * @param source1  input DataSource #1
      * @param source2  input DataSource #2
@@ -239,7 +359,14 @@ public class MergeTransformations {
             DataSource<S4> source4,
             DataSource<S5> source5,
             Data5Transformation<S1, S2, S3, S4, S5, D> merger) {
-        return () -> merger.apply(source1.get(), source2.get(), source3.get(), source4.get(), source5.get());
+        return DataSource5.<S1, S2, S3, S4, S5, D>builder()
+                .parentDataSource1(source1)
+                .parentDataSource2(source2)
+                .parentDataSource3(source3)
+                .parentDataSource4(source4)
+                .parentDataSource5(source5)
+                .transformation(merger)
+                .build();
     }
 
     /**
@@ -300,7 +427,50 @@ public class MergeTransformations {
     }
 
     /**
-     * Applies a merge transformation to all the input DataPipes.
+     * DataSource that stores information needed to perform a custom-defined operation on 6 input DataSources
+     *
+     * @param <S1> type of the input DataSource #1
+     * @param <S2> type of the input DataSource #2
+     * @param <S3> type of the input DataSource #3
+     * @param <S4> type of the input DataSource #4
+     * @param <S5> type of the input DataSource #5
+     * @param <S6> type of the input DataSource #6
+     * @param <D>  type of the output DataSource
+     */
+    @Value
+    @Builder
+    public static class DataSource6<S1, S2, S3, S4, S5, S6, D> implements DataSource<D> {
+
+        @Nonnull
+        DataSource<S1> parentDataSource1;
+        @Nonnull
+        DataSource<S2> parentDataSource2;
+        @Nonnull
+        DataSource<S3> parentDataSource3;
+        @Nonnull
+        DataSource<S4> parentDataSource4;
+        @Nonnull
+        DataSource<S5> parentDataSource5;
+        @Nonnull
+        DataSource<S6> parentDataSource6;
+        @Nonnull
+        Data6Transformation<S1, S2, S3, S4, S5, S6, D> transformation;
+
+        @Override
+        public Dataset<D> get() {
+            return transformation.apply(
+                    parentDataSource1.get(),
+                    parentDataSource2.get(),
+                    parentDataSource3.get(),
+                    parentDataSource4.get(),
+                    parentDataSource5.get(),
+                    parentDataSource6.get()
+            );
+        }
+    }
+
+    /**
+     * Creates a DataSource that performs an on-demand merge transformation between all the input DataSources.
      *
      * @param source1  input DataSource #1
      * @param source2  input DataSource #2
@@ -326,7 +496,15 @@ public class MergeTransformations {
             DataSource<S5> source5,
             DataSource<S6> source6,
             Data6Transformation<S1, S2, S3, S4, S5, S6, D> merger) {
-        return () -> merger.apply(source1.get(), source2.get(), source3.get(), source4.get(), source5.get(), source6.get());
+        return DataSource6.<S1, S2, S3, S4, S5, S6, D>builder()
+                .parentDataSource1(source1)
+                .parentDataSource2(source2)
+                .parentDataSource3(source3)
+                .parentDataSource4(source4)
+                .parentDataSource5(source5)
+                .parentDataSource6(source6)
+                .transformation(merger)
+                .build();
     }
 
     /**
@@ -390,7 +568,54 @@ public class MergeTransformations {
     }
 
     /**
-     * Applies a merge transformation to all the input DataPipes.
+     * DataSource that stores information needed to perform a custom-defined operation on 7 input DataSources
+     *
+     * @param <S1> type of the input DataSource #1
+     * @param <S2> type of the input DataSource #2
+     * @param <S3> type of the input DataSource #3
+     * @param <S4> type of the input DataSource #4
+     * @param <S5> type of the input DataSource #5
+     * @param <S6> type of the input DataSource #6
+     * @param <S7> type of the input DataSource #7
+     * @param <D>  type of the output DataSource
+     */
+    @Value
+    @Builder
+    public static class DataSource7<S1, S2, S3, S4, S5, S6, S7, D> implements DataSource<D> {
+
+        @Nonnull
+        DataSource<S1> parentDataSource1;
+        @Nonnull
+        DataSource<S2> parentDataSource2;
+        @Nonnull
+        DataSource<S3> parentDataSource3;
+        @Nonnull
+        DataSource<S4> parentDataSource4;
+        @Nonnull
+        DataSource<S5> parentDataSource5;
+        @Nonnull
+        DataSource<S6> parentDataSource6;
+        @Nonnull
+        DataSource<S7> parentDataSource7;
+        @Nonnull
+        Data7Transformation<S1, S2, S3, S4, S5, S6, S7, D> transformation;
+
+        @Override
+        public Dataset<D> get() {
+            return transformation.apply(
+                    parentDataSource1.get(),
+                    parentDataSource2.get(),
+                    parentDataSource3.get(),
+                    parentDataSource4.get(),
+                    parentDataSource5.get(),
+                    parentDataSource6.get(),
+                    parentDataSource7.get()
+            );
+        }
+    }
+
+    /**
+     * Creates a DataSource that performs an on-demand merge transformation between all the input DataSources.
      *
      * @param source1  input DataSource #1
      * @param source2  input DataSource #2
@@ -419,7 +644,16 @@ public class MergeTransformations {
             DataSource<S6> source6,
             DataSource<S7> source7,
             Data7Transformation<S1, S2, S3, S4, S5, S6, S7, D> merger) {
-        return () -> merger.apply(source1.get(), source2.get(), source3.get(), source4.get(), source5.get(), source6.get(), source7.get());
+        return DataSource7.<S1, S2, S3, S4, S5, S6, S7, D>builder()
+                .parentDataSource1(source1)
+                .parentDataSource2(source2)
+                .parentDataSource3(source3)
+                .parentDataSource4(source4)
+                .parentDataSource5(source5)
+                .parentDataSource6(source6)
+                .parentDataSource7(source7)
+                .transformation(merger)
+                .build();
     }
 
     /**
@@ -486,7 +720,58 @@ public class MergeTransformations {
     }
 
     /**
-     * Applies a merge transformation to all the input DataPipes.
+     * DataSource that stores information needed to perform a custom-defined operation on 8 input DataSources
+     *
+     * @param <S1> type of the input DataSource #1
+     * @param <S2> type of the input DataSource #2
+     * @param <S3> type of the input DataSource #3
+     * @param <S4> type of the input DataSource #4
+     * @param <S5> type of the input DataSource #5
+     * @param <S6> type of the input DataSource #6
+     * @param <S7> type of the input DataSource #7
+     * @param <S8> type of the input DataSource #8
+     * @param <D>  type of the output DataSource
+     */
+    @Value
+    @Builder
+    public static class DataSource8<S1, S2, S3, S4, S5, S6, S7, S8, D> implements DataSource<D> {
+
+        @Nonnull
+        DataSource<S1> parentDataSource1;
+        @Nonnull
+        DataSource<S2> parentDataSource2;
+        @Nonnull
+        DataSource<S3> parentDataSource3;
+        @Nonnull
+        DataSource<S4> parentDataSource4;
+        @Nonnull
+        DataSource<S5> parentDataSource5;
+        @Nonnull
+        DataSource<S6> parentDataSource6;
+        @Nonnull
+        DataSource<S7> parentDataSource7;
+        @Nonnull
+        DataSource<S8> parentDataSource8;
+        @Nonnull
+        Data8Transformation<S1, S2, S3, S4, S5, S6, S7, S8, D> transformation;
+
+        @Override
+        public Dataset<D> get() {
+            return transformation.apply(
+                    parentDataSource1.get(),
+                    parentDataSource2.get(),
+                    parentDataSource3.get(),
+                    parentDataSource4.get(),
+                    parentDataSource5.get(),
+                    parentDataSource6.get(),
+                    parentDataSource7.get(),
+                    parentDataSource8.get()
+            );
+        }
+    }
+
+    /**
+     * Creates a DataSource that performs an on-demand merge transformation between all the input DataSources.
      *
      * @param source1  input DataSource #1
      * @param source2  input DataSource #2
@@ -518,7 +803,17 @@ public class MergeTransformations {
             DataSource<S7> source7,
             DataSource<S8> source8,
             Data8Transformation<S1, S2, S3, S4, S5, S6, S7, S8, D> merger) {
-        return () -> merger.apply(source1.get(), source2.get(), source3.get(), source4.get(), source5.get(), source6.get(), source7.get(), source8.get());
+        return DataSource8.<S1, S2, S3, S4, S5, S6, S7, S8, D>builder()
+                .parentDataSource1(source1)
+                .parentDataSource2(source2)
+                .parentDataSource3(source3)
+                .parentDataSource4(source4)
+                .parentDataSource5(source5)
+                .parentDataSource6(source6)
+                .parentDataSource7(source7)
+                .parentDataSource8(source8)
+                .transformation(merger)
+                .build();
     }
 
     /**
@@ -588,7 +883,62 @@ public class MergeTransformations {
     }
 
     /**
-     * Applies a merge transformation to all the input DataPipes.
+     * DataSource that stores information needed to perform a custom-defined operation on 9 input DataSources
+     *
+     * @param <S1> type of the input DataSource #1
+     * @param <S2> type of the input DataSource #2
+     * @param <S3> type of the input DataSource #3
+     * @param <S4> type of the input DataSource #4
+     * @param <S5> type of the input DataSource #5
+     * @param <S6> type of the input DataSource #6
+     * @param <S7> type of the input DataSource #7
+     * @param <S8> type of the input DataSource #8
+     * @param <S9> type of the input DataSource #9
+     * @param <D>  type of the output DataSource
+     */
+    @Value
+    @Builder
+    public static class DataSource9<S1, S2, S3, S4, S5, S6, S7, S8, S9, D> implements DataSource<D> {
+
+        @Nonnull
+        DataSource<S1> parentDataSource1;
+        @Nonnull
+        DataSource<S2> parentDataSource2;
+        @Nonnull
+        DataSource<S3> parentDataSource3;
+        @Nonnull
+        DataSource<S4> parentDataSource4;
+        @Nonnull
+        DataSource<S5> parentDataSource5;
+        @Nonnull
+        DataSource<S6> parentDataSource6;
+        @Nonnull
+        DataSource<S7> parentDataSource7;
+        @Nonnull
+        DataSource<S8> parentDataSource8;
+        @Nonnull
+        DataSource<S9> parentDataSource9;
+        @Nonnull
+        Data9Transformation<S1, S2, S3, S4, S5, S6, S7, S8, S9, D> transformation;
+
+        @Override
+        public Dataset<D> get() {
+            return transformation.apply(
+                    parentDataSource1.get(),
+                    parentDataSource2.get(),
+                    parentDataSource3.get(),
+                    parentDataSource4.get(),
+                    parentDataSource5.get(),
+                    parentDataSource6.get(),
+                    parentDataSource7.get(),
+                    parentDataSource8.get(),
+                    parentDataSource9.get()
+            );
+        }
+    }
+
+    /**
+     * Creates a DataSource that performs an on-demand merge transformation between all the input DataSources.
      *
      * @param source1  input DataSource #1
      * @param source2  input DataSource #2
@@ -623,7 +973,18 @@ public class MergeTransformations {
             DataSource<S8> source8,
             DataSource<S9> source9,
             Data9Transformation<S1, S2, S3, S4, S5, S6, S7, S8, S9, D> merger) {
-        return () -> merger.apply(source1.get(), source2.get(), source3.get(), source4.get(), source5.get(), source6.get(), source7.get(), source8.get(), source9.get());
+        return DataSource9.<S1, S2, S3, S4, S5, S6, S7, S8, S9, D>builder()
+                .parentDataSource1(source1)
+                .parentDataSource2(source2)
+                .parentDataSource3(source3)
+                .parentDataSource4(source4)
+                .parentDataSource5(source5)
+                .parentDataSource6(source6)
+                .parentDataSource7(source7)
+                .parentDataSource8(source8)
+                .parentDataSource9(source9)
+                .transformation(merger)
+                .build();
     }
 
     /**
@@ -696,7 +1057,66 @@ public class MergeTransformations {
     }
 
     /**
-     * Applies a merge transformation to all the input DataPipes.
+     * DataSource that stores information needed to perform a custom-defined operation on 10 input DataSources
+     *
+     * @param <S1> type of the input DataSource #1
+     * @param <S2> type of the input DataSource #2
+     * @param <S3> type of the input DataSource #3
+     * @param <S4> type of the input DataSource #4
+     * @param <S5> type of the input DataSource #5
+     * @param <S6> type of the input DataSource #6
+     * @param <S7> type of the input DataSource #7
+     * @param <S8> type of the input DataSource #8
+     * @param <S9> type of the input DataSource #9
+     * @param <S10> type of the input DataSource #10
+     * @param <D>  type of the output DataSource
+     */
+    @Value
+    @Builder
+    public static class DataSource10<S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, D> implements DataSource<D> {
+
+        @Nonnull
+        DataSource<S1> parentDataSource1;
+        @Nonnull
+        DataSource<S2> parentDataSource2;
+        @Nonnull
+        DataSource<S3> parentDataSource3;
+        @Nonnull
+        DataSource<S4> parentDataSource4;
+        @Nonnull
+        DataSource<S5> parentDataSource5;
+        @Nonnull
+        DataSource<S6> parentDataSource6;
+        @Nonnull
+        DataSource<S7> parentDataSource7;
+        @Nonnull
+        DataSource<S8> parentDataSource8;
+        @Nonnull
+        DataSource<S9> parentDataSource9;
+        @Nonnull
+        DataSource<S10> parentDataSource10;
+        @Nonnull
+        Data10Transformation<S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, D> transformation;
+
+        @Override
+        public Dataset<D> get() {
+            return transformation.apply(
+                    parentDataSource1.get(),
+                    parentDataSource2.get(),
+                    parentDataSource3.get(),
+                    parentDataSource4.get(),
+                    parentDataSource5.get(),
+                    parentDataSource6.get(),
+                    parentDataSource7.get(),
+                    parentDataSource8.get(),
+                    parentDataSource9.get(),
+                    parentDataSource10.get()
+            );
+        }
+    }
+
+    /**
+     * Creates a DataSource that performs an on-demand merge transformation between all the input DataSources.
      *
      * @param source1  input DataSource #1
      * @param source2  input DataSource #2
@@ -734,9 +1154,19 @@ public class MergeTransformations {
             DataSource<S9> source9,
             DataSource<S10> source10,
             Data10Transformation<S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, D> merger) {
-        return () -> merger.apply(source1.get(), source2.get(), source3.get(), source4.get(), source5.get(), source6.get(), source7.get(), source8.get(), source9.get(), source10.get());
+        return DataSource10.<S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, D>builder()
+                .parentDataSource1(source1)
+                .parentDataSource2(source2)
+                .parentDataSource3(source3)
+                .parentDataSource4(source4)
+                .parentDataSource5(source5)
+                .parentDataSource6(source6)
+                .parentDataSource7(source7)
+                .parentDataSource8(source8)
+                .parentDataSource9(source9)
+                .parentDataSource10(source10)
+                .transformation(merger)
+                .build();
     }
-
-
 
 }
