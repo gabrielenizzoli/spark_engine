@@ -1,5 +1,6 @@
 package dataengine.pipeline.core.source.impl;
 
+import dataengine.pipeline.core.SparkSessionBase;
 import dataengine.pipeline.core.source.DataSource;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
@@ -10,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class SparkSourceTest {
+class SparkSourceTest extends SparkSessionBase {
 
     @Test
     void getTestDatasetAsText() {
