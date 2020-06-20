@@ -17,9 +17,9 @@ import java.util.List;
 
 public class SparkSqlUnresolvedRelationResolverTest {
 
-    public static final String SQL_SOURCE = "select 100 as value";
-    public static final String SQL_UNRESOLVED = "select value+1 as valueWithOperation from table";
-    public static final String SQL_TABLE = "table";
+    public static final String SQL1_SOURCE = "select 100 as value";
+    public static final String SQL1_UNRESOLVED = "select value+1 as valueWithOperation from table";
+    public static final String SQL1_TABLE = "table";
 
     static SparkSession sparkSession;
 
@@ -36,11 +36,25 @@ public class SparkSqlUnresolvedRelationResolverTest {
     @Test
     public void testSqlResolver() throws ParseException {
         // given
-        LogicalPlan logicalPlanWithData = sparkSession.sessionState().sqlParser().parsePlan(SQL_SOURCE);
-        SparkSqlUnresolvedRelationResolver resolver = SparkSqlUnresolvedRelationResolver.builder().plan(SQL_TABLE, logicalPlanWithData).build();
+        LogicalPlan logicalPlanWithData = sparkSession.sessionState().sqlParser().parsePlan(SQL1_SOURCE);
+        SparkSqlUnresolvedRelationResolver resolver = SparkSqlUnresolvedRelationResolver.builder().plan(SQL1_TABLE, logicalPlanWithData).build();
 
         // when
-        Dataset<Row> datasetResolved = resolver.resolveAsDataset(sparkSession, SQL_UNRESOLVED);
+        Dataset<Row> datasetResolved = resolver.resolveAsDataset(sparkSession, SQL1_UNRESOLVED);
+
+        // then
+        List<Integer> list = datasetResolved.select("valueWithOperation").as(Encoders.INT()).collectAsList();
+        Assertions.assertEquals(Collections.singletonList(101), list);
+    }
+
+    @Test
+    public void testSqlResolverWithExplosion() throws ParseException {
+        // given
+        LogicalPlan logicalPlanWithData = sparkSession.sessionState().sqlParser().parsePlan(SQL1_SOURCE);
+        SparkSqlUnresolvedRelationResolver resolver = SparkSqlUnresolvedRelationResolver.builder().plan(SQL1_TABLE, logicalPlanWithData).build();
+
+        // when
+        Dataset<Row> datasetResolved = resolver.resolveAsDataset(sparkSession, SQL1_UNRESOLVED);
 
         // then
         List<Integer> list = datasetResolved.select("valueWithOperation").as(Encoders.INT()).collectAsList();

@@ -1,5 +1,8 @@
 package dataengine.pipeline;
 
+import dataengine.pipeline.source.DataSource1;
+import dataengine.pipeline.source.DataSource2;
+import dataengine.pipeline.source.DataSourceReducer;
 import dataengine.pipeline.transformation.Transformations;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoder;
@@ -15,7 +18,7 @@ public interface DataSource<T> extends Supplier<Dataset<T>> {
     }
 
     default <D> DataSource<D> transformation(DataTransformation<T, D> mapper) {
-        return () -> mapper.apply(get());
+        return DataSource1.<T, D>builder().parentDataSource1(this).transformation(mapper).build();
     }
 
     default DataSource<T> cache(StorageLevel storageLevel) {
@@ -27,11 +30,11 @@ public interface DataSource<T> extends Supplier<Dataset<T>> {
     }
 
     default <T2, D> DataSource<D> mergeWith(DataSource<T2> otherDataSources, Data2Transformation<T, T2, D> merger) {
-        return () -> merger.apply(get(), otherDataSources.get());
+        return DataSource2.<T, T2, D>builder().parentDataSource1(this).parentDataSource2(otherDataSources).transformation(merger).build();
     }
 
     default DataSource<T> reduce(List<DataSource<T>> otherDataSources, Data2Transformation<T, T, T> reducer) {
-        return () -> otherDataSources.stream().map(Supplier::get).reduce(get(), reducer::apply);
+        return DataSourceReducer.<T>builder().dataSource(this).parentDataSources(otherDataSources).reducer(reducer).build();
     }
 
     default DataSource<T> union(List<DataSource<T>> otherDataSources) {

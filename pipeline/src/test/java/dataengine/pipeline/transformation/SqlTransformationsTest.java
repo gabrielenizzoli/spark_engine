@@ -64,7 +64,7 @@ class SqlTransformationsTest extends SparkSessionTest {
                 .andThenEncode(Encoders.bean(TestBean.class));
 
         // when
-        MergeTransformations.mergeAll(dataSource1, dataSource2, tx).write(dataSink);
+        Merge.mergeAll(dataSource1, dataSource2, tx).write(dataSink);
 
         // then
         Assertions.assertEquals(Collections.singletonList(TestBean.of(7, "six")), data);

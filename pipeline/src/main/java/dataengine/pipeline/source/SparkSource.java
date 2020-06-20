@@ -16,7 +16,7 @@ import java.util.Objects;
 @Builder
 public class SparkSource<T> implements DataSource<T> {
 
-    enum SourceType {
+    public enum SourceType {
         BATCH,
         STREAM
     }

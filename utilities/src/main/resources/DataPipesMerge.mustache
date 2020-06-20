@@ -50,7 +50,36 @@
     }
 
     /**
-     * Applies a merge transformation to all the input DataPipes.
+     * DataSource that stores information needed to perform a custom-defined operation on {{number}} input DataSources
+     *
+     {{#i}}
+     * @param <S{{this}}> type of the input DataSource #{{this}}
+     {{/i}}
+     * @param <D>  type of the output DataSource
+     */
+    @Value
+    @Builder
+    public static class DataSource{{number}}<{{#i}}{{^-first}}, {{/-first}}S{{this}}{{/i}}, D> implements DataSource<D> {
+
+        {{#i}}
+        @Nonnull
+        DataSource<S{{this}}> parentDataSource{{this}};
+        {{/i}}
+        @Nonnull
+        Data{{number}}Transformation<{{#i}}{{^-first}}, {{/-first}}S{{this}}{{/i}}, D> transformation;
+
+        @Override
+        public Dataset<D> get() {
+            return transformation.apply(
+                {{#i}}
+                parentDataSource{{this}}.get(){{^-last}},{{/-last}}
+                {{/i}}
+            );
+        }
+    }
+
+    /**
+     * Creates a DataSource that performs an on-demand merge transformation between all the input DataSources.
      *
      {{#i}}
      * @param source{{this}}  input DataSource #{{this}}
@@ -67,7 +96,12 @@
            DataSource<S{{this}}> source{{this}},
     {{/i}}
             Data{{number}}Transformation<{{#i}}{{^-first}}, {{/-first}}S{{this}}{{/i}}, D> merger) {
-        return () -> merger.apply({{#i}}{{^-first}}, {{/-first}}source{{this}}.get(){{/i}});
+        return DataSource{{number}}.<{{#i}}{{^-first}}, {{/-first}}S{{this}}{{/i}}, D>builder()
+           {{#i}}
+           .parentDataSource{{this}}(source{{this}})
+           {{/i}}
+           .transformation(merger)
+           .build();
     }
 
 {{/merges}}

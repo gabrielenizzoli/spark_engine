@@ -1,6 +1,6 @@
 package dataengine.model.pipeline.step;
 
-public interface SingleInput {
+public interface SingleInputStep extends Step {
 
     String getUsing();
 

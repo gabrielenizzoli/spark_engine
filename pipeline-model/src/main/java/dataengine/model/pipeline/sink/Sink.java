@@ -7,8 +7,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = SparkBatchSink.class, name = "batch"),
         @JsonSubTypes.Type(value = SparkStreamSink.class, name = "stream"),
-        @JsonSubTypes.Type(value = SparkStreamForeachBatchSink.class, name = "streamForeachBatch")
+        @JsonSubTypes.Type(value = SparkStreamForeachBatchSink.class, name = "streamForeachBatch"),
+        @JsonSubTypes.Type(value = SparkShowSink.class, name = "show")
 })
 public interface Sink {
+
+    String getUsing();
 
 }
