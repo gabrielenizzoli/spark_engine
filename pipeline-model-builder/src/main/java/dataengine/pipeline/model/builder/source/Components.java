@@ -18,7 +18,7 @@ import dataengine.pipeline.core.source.factory.DataSourceFactory;
 import dataengine.pipeline.core.source.impl.SparkSource;
 import dataengine.pipeline.core.source.DataSourceMerge;
 import dataengine.spark.transformation.SqlTransformations;
-import dataengine.pipeline.model.builder.ModelBuilderException;
+import dataengine.pipeline.core.DataFactoryException;
 import org.apache.spark.sql.Encoder;
 import org.apache.spark.sql.Encoders;
 
@@ -131,7 +131,7 @@ public class Components {
                     );
             }
         }
-        throw new ModelBuilderException(encoder + " encoder not managed");
+        throw new DataFactoryException(encoder + " encoder not managed");
     }
 
     public static DataSource createSourceForSingleInputStep(@Nonnull SingleInputStep step,
@@ -149,7 +149,7 @@ public class Components {
                     .apply(step.getUsing())
                     .transform(SqlTransformations.sql(step.getUsing(), ((Sql) step).getSql()));
         }
-        throw new ModelBuilderException(step + " not managed");
+        throw new DataFactoryException(step + " not managed");
     }
 
     public static DataSource createSourceForMultiInputStep(@Nonnull MultiInputStep step,
@@ -220,7 +220,7 @@ public class Components {
                     );
             }
         }
-        throw new ModelBuilderException(step + " step not managed");
+        throw new DataFactoryException(step + " step not managed");
     }
 
 }

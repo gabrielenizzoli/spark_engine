@@ -23,32 +23,30 @@ steps:
     sql: "select * from tx as t join fileIn2 as f on t.id = f.id"
 
 sinks:
-
   out1:
     type: batch
-    using: tx
     format: parquet
     options: { path: 'abc' }
     mode: OVERWRITE
-
   out2:
     type: stream
-    name: out2
-    using: tx
+    name: queryNameHere
     format: kafka
     options: { path: 'abc' }
     trigger: { milliseconds: 60 }
     mode: APPEND
-
   out3:
     type: streamForeachBatch
     name: out3
-    using: tx
     trigger: { milliseconds: 60 }
     mode: APPEND
     batches:
       - source: src
         steps:
-          tx: { type: encode, using: fileIn, as: { type: INT } }
-        sink: { type: batch, using: tx, format: parquet, options: { path: 'abc' }, mode: OVERWRITE }
+          tx: { type: encode, using: src, as: { type: INT } }
+        sink: { type: batch, format: parquet, options: { path: 'abc' }, mode: OVERWRITE }
 
+pipelines:
+  name: { source: tx, sink: out1 }
+  pipe2: { source: tx, sink: out2 }
+  pipe3: { source: tx, sink: out3 }

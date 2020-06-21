@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
  */
 @Value
 @Builder
-public class DataSource2<S1, S2, D> implements dataengine.pipeline.core.source.DataSource<D> {
+public class DataSource2<S1, S2, D> implements DataSource<D> {
 
     @Nonnull
     dataengine.pipeline.core.source.DataSource<S1> parentDataSource1;

@@ -31,6 +31,7 @@
         <module>spark-extensions</module>
         <module>pipeline-core</module>
         <module>pipeline-model</module>
+        <module>pipeline-model-supplier</module>
         <module>pipeline-model-builder</module>
     </modules>
 

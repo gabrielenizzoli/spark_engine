@@ -1,5 +1,6 @@
 package dataengine.pipeline.core.source.impl;
 
+import dataengine.pipeline.core.source.DataSource;
 import lombok.Builder;
 import lombok.Value;
 import org.apache.spark.sql.Dataset;
@@ -19,6 +20,10 @@ public class SparkSqlSource<T> implements dataengine.pipeline.core.source.DataSo
     String sql;
     @Nullable
     Encoder<T> encoder;
+
+    public static DataSource<Row> sql(String sql) {
+        return SparkSqlSource.<Row>builder().sql(sql).build();
+    }
 
     public Dataset<T> get() {
         return Objects.nonNull(encoder) ? getEncodedDataset() : (Dataset<T>) getRowDataset();

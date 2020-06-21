@@ -15,5 +15,6 @@ public class Pipelines {
 
     Map<String, Step> steps;
     Map<String, Sink> sinks;
+    Map<String, Pipeline> pipelines;
 
 }

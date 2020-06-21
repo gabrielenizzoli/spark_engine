@@ -11,14 +11,14 @@ import java.util.List;
 
 @EqualsAndHashCode
 @ToString
-public class DataSinkCollect<T> implements DataSink<T> {
+public class DataSinkCollectRows<T> implements DataSink<T> {
 
     @Getter
-    private final List<T> list = new LinkedList<>();
+    private final List<T> rows = new LinkedList<>();
 
     @Override
     public void accept(Dataset<T> dataset) {
-        list.addAll(dataset.collectAsList());
+        rows.addAll(dataset.collectAsList());
     }
 
 }

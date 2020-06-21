@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 @Value
 @AllArgsConstructor(staticName = "of")
 @Builder
-public class DataSource1<S1, D> implements dataengine.pipeline.core.source.DataSource<D> {
+public class DataSource1<S1, D> implements DataSource<D> {
 
     @Nonnull
     dataengine.pipeline.core.source.DataSource<S1> parentDataSource1;

@@ -1,6 +1,7 @@
 package dataengine.pipeline.core.source;
 
 import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import org.apache.spark.sql.Dataset;
@@ -8,11 +9,11 @@ import org.apache.spark.sql.Dataset;
 import javax.annotation.Nonnull;
 
 @Value
-@Builder
-public class DataSourceCache<T> implements dataengine.pipeline.core.source.DataSource<T> {
+@RequiredArgsConstructor(staticName = "of")
+public class DataSourceStore<T> implements DataSource<T> {
 
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<T> dataSource;
+    DataSource<T> dataSource;
     @NonFinal
     Dataset<T> cachedDataset;
 

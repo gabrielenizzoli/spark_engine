@@ -1,28 +1,26 @@
 package dataengine.pipeline.model.builder.source;
 
-import dataengine.pipeline.model.builder.ModelBuilderException;
-import dataengine.pipeline.model.pipeline.step.MultiInputStep;
-import dataengine.pipeline.model.pipeline.step.SingleInputStep;
-import dataengine.pipeline.model.pipeline.step.Source;
-import dataengine.pipeline.model.pipeline.step.Step;
+import dataengine.pipeline.core.DataFactoryException;
 import dataengine.pipeline.core.source.DataSource;
 import dataengine.pipeline.core.source.factory.DataSourceFactory;
-import lombok.Builder;
-import lombok.Value;
+import dataengine.pipeline.model.pipeline.step.*;
+import lombok.AllArgsConstructor;
 
 import javax.annotation.Nonnull;
-import java.util.Map;
 
-@Value
-@Builder
+@AllArgsConstructor
 public class DataSourceFactoryImpl implements DataSourceFactory {
 
     @Nonnull
-    private Map<String, Step> steps;
+    StepFactory stepsFactory;
+
+    public static DataSourceFactoryImpl withStepFactory(StepFactory stepFactory) {
+        return new DataSourceFactoryImpl(stepFactory);
+    }
 
     @Override
     public DataSource apply(String name) {
-        Step step = steps.get(name);
+        Step step = stepsFactory.apply(name);
         if (step instanceof Source) {
             Source source = (Source) step;
             return Components.buildDataSource(source);
@@ -31,7 +29,7 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
         } else if (step instanceof MultiInputStep) {
             return createSourceForMultiInputStep((MultiInputStep) step);
         }
-        throw new ModelBuilderException("source " + step + " not managed");
+        throw new DataFactoryException("source " + step + " not managed");
     }
 
     private DataSource createSourceForSingleInputStep(SingleInputStep step) {
