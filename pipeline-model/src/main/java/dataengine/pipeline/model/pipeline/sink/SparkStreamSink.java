@@ -13,8 +13,6 @@ import java.util.Map;
 public class SparkStreamSink implements Sink {
 
     @Nonnull
-    String using;
-    @Nonnull
     String name;
     @Nonnull
     String format;

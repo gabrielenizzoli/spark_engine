@@ -13,8 +13,6 @@ import java.util.Map;
 public class SparkBatchSink implements Sink {
 
     @Nonnull
-    String using;
-    @Nonnull
     String format;
     @Nonnull
     Map<String, String> options;

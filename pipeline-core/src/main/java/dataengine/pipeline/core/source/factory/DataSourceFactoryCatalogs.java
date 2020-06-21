@@ -1,8 +1,7 @@
-package dataengine.pipeline.model.builder.source;
+package dataengine.pipeline.core.source.factory;
 
 import dataengine.pipeline.core.source.DataSource;
-import dataengine.pipeline.core.source.factory.DataSourceFactory;
-import dataengine.pipeline.model.builder.ModelBuilderException;
+import dataengine.pipeline.core.DataFactoryException;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
@@ -47,11 +46,11 @@ public class DataSourceFactoryCatalogs implements DataSourceFactory {
             if (defaultCatalog != null) {
                 return defaultCatalog.apply(qualifiedName.getSourceName());
             }
-            throw new ModelBuilderException("can't find datasource with name " + qualifiedName);
+            throw new DataFactoryException("can't find datasource with name " + qualifiedName);
         }
         DataSourceFactory catalog = catalogs.get(qualifiedName.getCatalogName());
         if (catalog == null) {
-            throw new ModelBuilderException("can't find catalog for datasource with name " + qualifiedName);
+            throw new DataFactoryException("can't find catalog for datasource with name " + qualifiedName);
         }
         return catalog.apply(qualifiedName.getSourceName());
     }

@@ -6,10 +6,10 @@ import java.util.List;
 
 public class DataSourceMerge {
 
-    public static <T> dataengine.pipeline.core.source.DataSource<T> reduce(dataengine.pipeline.core.source.DataSource<T> dataSource,
-                                                                           List<dataengine.pipeline.core.source.DataSource<T>> otherDataSources,
-                                                                           DataTransformation2<T, T, T> reducer) {
-        return dataengine.pipeline.core.source.DataSourceReducer.<T>builder()
+    public static <T> DataSource<T> reduce(DataSource<T> dataSource,
+                                           List<DataSource<T>> otherDataSources,
+                                           DataTransformation2<T, T, T> reducer) {
+        return DataSourceReducer.<T>builder()
                 .dataSource(dataSource)
                 .parentDataSources(otherDataSources)
                 .reducer(reducer)
@@ -27,11 +27,11 @@ public class DataSourceMerge {
      * @param <D>     type of the output DataSource
      * @return outcome of the merge operation
      */
-    public static <S1, S2, D> dataengine.pipeline.core.source.DataSource<D> mergeAll(
-            dataengine.pipeline.core.source.DataSource<S1> source1,
-            dataengine.pipeline.core.source.DataSource<S2> source2,
+    public static <S1, S2, D> DataSource<D> mergeAll(
+            DataSource<S1> source1,
+            DataSource<S2> source2,
             DataTransformation2<S1, S2, D> merger) {
-        return dataengine.pipeline.core.source.DataSource2.<S1, S2, D>builder()
+        return DataSource2.<S1, S2, D>builder()
                 .parentDataSource1(source1)
                 .parentDataSource2(source2)
                 .transformation(merger)
@@ -51,12 +51,12 @@ public class DataSourceMerge {
      * @param <D>     type of the output DataSource
      * @return outcome of the merge operation
      */
-    public static <S1, S2, S3, D> dataengine.pipeline.core.source.DataSource<D> mergeAll(
-            dataengine.pipeline.core.source.DataSource<S1> source1,
-            dataengine.pipeline.core.source.DataSource<S2> source2,
-            dataengine.pipeline.core.source.DataSource<S3> source3,
+    public static <S1, S2, S3, D> DataSource<D> mergeAll(
+            DataSource<S1> source1,
+            DataSource<S2> source2,
+            DataSource<S3> source3,
             DataTransformation3<S1, S2, S3, D> merger) {
-        return dataengine.pipeline.core.source.DataSource3.<S1, S2, S3, D>builder()
+        return DataSource3.<S1, S2, S3, D>builder()
                 .parentDataSource1(source1)
                 .parentDataSource2(source2)
                 .parentDataSource3(source3)
@@ -79,13 +79,13 @@ public class DataSourceMerge {
      * @param <D>     type of the output DataSource
      * @return outcome of the merge operation
      */
-    public static <S1, S2, S3, S4, D> dataengine.pipeline.core.source.DataSource<D> mergeAll(
-            dataengine.pipeline.core.source.DataSource<S1> source1,
-            dataengine.pipeline.core.source.DataSource<S2> source2,
-            dataengine.pipeline.core.source.DataSource<S3> source3,
-            dataengine.pipeline.core.source.DataSource<S4> source4,
+    public static <S1, S2, S3, S4, D> DataSource<D> mergeAll(
+            DataSource<S1> source1,
+            DataSource<S2> source2,
+            DataSource<S3> source3,
+            DataSource<S4> source4,
             DataTransformation4<S1, S2, S3, S4, D> merger) {
-        return dataengine.pipeline.core.source.DataSource4.<S1, S2, S3, S4, D>builder()
+        return DataSource4.<S1, S2, S3, S4, D>builder()
                 .parentDataSource1(source1)
                 .parentDataSource2(source2)
                 .parentDataSource3(source3)
@@ -111,14 +111,14 @@ public class DataSourceMerge {
      * @param <D>     type of the output DataSource
      * @return outcome of the merge operation
      */
-    public static <S1, S2, S3, S4, S5, D> dataengine.pipeline.core.source.DataSource<D> mergeAll(
-            dataengine.pipeline.core.source.DataSource<S1> source1,
-            dataengine.pipeline.core.source.DataSource<S2> source2,
-            dataengine.pipeline.core.source.DataSource<S3> source3,
-            dataengine.pipeline.core.source.DataSource<S4> source4,
-            dataengine.pipeline.core.source.DataSource<S5> source5,
+    public static <S1, S2, S3, S4, S5, D> DataSource<D> mergeAll(
+            DataSource<S1> source1,
+            DataSource<S2> source2,
+            DataSource<S3> source3,
+            DataSource<S4> source4,
+            DataSource<S5> source5,
             DataTransformation5<S1, S2, S3, S4, S5, D> merger) {
-        return dataengine.pipeline.core.source.DataSource5.<S1, S2, S3, S4, S5, D>builder()
+        return DataSource5.<S1, S2, S3, S4, S5, D>builder()
                 .parentDataSource1(source1)
                 .parentDataSource2(source2)
                 .parentDataSource3(source3)
@@ -147,15 +147,15 @@ public class DataSourceMerge {
      * @param <D>     type of the output DataSource
      * @return outcome of the merge operation
      */
-    public static <S1, S2, S3, S4, S5, S6, D> dataengine.pipeline.core.source.DataSource<D> mergeAll(
-            dataengine.pipeline.core.source.DataSource<S1> source1,
-            dataengine.pipeline.core.source.DataSource<S2> source2,
-            dataengine.pipeline.core.source.DataSource<S3> source3,
-            dataengine.pipeline.core.source.DataSource<S4> source4,
-            dataengine.pipeline.core.source.DataSource<S5> source5,
-            dataengine.pipeline.core.source.DataSource<S6> source6,
+    public static <S1, S2, S3, S4, S5, S6, D> DataSource<D> mergeAll(
+            DataSource<S1> source1,
+            DataSource<S2> source2,
+            DataSource<S3> source3,
+            DataSource<S4> source4,
+            DataSource<S5> source5,
+            DataSource<S6> source6,
             DataTransformation6<S1, S2, S3, S4, S5, S6, D> merger) {
-        return dataengine.pipeline.core.source.DataSource6.<S1, S2, S3, S4, S5, S6, D>builder()
+        return DataSource6.<S1, S2, S3, S4, S5, S6, D>builder()
                 .parentDataSource1(source1)
                 .parentDataSource2(source2)
                 .parentDataSource3(source3)
@@ -187,16 +187,16 @@ public class DataSourceMerge {
      * @param <D>     type of the output DataSource
      * @return outcome of the merge operation
      */
-    public static <S1, S2, S3, S4, S5, S6, S7, D> dataengine.pipeline.core.source.DataSource<D> mergeAll(
-            dataengine.pipeline.core.source.DataSource<S1> source1,
-            dataengine.pipeline.core.source.DataSource<S2> source2,
-            dataengine.pipeline.core.source.DataSource<S3> source3,
-            dataengine.pipeline.core.source.DataSource<S4> source4,
-            dataengine.pipeline.core.source.DataSource<S5> source5,
-            dataengine.pipeline.core.source.DataSource<S6> source6,
-            dataengine.pipeline.core.source.DataSource<S7> source7,
+    public static <S1, S2, S3, S4, S5, S6, S7, D> DataSource<D> mergeAll(
+            DataSource<S1> source1,
+            DataSource<S2> source2,
+            DataSource<S3> source3,
+            DataSource<S4> source4,
+            DataSource<S5> source5,
+            DataSource<S6> source6,
+            DataSource<S7> source7,
             DataTransformation7<S1, S2, S3, S4, S5, S6, S7, D> merger) {
-        return dataengine.pipeline.core.source.DataSource7.<S1, S2, S3, S4, S5, S6, S7, D>builder()
+        return DataSource7.<S1, S2, S3, S4, S5, S6, S7, D>builder()
                 .parentDataSource1(source1)
                 .parentDataSource2(source2)
                 .parentDataSource3(source3)
@@ -231,17 +231,17 @@ public class DataSourceMerge {
      * @param <D>     type of the output DataSource
      * @return outcome of the merge operation
      */
-    public static <S1, S2, S3, S4, S5, S6, S7, S8, D> dataengine.pipeline.core.source.DataSource<D> mergeAll(
-            dataengine.pipeline.core.source.DataSource<S1> source1,
-            dataengine.pipeline.core.source.DataSource<S2> source2,
-            dataengine.pipeline.core.source.DataSource<S3> source3,
-            dataengine.pipeline.core.source.DataSource<S4> source4,
-            dataengine.pipeline.core.source.DataSource<S5> source5,
-            dataengine.pipeline.core.source.DataSource<S6> source6,
-            dataengine.pipeline.core.source.DataSource<S7> source7,
-            dataengine.pipeline.core.source.DataSource<S8> source8,
+    public static <S1, S2, S3, S4, S5, S6, S7, S8, D> DataSource<D> mergeAll(
+            DataSource<S1> source1,
+            DataSource<S2> source2,
+            DataSource<S3> source3,
+            DataSource<S4> source4,
+            DataSource<S5> source5,
+            DataSource<S6> source6,
+            DataSource<S7> source7,
+            DataSource<S8> source8,
             DataTransformation8<S1, S2, S3, S4, S5, S6, S7, S8, D> merger) {
-        return dataengine.pipeline.core.source.DataSource8.<S1, S2, S3, S4, S5, S6, S7, S8, D>builder()
+        return DataSource8.<S1, S2, S3, S4, S5, S6, S7, S8, D>builder()
                 .parentDataSource1(source1)
                 .parentDataSource2(source2)
                 .parentDataSource3(source3)
@@ -279,18 +279,18 @@ public class DataSourceMerge {
      * @param <D>     type of the output DataSource
      * @return outcome of the merge operation
      */
-    public static <S1, S2, S3, S4, S5, S6, S7, S8, S9, D> dataengine.pipeline.core.source.DataSource<D> mergeAll(
-            dataengine.pipeline.core.source.DataSource<S1> source1,
-            dataengine.pipeline.core.source.DataSource<S2> source2,
-            dataengine.pipeline.core.source.DataSource<S3> source3,
-            dataengine.pipeline.core.source.DataSource<S4> source4,
-            dataengine.pipeline.core.source.DataSource<S5> source5,
-            dataengine.pipeline.core.source.DataSource<S6> source6,
-            dataengine.pipeline.core.source.DataSource<S7> source7,
-            dataengine.pipeline.core.source.DataSource<S8> source8,
-            dataengine.pipeline.core.source.DataSource<S9> source9,
+    public static <S1, S2, S3, S4, S5, S6, S7, S8, S9, D> DataSource<D> mergeAll(
+            DataSource<S1> source1,
+            DataSource<S2> source2,
+            DataSource<S3> source3,
+            DataSource<S4> source4,
+            DataSource<S5> source5,
+            DataSource<S6> source6,
+            DataSource<S7> source7,
+            DataSource<S8> source8,
+            DataSource<S9> source9,
             DataTransformation9<S1, S2, S3, S4, S5, S6, S7, S8, S9, D> merger) {
-        return dataengine.pipeline.core.source.DataSource9.<S1, S2, S3, S4, S5, S6, S7, S8, S9, D>builder()
+        return DataSource9.<S1, S2, S3, S4, S5, S6, S7, S8, S9, D>builder()
                 .parentDataSource1(source1)
                 .parentDataSource2(source2)
                 .parentDataSource3(source3)
@@ -331,19 +331,19 @@ public class DataSourceMerge {
      * @param <D>      type of the output DataSource
      * @return outcome of the merge operation
      */
-    public static <S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, D> dataengine.pipeline.core.source.DataSource<D> mergeAll(
-            dataengine.pipeline.core.source.DataSource<S1> source1,
-            dataengine.pipeline.core.source.DataSource<S2> source2,
-            dataengine.pipeline.core.source.DataSource<S3> source3,
-            dataengine.pipeline.core.source.DataSource<S4> source4,
-            dataengine.pipeline.core.source.DataSource<S5> source5,
-            dataengine.pipeline.core.source.DataSource<S6> source6,
-            dataengine.pipeline.core.source.DataSource<S7> source7,
-            dataengine.pipeline.core.source.DataSource<S8> source8,
-            dataengine.pipeline.core.source.DataSource<S9> source9,
-            dataengine.pipeline.core.source.DataSource<S10> source10,
+    public static <S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, D> DataSource<D> mergeAll(
+            DataSource<S1> source1,
+            DataSource<S2> source2,
+            DataSource<S3> source3,
+            DataSource<S4> source4,
+            DataSource<S5> source5,
+            DataSource<S6> source6,
+            DataSource<S7> source7,
+            DataSource<S8> source8,
+            DataSource<S9> source9,
+            DataSource<S10> source10,
             DataTransformation10<S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, D> merger) {
-        return dataengine.pipeline.core.source.DataSource10.<S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, D>builder()
+        return DataSource10.<S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, D>builder()
                 .parentDataSource1(source1)
                 .parentDataSource2(source2)
                 .parentDataSource3(source3)

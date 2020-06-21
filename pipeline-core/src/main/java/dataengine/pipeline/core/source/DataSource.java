@@ -26,6 +26,10 @@ public interface DataSource<T> extends Supplier<Dataset<T>> {
         return DataSource1.of(this, Transformations.dataFrame());
     }
 
+    default DataSource<T> withDatasetStore() {
+        return DataSourceStore.of(this);
+    }
+
     default DataSource<T> cache(StorageLevel storageLevel) {
         return transform(Transformations.cache(storageLevel));
     }

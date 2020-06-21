@@ -7,7 +7,7 @@ import dataengine.pipeline.model.pipeline.sink.SparkShowSink;
 import dataengine.pipeline.core.sink.DataSink;
 import dataengine.pipeline.core.sink.factory.DataSinkFactory;
 import dataengine.pipeline.core.sink.impl.SinkFormat;
-import dataengine.pipeline.model.builder.ModelBuilderException;
+import dataengine.pipeline.core.DataFactoryException;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
@@ -45,7 +45,7 @@ public class DataSinkFactoryImpl implements DataSinkFactory {
                     .format(sinkFormat)
                     .build();
         }
-        throw new ModelBuilderException(sink + " not managed");
+        throw new DataFactoryException(sink + " not managed");
     }
 
 }

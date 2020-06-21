@@ -13,8 +13,6 @@ import java.util.List;
 public class SparkStreamForeachBatchSink implements Sink {
 
     @Nonnull
-    String using;
-    @Nonnull
     String name;
     @Nonnull
     Trigger trigger;

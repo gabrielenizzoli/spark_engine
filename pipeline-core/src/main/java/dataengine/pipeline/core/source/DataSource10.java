@@ -24,28 +24,28 @@ import javax.annotation.Nonnull;
  */
 @Value
 @Builder
-public class DataSource10<S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, D> implements dataengine.pipeline.core.source.DataSource<D> {
+public class DataSource10<S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, D> implements DataSource<D> {
 
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S1> parentDataSource1;
+    DataSource<S1> parentDataSource1;
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S2> parentDataSource2;
+    DataSource<S2> parentDataSource2;
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S3> parentDataSource3;
+    DataSource<S3> parentDataSource3;
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S4> parentDataSource4;
+    DataSource<S4> parentDataSource4;
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S5> parentDataSource5;
+    DataSource<S5> parentDataSource5;
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S6> parentDataSource6;
+    DataSource<S6> parentDataSource6;
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S7> parentDataSource7;
+    DataSource<S7> parentDataSource7;
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S8> parentDataSource8;
+    DataSource<S8> parentDataSource8;
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S9> parentDataSource9;
+    DataSource<S9> parentDataSource9;
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S10> parentDataSource10;
+    DataSource<S10> parentDataSource10;
     @Nonnull
     DataTransformation10<S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, D> transformation;
 

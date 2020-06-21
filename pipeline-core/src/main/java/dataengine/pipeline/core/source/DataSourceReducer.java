@@ -12,13 +12,13 @@ import java.util.function.Supplier;
 
 @Value
 @Builder
-public class DataSourceReducer<T> implements dataengine.pipeline.core.source.DataSource<T> {
+public class DataSourceReducer<T> implements DataSource<T> {
 
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<T> dataSource;
+    DataSource<T> dataSource;
     @Nonnull
     @Singular
-    List<dataengine.pipeline.core.source.DataSource<T>> parentDataSources;
+    List<DataSource<T>> parentDataSources;
     @Nonnull
     DataTransformation2<T, T, T> reducer;
 

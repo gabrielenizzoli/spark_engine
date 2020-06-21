@@ -4,10 +4,12 @@ import dataengine.pipeline.core.source.DataSource;
 
 import java.util.function.Function;
 
-public interface DataSourceFactory extends Function<String, DataSource> {
+public interface DataSourceFactory extends Function<String, DataSource<?>> {
 
-    default DataSourceFactory withCache() {
-        return dataengine.pipeline.core.source.factory.DataSourceFactoryCache.builder().dataSourceFactory(this).build();
+    default DataSourceFactory withLookupCache() {
+        if (this instanceof DataSourceFactoryLookupStore)
+            return this;
+        return DataSourceFactoryLookupStore.builder().dataSourceFactory(this).build();
     }
 
 }

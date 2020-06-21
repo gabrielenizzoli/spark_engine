@@ -1,13 +1,10 @@
 package datangine.pipeline.model.builder.source;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import dataengine.pipeline.core.sink.impl.DataSinkCollect;
+import dataengine.pipeline.core.sink.impl.DataSinkCollectRows;
 import dataengine.pipeline.core.source.DataSource;
 import dataengine.pipeline.core.source.factory.DataSourceFactory;
 import dataengine.pipeline.model.builder.source.DataSourceFactoryImpl;
-import dataengine.pipeline.model.pipeline.step.Step;
+import dataengine.pipeline.model.pipeline.step.StepFactory;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.AfterAll;
@@ -15,10 +12,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 class DataSourceFactoryImplTest {
@@ -39,23 +34,22 @@ class DataSourceFactoryImplTest {
     void testBuilder() throws IOException {
 
         // given
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        File yamlSource = new File("src/test/resources/simplePipeline.yaml");
-        Map<String, Step> steps = mapper.readValue(yamlSource, new TypeReference<Map<String, Step>>() {
-        });
-        DataSourceFactory dataSourceFactory = DataSourceFactoryImpl.builder().steps(steps).build().withCache();
+        StepFactory steps = Utils.getStepsFactory();
+        DataSourceFactory dataSourceFactory = DataSourceFactoryImpl.withStepFactory(steps);
 
         // when
-        DataSinkCollect<Row> dataSink = new DataSinkCollect();
+        DataSinkCollectRows<Row> dataSink = new DataSinkCollectRows();
         DataSource dataSource = dataSourceFactory.apply("tx");
         dataSource.toDataFrame().write(dataSink);
 
         // then
         Assertions.assertEquals(
                 Arrays.asList("a:xxx", "b:yyy"),
-                dataSink.getList().stream()
+                dataSink.getRows().stream()
                         .map(r -> r.get(r.fieldIndex("str")) + ":" + r.getString(r.fieldIndex("str2")))
                         .sorted()
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList())
+        );
     }
+
 }
