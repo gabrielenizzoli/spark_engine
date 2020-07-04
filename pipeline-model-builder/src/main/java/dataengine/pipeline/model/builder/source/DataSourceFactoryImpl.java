@@ -19,7 +19,7 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
     }
 
     @Override
-    public DataSource apply(String name) {
+    public DataSource<?> apply(String name) {
         Step step = stepsFactory.apply(name);
         if (step instanceof Source) {
             Source source = (Source) step;

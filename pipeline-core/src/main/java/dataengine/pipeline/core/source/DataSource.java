@@ -14,30 +14,55 @@ import java.util.function.Supplier;
 
 public interface DataSource<T> extends Supplier<Dataset<T>> {
 
-    default void write(DataSink<T> destination) {
+    default void writeTo(DataSink<T> destination) {
         destination.accept(get());
     }
 
-    default <D> DataSource<D> transform(DataTransformation<T, D> mapper) {
-        return DataSource1.of(this, mapper);
+    default <D> DataSource<D> transform(DataTransformation<T, D> transformation) {
+        return DataSource1.of(this, transformation);
     }
 
-    default DataSource<Row> toDataFrame() {
-        return DataSource1.of(this, Transformations.dataFrame());
-    }
-
-    default DataSource<T> withDatasetStore() {
-        return DataSourceStore.of(this);
-    }
-
+    /**
+     * Provides a Dataset that has his data cached.
+     *
+     * @param storageLevel caching level desired
+     * @return DataSource with a dataset that caches data
+     */
     default DataSource<T> cache(StorageLevel storageLevel) {
         return transform(Transformations.cache(storageLevel));
     }
 
-    default <D> DataSource<D> encode(Encoder<D> encoder) {
-        return transform(Transformations.encode(encoder));
+    /**
+     * DataSource that provides the same Dataset. Note that the Dataset data will not be cached.
+     *
+     * @return stored Dataset
+     */
+    default DataSource<T> store() {
+        return transform(Transformations.store());
     }
 
+    default <D> DataSource<D> encodeAs(Encoder<D> encoder) {
+        return transform(Transformations.encodeAs(encoder));
+    }
+
+    /**
+     * Encode to Row (in spark terms: a DataFrame).
+     *
+     * @return DataFrame
+     */
+    default DataSource<Row> encodeAsRow() {
+        return transform(Transformations.encodeAsRow());
+    }
+
+    /**
+     * 2-way merge operation between data provided by this DataSource and another one.
+     *
+     * @param otherDataSource Second DataSource
+     * @param merger Merge operation
+     * @param <T2> Type of second DataSource.
+     * @param <D> Return type of merge operation.
+     * @return Resulting DataSource
+     */
     default <T2, D> DataSource<D> mergeWith(DataSource<T2> otherDataSource, DataTransformation2<T, T2, D> merger) {
         return DataSourceMerge.mergeAll(this, otherDataSource, merger);
     }

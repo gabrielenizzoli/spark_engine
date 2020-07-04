@@ -20,11 +20,11 @@ import javax.annotation.Nonnull;
 public class DataSource3<S1, S2, S3, D> implements DataSource<D> {
 
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S1> parentDataSource1;
+    DataSource<S1> parentDataSource1;
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S2> parentDataSource2;
+    DataSource<S2> parentDataSource2;
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S3> parentDataSource3;
+    DataSource<S3> parentDataSource3;
     @Nonnull
     DataTransformation3<S1, S2, S3, D> transformation;
 

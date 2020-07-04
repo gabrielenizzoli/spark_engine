@@ -17,7 +17,7 @@
 
         <revision>0.1</revision>
         <jsr305.version>3.0.2</jsr305.version>
-        <spark.version>3.0.0-preview2</spark.version>
+        <spark.version>3.0.0</spark.version>
         <scala.version>2.12</scala.version>
         <scalacompat.version>0.9.1</scalacompat.version>
         <fasterxml.jackson.version>2.10.0</fasterxml.jackson.version>
@@ -33,6 +33,7 @@
         <module>pipeline-model</module>
         <module>pipeline-model-supplier</module>
         <module>pipeline-model-builder</module>
+        <module>pipeline</module>
     </modules>
 
     <dependencyManagement>

@@ -2,8 +2,6 @@ package dataengine.pipeline.core.source;
 
 import dataengine.pipeline.core.SparkSessionBase;
 import dataengine.pipeline.core.sink.DataSink;
-import dataengine.pipeline.core.source.DataSource;
-import dataengine.pipeline.core.source.DataSourceMerge;
 import dataengine.spark.transformation.DataTransformation;
 import dataengine.spark.transformation.DataTransformation2;
 import dataengine.spark.transformation.SqlTransformations;
@@ -38,8 +36,8 @@ class SqlTransformationsTest extends SparkSessionBase {
         dataSource
                 .transform(tx1)
                 .transform(tx2)
-                .encode(Encoders.DECIMAL())
-                .write(dataSink);
+                .encodeAs(Encoders.DECIMAL())
+                .writeTo(dataSink);
 
         // then
         Assertions.assertEquals(Collections.singletonList(42), data);
@@ -68,7 +66,7 @@ class SqlTransformationsTest extends SparkSessionBase {
                 .andThenEncode(Encoders.bean(TestBean.class));
 
         // when
-        DataSourceMerge.mergeAll(dataSource1, dataSource2, tx).write(dataSink);
+        DataSourceMerge.mergeAll(dataSource1, dataSource2, tx).writeTo(dataSink);
 
         // then
         Assertions.assertEquals(Collections.singletonList(TestBean.of(7, "six")), data);

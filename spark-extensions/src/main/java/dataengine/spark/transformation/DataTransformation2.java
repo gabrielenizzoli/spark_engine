@@ -12,7 +12,7 @@ public interface DataTransformation2<S1, S2, D> {
     }
 
     default <D2> DataTransformation2<S1, S2, D2> andThenEncode(Encoder<D2> encoder) {
-        return andThen(Transformations.encode(encoder));
+        return andThen(Transformations.encodeAs(encoder));
     }
 
 }

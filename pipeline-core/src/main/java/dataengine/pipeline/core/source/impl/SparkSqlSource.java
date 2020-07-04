@@ -14,7 +14,7 @@ import java.util.Objects;
 
 @Value
 @Builder
-public class SparkSqlSource<T> implements dataengine.pipeline.core.source.DataSource<T> {
+public class SparkSqlSource<T> implements DataSource<T> {
 
     @Nonnull
     String sql;

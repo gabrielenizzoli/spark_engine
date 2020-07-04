@@ -4,6 +4,12 @@ import dataengine.spark.transformation.*;
 
 import java.util.List;
 
+/**
+ * Set of utility functions to merge together up to 10 DataSources of different types.
+ * If merging is needed between DataSource of same type with a reducer,
+ * the {@link #reduce(DataSource, List, DataTransformation2)} function can be used
+ * to reduce an undefined list of DataSources.
+ */
 public class DataSourceMerge {
 
     public static <T> DataSource<T> reduce(DataSource<T> dataSource,

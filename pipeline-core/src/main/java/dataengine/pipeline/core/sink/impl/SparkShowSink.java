@@ -1,12 +1,13 @@
 package dataengine.pipeline.core.sink.impl;
 
+import dataengine.pipeline.core.sink.DataSink;
 import lombok.Builder;
 import lombok.Value;
 import org.apache.spark.sql.Dataset;
 
 @Value
 @Builder
-public class SparkShowSink<T> implements dataengine.pipeline.core.sink.DataSink<T> {
+public class SparkShowSink<T> implements DataSink<T> {
 
     @lombok.Builder.Default
     int numRows = 20;

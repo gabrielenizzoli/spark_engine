@@ -143,7 +143,7 @@ public class Components {
         if (step instanceof Encode) {
             return dataSourceFactory
                     .apply(step.getUsing())
-                    .encode(getEncoder(((Encode) step).getAs()));
+                    .encodeAs(getEncoder(((Encode) step).getAs()));
         } else if (step instanceof Sql) {
             return dataSourceFactory
                     .apply(step.getUsing())

@@ -1,5 +1,6 @@
 package dataengine.pipeline.core.sink.impl;
 
+import dataengine.pipeline.core.sink.DataSink;
 import lombok.Builder;
 import lombok.Value;
 import org.apache.spark.sql.Dataset;
@@ -14,10 +15,10 @@ import java.util.concurrent.TimeoutException;
 
 @Value
 @Builder
-public class SparkStreamSink<T> implements dataengine.pipeline.core.sink.DataSink<T> {
+public class SparkStreamSink<T> implements DataSink<T> {
 
     @Nonnull
-    SinkFormat<T> format;
+    SinkFormat format;
     @Nonnull
     String queryName;
     @Nonnull
@@ -30,7 +31,7 @@ public class SparkStreamSink<T> implements dataengine.pipeline.core.sink.DataSin
         if (!dataset.isStreaming())
             throw new IllegalArgumentException("input dataset is not a streaming dataset");
 
-        DataStreamWriter<T> writer = format.configureStream(dataset.writeStream()).queryName(queryName).trigger(trigger);
+        DataStreamWriter<?> writer = format.configureStream(dataset.writeStream()).queryName(queryName).trigger(trigger);
         Optional.ofNullable(outputMode).ifPresent(o -> writer.outputMode(outputMode));
         try {
             writer.start();

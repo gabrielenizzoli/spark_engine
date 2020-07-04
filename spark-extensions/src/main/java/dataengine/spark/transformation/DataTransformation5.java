@@ -52,7 +52,7 @@ public interface DataTransformation5<S1, S2, S3, S4, S5, D> {
      * @return output dataset after the encoding
      */
     default <D2> DataTransformation5<S1, S2, S3, S4, S5, D2> andThenEncode(Encoder<D2> encoder) {
-        return andThen(Transformations.encode(encoder));
+        return andThen(Transformations.encodeAs(encoder));
     }
 
 }

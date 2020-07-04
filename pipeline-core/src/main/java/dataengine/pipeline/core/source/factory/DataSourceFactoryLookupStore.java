@@ -41,7 +41,7 @@ public class DataSourceFactoryLookupStore implements DataSourceFactory {
             return dataSourceFactory.apply(name);
         return cachedSources.computeIfAbsent(name, n -> {
             DataSource ds = dataSourceFactory.apply(n);
-            return storeMode.isStoreDataset() ? ds.withDatasetStore() : ds;
+            return storeMode.isStoreDataset() ? ds.store() : ds;
         });
     }
 

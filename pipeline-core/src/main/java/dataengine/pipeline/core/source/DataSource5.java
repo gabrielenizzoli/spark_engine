@@ -22,15 +22,15 @@ import javax.annotation.Nonnull;
 public class DataSource5<S1, S2, S3, S4, S5, D> implements DataSource<D> {
 
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S1> parentDataSource1;
+    DataSource<S1> parentDataSource1;
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S2> parentDataSource2;
+    DataSource<S2> parentDataSource2;
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S3> parentDataSource3;
+    DataSource<S3> parentDataSource3;
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S4> parentDataSource4;
+    DataSource<S4> parentDataSource4;
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S5> parentDataSource5;
+    DataSource<S5> parentDataSource5;
     @Nonnull
     DataTransformation5<S1, S2, S3, S4, S5, D> transformation;
 

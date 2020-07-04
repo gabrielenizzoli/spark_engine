@@ -23,32 +23,39 @@ public class SparkSqlUnresolvedRelationResolver {
     @Nonnull
     Map<String, LogicalPlan> plans;
 
-    public class UnresolvedRelationResolver implements Function<LogicalPlan, LogicalPlan> {
-
-        @Override
-        public LogicalPlan apply(LogicalPlan logicalPlan) {
-            if (!(logicalPlan instanceof UnresolvedRelation))
-                return logicalPlan.mapChildren(new FromJavaFunction<>(this));
-            LogicalPlan resolvedRelation = plans.get(((UnresolvedRelation) logicalPlan).tableName());
-            if (resolvedRelation == null)
-                return logicalPlan.mapChildren(new FromJavaFunction<>(this));
-            return resolvedRelation;
-        }
-
-    }
-
-    public LogicalPlan resolve(SparkSession sparkSession, String sql) {
+    private LogicalPlan getLogicalPlanForSql(SparkSession sparkSession, String sql) {
         LogicalPlan logicalPlanWithUnresolvedRelations = null;
         try {
             logicalPlanWithUnresolvedRelations = sparkSession.sessionState().sqlParser().parsePlan(sql);
         } catch (ParseException e) {
             throw new IllegalArgumentException("bad sql", e);
         }
-        return logicalPlanWithUnresolvedRelations.mapChildren(new FromJavaFunction<>(new UnresolvedRelationResolver()));
+        return logicalPlanWithUnresolvedRelations;
     }
 
     public Dataset<Row> resolveAsDataset(SparkSession sparkSession, String sql) {
-        return Dataset.ofRows(sparkSession, resolve(sparkSession, sql));
+        return Dataset.ofRows(sparkSession, resolveAsLogicalPlan(sparkSession, sql));
+    }
+
+    @SuppressWarnings("unchecked")
+    private LogicalPlan resolveAsLogicalPlan(SparkSession sparkSession, String sql) {
+        LogicalPlan logicalPlanWithUnresolvedRelations = getLogicalPlanForSql(sparkSession, sql);
+        return logicalPlanWithUnresolvedRelations.mapChildren(new FromJavaFunction<LogicalPlan, LogicalPlan>(new UnresolvedRelationResolver()));
+    }
+
+    private class UnresolvedRelationResolver implements Function<LogicalPlan, LogicalPlan> {
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public LogicalPlan apply(LogicalPlan logicalPlan) {
+            if (!(logicalPlan instanceof UnresolvedRelation))
+                return logicalPlan.mapChildren(new FromJavaFunction<LogicalPlan, LogicalPlan>(this));
+            LogicalPlan resolvedRelation = plans.get(((UnresolvedRelation) logicalPlan).tableName());
+            if (resolvedRelation == null)
+                return logicalPlan.mapChildren(new FromJavaFunction<LogicalPlan, LogicalPlan>(this));
+            return resolvedRelation;
+        }
+
     }
 
 }

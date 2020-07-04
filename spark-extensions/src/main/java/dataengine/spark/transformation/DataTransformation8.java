@@ -61,7 +61,7 @@ public interface DataTransformation8<S1, S2, S3, S4, S5, S6, S7, S8, D> {
      * @return output dataset after the encoding
      */
     default <D2> DataTransformation8<S1, S2, S3, S4, S5, S6, S7, S8, D2> andThenEncode(Encoder<D2> encoder) {
-        return andThen(Transformations.encode(encoder));
+        return andThen(Transformations.encodeAs(encoder));
     }
 
 }

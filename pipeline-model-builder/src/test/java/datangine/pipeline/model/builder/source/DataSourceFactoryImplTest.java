@@ -38,9 +38,8 @@ class DataSourceFactoryImplTest {
         DataSourceFactory dataSourceFactory = DataSourceFactoryImpl.withStepFactory(steps);
 
         // when
-        DataSinkCollectRows<Row> dataSink = new DataSinkCollectRows();
-        DataSource dataSource = dataSourceFactory.apply("tx");
-        dataSource.toDataFrame().write(dataSink);
+        DataSinkCollectRows<Row> dataSink = new DataSinkCollectRows<>();
+        dataSourceFactory.apply("tx").encodeAsRow().writeTo(dataSink);
 
         // then
         Assertions.assertEquals(
