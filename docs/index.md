@@ -17,8 +17,9 @@ df10.write.save
 ```
 
 Well, probably you find out that they are:
-- [x] difficult to write
-- [x] difficult to compose
-- [x] difficult to debug
-- [x] difficult to maintain
-- [x] difficult to understand where a table is defined and what is its schema
+* difficult to write
+* difficult to compose
+* difficult to debug
+* difficult to maintain
+* difficult to understand where a table is defined 
+* ... and do you remember what the schema of a table is?
