@@ -8,10 +8,12 @@ import javax.annotation.Nonnull;
 
 public class SqlTransformations {
 
-    public static <S> DataTransformation<S, Row> sql(@Nonnull String sourceName, @Nonnull String sql) {
-        return s -> {
-            SparkSqlUnresolvedRelationResolver resolver = SparkSqlUnresolvedRelationResolver.builder().plan(sourceName, s.logicalPlan()).build();
-            return resolver.resolveAsDataset(s.sparkSession(), sql);
+    public static <S> DataTransformation<S, Row> sql(@Nonnull String sourceName1, @Nonnull String sql) {
+        return (s1) -> {
+            SparkSqlUnresolvedRelationResolver resolver = SparkSqlUnresolvedRelationResolver.builder()
+                    .plan(sourceName1, s1.logicalPlan())
+                    .build();
+            return resolver.resolveAsDataset(SparkSession.active(), sql);
         };
     }
 

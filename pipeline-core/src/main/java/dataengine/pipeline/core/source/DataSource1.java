@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 public class DataSource1<S1, D> implements DataSource<D> {
 
     @Nonnull
-    dataengine.pipeline.core.source.DataSource<S1> parentDataSource1;
+    DataSource<S1> parentDataSource1;
     @Nonnull
     DataTransformation<S1, D> transformation;
 

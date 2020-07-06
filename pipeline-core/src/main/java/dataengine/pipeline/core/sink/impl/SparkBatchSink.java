@@ -1,5 +1,6 @@
 package dataengine.pipeline.core.sink.impl;
 
+import dataengine.pipeline.core.sink.DataSink;
 import lombok.Builder;
 import lombok.Value;
 import org.apache.spark.sql.DataFrameWriter;
@@ -12,10 +13,10 @@ import java.util.Optional;
 
 @Value
 @Builder
-public class SparkBatchSink<T> implements dataengine.pipeline.core.sink.DataSink<T> {
+public class SparkBatchSink<T> implements DataSink<T> {
 
     @Nonnull
-    SinkFormat<T> format;
+    SinkFormat format;
     @Nullable
     SaveMode saveMode;
 

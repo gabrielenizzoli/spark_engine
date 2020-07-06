@@ -30,8 +30,8 @@
 
         <!-- test -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
+            <groupId>dataengine</groupId>
+            <artifactId>spark-test</artifactId>
         </dependency>
 
     </dependencies>

@@ -1,4 +1,4 @@
-steps:
+components:
   source1:
     type: batchSource
     format: json
@@ -36,13 +36,13 @@ sinks:
     trigger: { milliseconds: 60 }
     mode: APPEND
   out3:
-    type: streamForeachBatch
+    type: foreachBatch
     name: out3
     trigger: { milliseconds: 60 }
     mode: APPEND
     batches:
       - source: src
-        steps:
+        components:
           tx: { type: encode, using: src, as: { type: INT } }
         sink: { type: batch, format: parquet, options: { path: 'abc' }, mode: OVERWRITE }
 

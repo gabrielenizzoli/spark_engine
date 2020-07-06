@@ -17,7 +17,7 @@
 
         <revision>0.1</revision>
         <jsr305.version>3.0.2</jsr305.version>
-        <spark.version>3.0.0-preview2</spark.version>
+        <spark.version>3.0.0</spark.version>
         <scala.version>2.12</scala.version>
         <scalacompat.version>0.9.1</scalacompat.version>
         <fasterxml.jackson.version>2.10.0</fasterxml.jackson.version>
@@ -28,11 +28,13 @@
 
     <modules>
         <module>utilities</module>
+        <module>spark-test</module>
         <module>spark-extensions</module>
         <module>pipeline-core</module>
         <module>pipeline-model</module>
         <module>pipeline-model-supplier</module>
         <module>pipeline-model-builder</module>
+        <module>pipeline</module>
     </modules>
 
     <dependencyManagement>
@@ -42,13 +44,6 @@
                 <groupId>com.google.code.findbugs</groupId>
                 <artifactId>jsr305</artifactId>
                 <version>${jsr305.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
             </dependency>
 
             <dependency>
@@ -70,6 +65,33 @@
                 <version>${scalacompat.version}</version>
             </dependency>
 
+            <!-- project -->
+            <dependency>
+                <groupId>dataengine</groupId>
+                <artifactId>spark-extensions</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dataengine</groupId>
+                <artifactId>pipeline-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dataengine</groupId>
+                <artifactId>pipeline-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dataengine</groupId>
+                <artifactId>pipeline-model-builder</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dataengine</groupId>
+                <artifactId>pipeline-model-supplier</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- fasterxml -->
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -81,6 +103,21 @@
                 <artifactId>jackson-databind</artifactId>
                 <version>${fasterxml.jackson.version}</version>
             </dependency>
+
+            <!-- testing -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>dataengine</groupId>
+                <artifactId>spark-test</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+
 
         </dependencies>
     </dependencyManagement>

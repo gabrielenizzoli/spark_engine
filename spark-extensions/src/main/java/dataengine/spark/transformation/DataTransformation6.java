@@ -55,7 +55,7 @@ public interface DataTransformation6<S1, S2, S3, S4, S5, S6, D> {
      * @return output dataset after the encoding
      */
     default <D2> DataTransformation6<S1, S2, S3, S4, S5, S6, D2> andThenEncode(Encoder<D2> encoder) {
-        return andThen(Transformations.encode(encoder));
+        return andThen(Transformations.encodeAs(encoder));
     }
 
 }

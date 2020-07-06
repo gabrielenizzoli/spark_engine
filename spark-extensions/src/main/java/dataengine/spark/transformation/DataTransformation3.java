@@ -46,7 +46,7 @@ public interface DataTransformation3<S1, S2, S3, D> {
      * @return output dataset after the encoding
      */
     default <D2> DataTransformation3<S1, S2, S3, D2> andThenEncode(Encoder<D2> encoder) {
-        return andThen(Transformations.encode(encoder));
+        return andThen(Transformations.encodeAs(encoder));
     }
 
 }

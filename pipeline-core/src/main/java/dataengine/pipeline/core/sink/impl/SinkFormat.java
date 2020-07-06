@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Value
 @Builder
-public class SinkFormat<T> {
+public class SinkFormat {
 
     @Nonnull
     String format;
@@ -23,19 +23,19 @@ public class SinkFormat<T> {
     @Singular
     List<String> partitionColumns;
 
-    public static class Builder<T> {
+    public static class Builder {
 
-        public Builder<T> path(String path) {
+        public Builder path(String path) {
             return option("path", path);
         }
 
     }
 
-    DataFrameWriter<T> configureBatch(DataFrameWriter<T> writer) {
+    <T> DataFrameWriter<T> configureBatch(DataFrameWriter<T> writer) {
         return writer.format(format).options(options).partitionBy(partitionColumns.stream().toArray(String[]::new));
     }
 
-    DataStreamWriter<T> configureStream(DataStreamWriter<T> writer) {
+    <T> DataStreamWriter<T> configureStream(DataStreamWriter<T> writer) {
         return writer.format(format).options(options).partitionBy(partitionColumns.stream().toArray(String[]::new));
     }
 

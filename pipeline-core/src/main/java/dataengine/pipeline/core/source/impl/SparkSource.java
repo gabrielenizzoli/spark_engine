@@ -1,5 +1,6 @@
 package dataengine.pipeline.core.source.impl;
 
+import dataengine.pipeline.core.source.DataSource;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
@@ -13,7 +14,7 @@ import java.util.Objects;
 
 @Value
 @Builder
-public class SparkSource<T> implements dataengine.pipeline.core.source.DataSource<T> {
+public class SparkSource<T> implements DataSource<T> {
 
     public enum SourceType {
         BATCH,

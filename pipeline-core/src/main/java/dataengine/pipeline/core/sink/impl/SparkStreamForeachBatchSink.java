@@ -1,5 +1,6 @@
 package dataengine.pipeline.core.sink.impl;
 
+import dataengine.pipeline.core.sink.DataSink;
 import dataengine.pipeline.core.source.DataSource;
 import lombok.Builder;
 import lombok.Value;
@@ -15,7 +16,7 @@ import java.util.concurrent.TimeoutException;
 
 @Value
 @Builder
-public class SparkStreamForeachBatchSink<T> implements dataengine.pipeline.core.sink.DataSink<T> {
+public class SparkStreamForeachBatchSink<T> implements DataSink<T> {
 
     @Nonnull
     String queryName;
@@ -24,7 +25,7 @@ public class SparkStreamForeachBatchSink<T> implements dataengine.pipeline.core.
     @Nullable
     OutputMode outputMode;
     @Nonnull
-    dataengine.pipeline.core.sink.DataSink<T> sink;
+    DataSink<T> sink;
 
     @Override
     public void accept(Dataset<T> dataset) {
@@ -39,7 +40,7 @@ public class SparkStreamForeachBatchSink<T> implements dataengine.pipeline.core.
             Dataset<T> cachedDataset = ds.persist();
             try {
                 DataSource<T> dataSource = () -> cachedDataset;
-                dataSource.write(sink);
+                dataSource.writeTo(sink);
             } finally {
                 cachedDataset.unpersist();
             }

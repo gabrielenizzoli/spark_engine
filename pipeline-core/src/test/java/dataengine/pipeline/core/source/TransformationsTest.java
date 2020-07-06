@@ -1,8 +1,7 @@
 package dataengine.pipeline.core.source;
 
-import dataengine.pipeline.core.SparkSessionBase;
 import dataengine.pipeline.core.sink.DataSink;
-import dataengine.pipeline.core.source.DataSource;
+import dataengine.spark.test.SparkSessionBase;
 import dataengine.spark.transformation.DataTransformation;
 import dataengine.spark.transformation.SqlTransformations;
 import dataengine.spark.transformation.Transformations;
@@ -32,8 +31,8 @@ class TransformationsTest extends SparkSessionBase {
         // when
         dataSource
                 .transform(tx1)
-                .transform(Transformations.encode(Encoders.DECIMAL()))
-                .write(dataSink);
+                .transform(Transformations.encodeAs(Encoders.DECIMAL()))
+                .writeTo(dataSink);
 
         // then
         Assertions.assertEquals(Collections.singletonList(10), data);

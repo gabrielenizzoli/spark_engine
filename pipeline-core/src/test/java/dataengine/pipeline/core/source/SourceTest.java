@@ -1,7 +1,7 @@
 package dataengine.pipeline.core.source;
 
-import dataengine.pipeline.core.SparkSessionBase;
 import dataengine.pipeline.core.sink.DataSink;
+import dataengine.spark.test.SparkSessionBase;
 import dataengine.spark.transformation.DataTransformation;
 import dataengine.spark.transformation.Transformations;
 import org.apache.spark.sql.Encoders;
@@ -24,7 +24,7 @@ class SourceTest extends SparkSessionBase {
         DataTransformation<String, String> tx = Transformations.map(s -> s + s.length(), Encoders.STRING());
 
         // when
-        dataSource.transform(tx).write(dataSink);
+        dataSource.transform(tx).writeTo(dataSink);
 
         // then
         Assertions.assertEquals(Arrays.asList("a1", "aa2", "aaa3"), data);

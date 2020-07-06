@@ -17,16 +17,31 @@ public class Transformations {
         return s -> s.flatMap(map, encoder);
     }
 
-    public static <S, D> DataTransformation<S, D> encode(Encoder<D> encoder) {
-        return s -> s.as(encoder);
-    }
-
     public static <S> DataTransformation<S, S> cache(StorageLevel storageLevel) {
         return s -> s.persist(storageLevel);
     }
 
-    public static <S> DataTransformation<S, Row> dataFrame() {
+    public static <S, D> DataTransformation<S, D> encodeAs(Encoder<D> encoder) {
+        return s -> s.as(encoder);
+    }
+
+    public static <S> DataTransformation<S, Row> encodeAsRow() {
         return Dataset::toDF;
+    }
+
+    public static <S> DataTransformation<S, S> store() {
+        return new DataTransformation<S, S>() {
+
+            Dataset<S> storedDataset = null;
+
+            @Override
+            public Dataset<S> apply(Dataset<S> dataset) {
+                if (storedDataset != null)
+                    return storedDataset;
+                storedDataset = dataset;
+                return storedDataset;
+            }
+        };
     }
 
 }
