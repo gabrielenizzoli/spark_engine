@@ -3,6 +3,7 @@ package dataengine.spark.transformation;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoder;
 
+@FunctionalInterface
 public interface DataTransformation<S, D> {
 
     Dataset<D> apply(Dataset<S> dataset);

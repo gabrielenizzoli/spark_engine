@@ -1,7 +1,7 @@
 package dataengine.pipeline.core.source;
 
-import dataengine.pipeline.core.SparkSessionBase;
 import dataengine.pipeline.core.sink.DataSink;
+import dataengine.spark.test.SparkSessionBase;
 import dataengine.spark.transformation.DataTransformation;
 import dataengine.spark.transformation.Transformations;
 import org.apache.spark.sql.Encoders;

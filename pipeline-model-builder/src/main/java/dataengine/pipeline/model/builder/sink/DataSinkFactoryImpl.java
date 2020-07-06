@@ -1,51 +1,45 @@
 package dataengine.pipeline.model.builder.sink;
 
-import dataengine.pipeline.model.builder.Validate;
-import dataengine.pipeline.model.pipeline.sink.Sink;
-import dataengine.pipeline.model.pipeline.sink.SparkBatchSink;
-import dataengine.pipeline.model.pipeline.sink.SparkShowSink;
 import dataengine.pipeline.core.sink.DataSink;
 import dataengine.pipeline.core.sink.factory.DataSinkFactory;
 import dataengine.pipeline.core.sink.impl.SinkFormat;
-import dataengine.pipeline.core.DataFactoryException;
-import lombok.Builder;
-import lombok.Singular;
-import lombok.Value;
+import dataengine.pipeline.core.sink.impl.SparkBatchSink;
+import dataengine.pipeline.core.sink.impl.SparkShowSink;
+import dataengine.pipeline.model.description.sink.BatchSink;
+import dataengine.pipeline.model.description.sink.ShowSink;
+import dataengine.pipeline.model.description.sink.Sink;
+import lombok.AllArgsConstructor;
 
 import javax.annotation.Nonnull;
-import java.util.Map;
 
-@Value
-@Builder
-public class DataSinkFactoryImpl implements DataSinkFactory {
+@AllArgsConstructor
+public class DataSinkFactoryImpl<T> implements DataSinkFactory<T> {
 
     @Nonnull
-    @Singular
-    Map<String, Sink> sinks;
+    Sink sink;
 
     @Override
-    public DataSink apply(String name) {
+    @SuppressWarnings("unchecked")
+    public DataSink<T> get() {
 
-        Sink sink = sinks.get(name);
-        Validate.sink().accept(sink);
-
-        if (sink instanceof SparkShowSink) {
-            SparkShowSink show = (SparkShowSink)sink;
-            return dataengine.pipeline.core.sink.impl.SparkShowSink.builder()
-                    .numRows(show.getNumRows())
-                    .truncate(show.getTruncate())
+        if (sink instanceof ShowSink) {
+            ShowSink showSink = (ShowSink) sink;
+            return (DataSink<T>) SparkShowSink.builder()
+                    .numRows(showSink.getNumRows())
+                    .truncate(showSink.getTruncate())
                     .build();
-        } else if (sink instanceof SparkBatchSink) {
-            SparkBatchSink sparkBatchSink = (SparkBatchSink) sink;
+        } else if (sink instanceof BatchSink) {
+            BatchSink batchSink = (BatchSink) sink;
             SinkFormat sinkFormat = SinkFormat.builder()
-                    .format(sparkBatchSink.getFormat())
-                    .options(sparkBatchSink.getOptions())
+                    .format(batchSink.getFormat())
+                    .options(batchSink.getOptions())
                     .build();
-            return dataengine.pipeline.core.sink.impl.SparkBatchSink.builder()
+            return (DataSink<T>) SparkBatchSink.builder()
                     .format(sinkFormat)
                     .build();
         }
-        throw new DataFactoryException(sink + " not managed");
+        return null;
+        //throw new DataSourceFactoryException(sink + " not managed");
     }
 
 }

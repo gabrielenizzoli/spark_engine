@@ -21,12 +21,10 @@
         <dependency>
             <groupId>dataengine</groupId>
             <artifactId>pipeline-model-builder</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>dataengine</groupId>
             <artifactId>pipeline-model-supplier</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>

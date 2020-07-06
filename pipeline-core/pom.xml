@@ -17,7 +17,6 @@
         <dependency>
             <groupId>dataengine</groupId>
             <artifactId>spark-extensions</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -33,9 +32,10 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- test -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
+            <groupId>dataengine</groupId>
+            <artifactId>spark-test</artifactId>
         </dependency>
 
     </dependencies>

@@ -1,7 +1,7 @@
 package dataengine.pipeline.core.source.impl;
 
-import dataengine.pipeline.core.SparkSessionBase;
 import dataengine.pipeline.core.source.DataSource;
+import dataengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import org.junit.jupiter.api.Assertions;
