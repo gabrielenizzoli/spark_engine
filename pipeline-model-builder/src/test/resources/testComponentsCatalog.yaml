@@ -6,6 +6,10 @@ source2:
   type: sqlSource
   sql: >
     select explode(array(named_struct("zum", 1, "stuff", "xxx"), named_struct("zum", 2, "stuff", "yyy"))) as def
+source3:
+  type: sqlSource
+  sql: >
+    select 1 as number
 tx:
   type: sqlMerge
   using: [source1, source2]

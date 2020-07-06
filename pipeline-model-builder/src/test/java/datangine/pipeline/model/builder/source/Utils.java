@@ -14,7 +14,7 @@ import java.util.Map;
 public class Utils {
 
     @Nonnull
-    public static ComponentCatalog getCatalog() {
+    public static ComponentCatalog getComponentCatalog() {
         return new ComponentCatalog() {
 
             private Map<String, Component> cachedSteps;
