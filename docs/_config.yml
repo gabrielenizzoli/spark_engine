@@ -1,4 +1,3 @@
 theme: jekyll-theme-tactile
-site:
-  title: Spark Datatset Composition Engine
-  description: Compose Apache Spark Logical Plans with ease.
+title: Spark Datatset Composition Engine
+description: Compose Apache Spark Logical Plans with ease.
