@@ -1,3 +1,7 @@
+---
+layout: mainPage
+---
+
 # Compose spark dataset operations with ease
 
 Did you ever find yourself writing many many datasets operations and then making a single data pipeline with them?
