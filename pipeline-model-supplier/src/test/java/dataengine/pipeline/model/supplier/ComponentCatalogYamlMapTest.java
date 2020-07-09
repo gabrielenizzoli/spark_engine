@@ -14,7 +14,7 @@ class ComponentCatalogYamlMapTest {
     @Test
     void testYaml() throws ComponentCatalogException {
 
-        File yamlSource = new File("src/test/resources/simplePipeline.yaml");
+        File yamlSource = new File("src/test/resources/components.yaml");
         ComponentCatalogFromYamlMap catalog = ComponentCatalogFromYamlMap.builder().inputStreamFactory(() -> {
             try {
                 return new FileInputStream(yamlSource);

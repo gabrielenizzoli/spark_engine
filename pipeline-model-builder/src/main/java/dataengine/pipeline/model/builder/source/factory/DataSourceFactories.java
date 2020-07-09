@@ -21,6 +21,10 @@ public class DataSourceFactories {
             return new BatchSourceFactory((BatchSource) source);
         } else if (source instanceof StreamSource) {
             return new StreamSourceFactory((StreamSource) source);
+        } else if (source instanceof EmptyDatasetSource) {
+            return new EmptyDatasetSourceFactory((EmptyDatasetSource) source);
+        } else if (source instanceof EmptyDataframeSource) {
+            return new EmptyDataframeSourceFactory((EmptyDataframeSource) source);
         }
         throw new DataSourceFactoryException("source " + source + " not managed");
     }
