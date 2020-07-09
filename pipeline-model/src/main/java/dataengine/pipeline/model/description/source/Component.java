@@ -10,6 +10,8 @@ import dataengine.pipeline.model.description.source.component.*;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
         // sources
+        @JsonSubTypes.Type(value = EmptyDatasetSource.class, name = "emptyDatasetSource"),
+        @JsonSubTypes.Type(value = EmptyDataframeSource.class, name = "emptyDataframeSource"),
         @JsonSubTypes.Type(value = BatchSource.class, name = "batchSource"),
         @JsonSubTypes.Type(value = SqlSource.class, name = "sqlSource"),
         @JsonSubTypes.Type(value = StreamSource.class, name = "streamSource"),

@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.Map;
 
-public class Utils {
+public class TestUtils {
 
     @Nonnull
     public static ComponentCatalog getComponentCatalog() {

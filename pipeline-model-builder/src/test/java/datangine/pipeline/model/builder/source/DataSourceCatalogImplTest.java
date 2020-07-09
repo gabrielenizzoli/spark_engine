@@ -4,7 +4,6 @@ import dataengine.pipeline.core.sink.impl.DataSinkCollectRows;
 import dataengine.pipeline.core.source.factory.DataSourceCatalog;
 import dataengine.pipeline.core.source.factory.DataSourceCatalogException;
 import dataengine.pipeline.model.builder.source.DataSourceCatalogImpl;
-import dataengine.pipeline.model.description.source.ComponentCatalog;
 import dataengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.Row;
 import org.junit.jupiter.api.Assertions;
@@ -19,7 +18,7 @@ class DataSourceCatalogImplTest extends SparkSessionBase {
     void testBuilder() throws DataSourceCatalogException {
 
         // given
-        DataSourceCatalog dataSourceCatalog = DataSourceCatalogImpl.withComponentCatalog(Utils.getComponentCatalog());
+        DataSourceCatalog dataSourceCatalog = DataSourceCatalogImpl.withComponentCatalog(TestUtils.getComponentCatalog());
 
         // when
         DataSinkCollectRows<Row> dataSink = new DataSinkCollectRows<>();

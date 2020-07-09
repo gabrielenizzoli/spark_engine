@@ -7,6 +7,9 @@ import javax.annotation.Nonnull;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public interface DataSinkFactory<T> extends Supplier<DataSink<T>> {
+@FunctionalInterface
+public interface DataSinkFactory<T> {
+
+    DataSink<T> build() throws DataSinkFactoryException;
 
 }
