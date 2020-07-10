@@ -18,7 +18,7 @@ class DataSourceCatalogImplTest extends SparkSessionBase {
     void testBuilder() throws DataSourceCatalogException {
 
         // given
-        DataSourceCatalog dataSourceCatalog = DataSourceCatalogImpl.withComponentCatalog(TestUtils.getComponentCatalog());
+        DataSourceCatalog dataSourceCatalog = new DataSourceCatalogImpl(TestUtils.getComponentCatalog());
 
         // when
         DataSinkCollectRows<Row> dataSink = new DataSinkCollectRows<>();
