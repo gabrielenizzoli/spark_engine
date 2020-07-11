@@ -3,13 +3,10 @@ source1:
   sql: >
     select explode(array(named_struct("num", 1, "str", "a"), named_struct("num", 2, "str", "b"))) as abc
 source2:
-  type: sqlSource
+  type: sql
+  using: [tx]
   sql: >
-    select explode(array(named_struct("zum", 1, "stuff", "xxx"), named_struct("zum", 2, "stuff", "yyy"))) as def
-source3:
-  type: sqlSource
-  sql: >
-    select 1 as number
+    select 1 from tx limit 1
 tx:
   type: sql
   using: [source1, source2]

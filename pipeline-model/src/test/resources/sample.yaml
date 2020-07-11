@@ -18,7 +18,7 @@ components:
     using: source1
     as: { type: INT }
   tx2:
-    type: sqlMerge
+    type: sql
     using: [ tx, source2 ]
     sql: "select * from tx as t join fileIn2 as f on t.id = f.id"
 

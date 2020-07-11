@@ -10,4 +10,21 @@ public class DataSourceCatalogException extends Exception {
         super(str, t);
     }
 
+    public static class ComponentNotFound extends DataSourceCatalogException {
+
+        public ComponentNotFound(String str) {
+            super(str);
+        }
+
+    }
+
+    public static class InvalidPath extends DataSourceCatalogException {
+
+        public InvalidPath(String str) {
+            super(str);
+        }
+
+    }
+
+
 }

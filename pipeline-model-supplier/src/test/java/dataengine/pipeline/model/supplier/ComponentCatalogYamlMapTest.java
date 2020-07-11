@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Optional;
 
 class ComponentCatalogYamlMapTest {
 
@@ -23,9 +24,11 @@ class ComponentCatalogYamlMapTest {
             }
         }).build();
 
-        Component sourceComponent = catalog.lookup("tx");
+        Optional<Component> sourceComponent = catalog.lookup("tx");
 
         Assertions.assertNotNull(sourceComponent);
+        Assertions.assertTrue(sourceComponent.isPresent());
+
     }
 
 }
