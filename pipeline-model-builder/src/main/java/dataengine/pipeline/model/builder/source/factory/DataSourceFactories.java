@@ -35,8 +35,6 @@ public class DataSourceFactories {
             throws DataSourceFactoryException {
         if (component instanceof Encode) {
             return new EncodeFactory((Encode) component, catalog);
-        } else if (component instanceof Sql) {
-            return new SqlFactory((Sql) component, catalog);
         }
         throw new DataSourceFactoryException("component " + component + " not managed");
     }
@@ -47,8 +45,8 @@ public class DataSourceFactories {
             throws DataSourceFactoryException {
         if (component instanceof Union) {
             return new UnionFactory((Union) component, catalog);
-        } else if (component instanceof SqlMerge) {
-            return new SqlMergeFactory((SqlMerge) component, catalog);
+        } else if (component instanceof Sql) {
+            return new SqlFactory((Sql) component, catalog);
         }
         throw new DataSourceFactoryException("component " + component + " not managed");
     }

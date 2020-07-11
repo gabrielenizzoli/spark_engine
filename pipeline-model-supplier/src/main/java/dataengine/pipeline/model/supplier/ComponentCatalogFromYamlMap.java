@@ -13,6 +13,7 @@ import lombok.experimental.NonFinal;
 import javax.annotation.Nonnull;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 @Value
@@ -25,14 +26,15 @@ public class ComponentCatalogFromYamlMap implements ComponentCatalog {
     Map<String, Component> components = null;
 
     @Override
-    public Component lookup(String componentName) throws ComponentCatalogException {
+    @Nonnull
+    public Optional<Component> lookup(String componentName) throws ComponentCatalogException {
         if (components == null)
             read();
-        return components.get(componentName);
+        return Optional.ofNullable(components.get(componentName));
     }
 
     public void read() throws ComponentCatalogException {
-        try(InputStream inputStream = inputStreamFactory.get()) {
+        try (InputStream inputStream = inputStreamFactory.get()) {
             ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
             components = mapper.readValue(inputStream, new TypeReference<Map<String, Component>>() {
             });

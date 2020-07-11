@@ -7,7 +7,7 @@ source2:
   sql: >
     select explode(array(named_struct("zum", 1, "stuff", "xxx"), named_struct("zum", 2, "stuff", "yyy"))) as def
 tx:
-  type: sqlMerge
+  type: sql
   using: [source1, source2]
   sql: >
     select

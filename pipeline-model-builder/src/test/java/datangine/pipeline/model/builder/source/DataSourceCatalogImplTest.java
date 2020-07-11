@@ -18,7 +18,7 @@ class DataSourceCatalogImplTest extends SparkSessionBase {
     void testBuilder() throws DataSourceCatalogException {
 
         // given
-        DataSourceCatalog dataSourceCatalog = new DataSourceCatalogImpl(TestUtils.getComponentCatalog());
+        DataSourceCatalog dataSourceCatalog = new DataSourceCatalogImpl(TestUtils.getComponentCatalog(null));
 
         // when
         DataSinkCollectRows<Row> dataSink = new DataSinkCollectRows<>();
@@ -32,6 +32,16 @@ class DataSourceCatalogImplTest extends SparkSessionBase {
                         .sorted()
                         .collect(Collectors.toList())
         );
+    }
+
+    @Test
+    void testBuilderWithBadComponents() {
+
+        Assertions.assertThrows(DataSourceCatalogException.class, () -> {
+            DataSourceCatalog dataSourceCatalog = new DataSourceCatalogImpl(TestUtils.getComponentCatalog("testBadComponentsCatalog"));
+            dataSourceCatalog.lookup("tx");
+        });
+
     }
 
 }

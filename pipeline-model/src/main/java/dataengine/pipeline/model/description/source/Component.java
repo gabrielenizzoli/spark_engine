@@ -18,11 +18,10 @@ import dataengine.pipeline.model.description.source.component.*;
         // transformation with single input
         @JsonSubTypes.Type(value = Transform.class, name = "transform"),
         @JsonSubTypes.Type(value = Encode.class, name = "encode"),
-        @JsonSubTypes.Type(value = Sql.class, name = "sql"),
         // transformation with multiple inputs
         @JsonSubTypes.Type(value = Merge.class, name = "merge"),
         @JsonSubTypes.Type(value = Union.class, name = "union"),
-        @JsonSubTypes.Type(value = SqlMerge.class, name = "sqlMerge")
+        @JsonSubTypes.Type(value = Sql.class, name = "sql")
 })
 public interface Component {
 
