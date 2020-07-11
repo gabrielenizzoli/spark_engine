@@ -50,6 +50,8 @@ public class DataSourceCatalogImpl implements DataSourceCatalog {
 
             while (!dataSourceNames.isEmpty()) {
                 String currentDataSourceName = dataSourceNames.remove();
+                if (dataSourceCache.get(currentDataSourceName).isPresent())
+                    continue;
                 DataSourceCache.DataSourceInfo<?> currentDataSourceInfo = lookupDataSourceInfo(currentDataSourceName);
                 dataSourceCache.add(currentDataSourceName, currentDataSourceInfo);
                 dataSourceNames.addAll(currentDataSourceInfo.getParentDataSourceNames());
