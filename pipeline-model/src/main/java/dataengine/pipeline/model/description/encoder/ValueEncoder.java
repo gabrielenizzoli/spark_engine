@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 @Value
 @Builder(setterPrefix = "with")
 @JsonDeserialize(builder = ValueEncoder.Builder.class)
-public class ValueEncoder implements Encoder {
+public class ValueEncoder implements DataEncoder {
 
     @Nonnull
     DataType type;

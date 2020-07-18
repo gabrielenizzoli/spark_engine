@@ -3,20 +3,20 @@ components:
     type: batchSource
     format: json
     options: { a: b, path: 'there/file.json' }
-    as: { type: STRING }
+    encodedAs: { type: STRING }
   source2:
     type: streamSource
     format: kafka
     options: { a: b, path: 'there/file.json' }
-    as: { schema: bean, ofClass: "a.b.C" }
+    encodedAs: { schema: bean, ofClass: "a.b.C" }
   txTest:
     type: encode
     using: source1
-    as: { schema: tuple, of: [{ type: STRING }, { type: BINARY }] }
+    encodedAs: { schema: tuple, of: [{ type: STRING }, { type: BINARY }] }
   tx:
     type: encode
     using: source1
-    as: { type: INT }
+    encodedAs: { type: INT }
   tx2:
     type: sql
     using: [ tx, source2 ]

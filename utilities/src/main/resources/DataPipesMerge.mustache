@@ -37,14 +37,14 @@
         }
 
         /**
-         * This utility method applies an encoder to the output dataset.
+         * This utility method applies an dataEncoder to the output dataset.
          *
-         * @param encoder encoder to apply
+         * @param dataEncoder dataEncoder to apply
          * @param <D2>    type of the output after this encoding is applied
          * @return output dataset after the encoding
          */
-        default <D2> Data{{number}}Transformation<{{#i}}{{^-first}}, {{/-first}}S{{this}}{{/i}}, D2> andThenEncode(Encoder<D2> encoder) {
-            return andThen(Transformations.encode(encoder));
+        default <D2> Data{{number}}Transformation<{{#i}}{{^-first}}, {{/-first}}S{{this}}{{/i}}, D2> andThenEncode(Encoder<D2> dataEncoder) {
+            return andThen(Transformations.encode(dataEncoder));
         }
 
     }
