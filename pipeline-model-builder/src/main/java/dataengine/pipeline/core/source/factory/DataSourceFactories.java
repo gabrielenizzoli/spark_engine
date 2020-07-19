@@ -1,8 +1,6 @@
-package dataengine.pipeline.model.builder.source.factory;
+package dataengine.pipeline.core.source.factory;
 
-import dataengine.pipeline.core.source.factory.DataSourceCatalog;
-import dataengine.pipeline.core.source.factory.DataSourceFactory;
-import dataengine.pipeline.core.source.factory.DataSourceFactoryException;
+import dataengine.pipeline.core.source.composer.DataSourceComposer;
 import dataengine.pipeline.model.description.source.Component;
 import dataengine.pipeline.model.description.source.SourceComponent;
 import dataengine.pipeline.model.description.source.TransformationComponentWithMultipleInputs;
@@ -23,25 +21,25 @@ public class DataSourceFactories {
             return new StreamSourceFactory((StreamSource) source);
         } else if (source instanceof EmptyDatasetSource) {
             return new EmptyDatasetSourceFactory((EmptyDatasetSource) source);
-        } else if (source instanceof EmptyDataframeSource) {
-            return new EmptyDataframeSourceFactory((EmptyDataframeSource) source);
+        } else if (source instanceof InlineDataframeSource) {
+            return new InlineDataframeSourceFactory((InlineDataframeSource) source);
         }
         throw new DataSourceFactoryException("source " + source + " not managed");
     }
 
     public static DataSourceFactory<?> factoryForSingleInputComponent(
             @Nonnull TransformationComponentWithSingleInput component,
-            @Nonnull DataSourceCatalog catalog)
+            @Nonnull DataSourceComposer dataSourceComposer)
             throws DataSourceFactoryException {
         if (component instanceof Encode) {
-            return new EncodeFactory((Encode) component, catalog);
+            return new EncodeFactory((Encode) component, dataSourceComposer);
         }
         throw new DataSourceFactoryException("component " + component + " not managed");
     }
 
     public static DataSourceFactory<?> factoryForMultiInputComponent(
             @Nonnull TransformationComponentWithMultipleInputs component,
-            @Nonnull DataSourceCatalog catalog)
+            @Nonnull DataSourceComposer catalog)
             throws DataSourceFactoryException {
         if (component instanceof Union) {
             return new UnionFactory((Union) component, catalog);
@@ -53,14 +51,14 @@ public class DataSourceFactories {
 
     public static DataSourceFactory<?> factoryForComponent(
             @Nonnull Component component,
-            @Nonnull DataSourceCatalog catalog)
+            @Nonnull DataSourceComposer dataSourceComposer)
             throws DataSourceFactoryException {
         if (component instanceof SourceComponent) {
             return factoryForSourceComponent((SourceComponent) component);
         } else if (component instanceof TransformationComponentWithSingleInput) {
-            return factoryForSingleInputComponent((TransformationComponentWithSingleInput) component, catalog);
+            return factoryForSingleInputComponent((TransformationComponentWithSingleInput) component, dataSourceComposer);
         } else if (component instanceof TransformationComponentWithMultipleInputs) {
-            return factoryForMultiInputComponent((TransformationComponentWithMultipleInputs) component, catalog);
+            return factoryForMultiInputComponent((TransformationComponentWithMultipleInputs) component, dataSourceComposer);
         }
         throw new DataSourceFactoryException("component " + component + " not managed");
     }

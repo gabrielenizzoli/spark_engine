@@ -1,8 +1,6 @@
-package dataengine.pipeline.model.builder.source.factory;
+package dataengine.pipeline.core.source.factory;
 
 import dataengine.pipeline.core.source.DataSource;
-import dataengine.pipeline.core.source.factory.DataSourceFactory;
-import dataengine.pipeline.core.source.factory.DataSourceFactoryException;
 import dataengine.pipeline.core.source.impl.SparkSource;
 import dataengine.pipeline.model.description.source.component.BatchSource;
 import lombok.Value;
@@ -20,7 +18,7 @@ public class BatchSourceFactory implements DataSourceFactory {
         return SparkSource.builder()
                 .format(source.getFormat())
                 .options(source.getOptions())
-                .encoder(EncoderUtils.buildEncoder(source.getAs()))
+                .encoder(EncoderUtils.buildEncoder(source.getEncodedAs()))
                 .type(SparkSource.SourceType.BATCH)
                 .build();
     }

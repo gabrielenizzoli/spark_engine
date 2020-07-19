@@ -1,7 +1,8 @@
 package dataengine.pipeline.model.description.source.component;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import dataengine.pipeline.model.description.encoder.Encoder;
+import dataengine.pipeline.model.description.encoder.DataEncoder;
+import dataengine.pipeline.model.description.source.EncodedComponent;
 import dataengine.pipeline.model.description.source.SourceComponent;
 import lombok.Builder;
 import lombok.Value;
@@ -13,13 +14,13 @@ import java.util.Map;
 @Value
 @Builder(setterPrefix = "with")
 @JsonDeserialize(builder = BatchSource.Builder.class)
-public class BatchSource implements SourceComponent {
+public class BatchSource implements SourceComponent, EncodedComponent {
 
     @Nonnull
     String format;
     @Nonnull
     Map<String, String> options;
     @Nullable
-    Encoder as;
+    DataEncoder encodedAs;
 
 }

@@ -1,10 +1,8 @@
-package dataengine.pipeline.model.builder.source.factory;
+package dataengine.pipeline.core.source.factory;
 
 import dataengine.pipeline.core.source.DataSource;
-import dataengine.pipeline.core.source.factory.DataSourceCatalog;
-import dataengine.pipeline.core.source.factory.DataSourceCatalogException;
-import dataengine.pipeline.core.source.factory.DataSourceFactory;
-import dataengine.pipeline.core.source.factory.DataSourceFactoryException;
+import dataengine.pipeline.core.source.composer.DataSourceComposer;
+import dataengine.pipeline.core.source.composer.DataSourceComposerException;
 import dataengine.pipeline.model.description.source.component.Union;
 import lombok.Value;
 
@@ -18,7 +16,7 @@ public class UnionFactory implements DataSourceFactory {
     @Nonnull
     Union union;
     @Nonnull
-    DataSourceCatalog dataSourceCatalog;
+    DataSourceComposer dataSourceComposer;
 
     @Override
     public DataSource<?> build() throws DataSourceFactoryException {
@@ -28,8 +26,8 @@ public class UnionFactory implements DataSourceFactory {
         for (String name : union.getUsing()) {
             Validate.notBlank("source name").accept(name);
             try {
-                dataSources.add(dataSourceCatalog.lookup(name));
-            } catch (DataSourceCatalogException e) {
+                dataSources.add(dataSourceComposer.lookup(name));
+            } catch (DataSourceComposerException e) {
                 throw new DataSourceFactoryException("can't locate datasource with name " + name, e);
             }
         }

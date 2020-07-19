@@ -10,9 +10,9 @@ import java.util.List;
 @Value
 @Builder(setterPrefix = "with")
 @JsonDeserialize(builder = TupleEncoder.Builder.class)
-public class TupleEncoder implements Encoder {
+public class TupleEncoder implements DataEncoder {
 
     @Nonnull
-    List<Encoder> of;
+    List<DataEncoder> of;
 
 }

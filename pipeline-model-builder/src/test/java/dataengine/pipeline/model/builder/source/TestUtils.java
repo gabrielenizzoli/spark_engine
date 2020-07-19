@@ -1,4 +1,4 @@
-package datangine.pipeline.model.builder.source;
+package dataengine.pipeline.model.builder.source;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

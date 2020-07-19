@@ -1,4 +1,4 @@
-package dataengine.pipeline.model.builder.source.factory;
+package dataengine.pipeline.core.source.factory;
 
 import dataengine.pipeline.core.source.factory.DataSourceFactoryException;
 import dataengine.pipeline.model.description.source.TransformationComponentWithMultipleInputs;

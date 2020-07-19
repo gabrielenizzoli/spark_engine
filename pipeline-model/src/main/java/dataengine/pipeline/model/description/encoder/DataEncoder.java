@@ -10,5 +10,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = BeanEncoder.class, name = "bean"),
         @JsonSubTypes.Type(value = SerializationEncoder.class, name = "serialization")
 })
-public interface Encoder {
+public interface DataEncoder {
 }

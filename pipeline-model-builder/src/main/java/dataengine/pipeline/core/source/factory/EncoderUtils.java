@@ -1,6 +1,6 @@
-package dataengine.pipeline.model.builder.source.factory;
+package dataengine.pipeline.core.source.factory;
 
-import dataengine.pipeline.core.source.factory.DataSourceFactoryException;
+import dataengine.pipeline.model.description.encoder.DataEncoder;
 import dataengine.pipeline.model.description.encoder.TupleEncoder;
 import dataengine.pipeline.model.description.encoder.ValueEncoder;
 import org.apache.spark.sql.Encoder;
@@ -10,12 +10,12 @@ import javax.annotation.Nullable;
 
 public class EncoderUtils {
 
-    public static Encoder buildEncoder(@Nullable dataengine.pipeline.model.description.encoder.Encoder encoder)
+    public static Encoder buildEncoder(@Nullable DataEncoder dataEncoder)
             throws DataSourceFactoryException {
-        if (encoder == null) {
+        if (dataEncoder == null) {
             return null;
-        } else if (encoder instanceof ValueEncoder) {
-            switch (((ValueEncoder) encoder).getType()) {
+        } else if (dataEncoder instanceof ValueEncoder) {
+            switch (((ValueEncoder) dataEncoder).getType()) {
                 case BINARY:
                     return Encoders.BINARY();
                 case BOOLEAN:
@@ -45,8 +45,8 @@ public class EncoderUtils {
                 case TIMESTAMP:
                     return Encoders.TIMESTAMP();
             }
-        } else if (encoder instanceof TupleEncoder) {
-            TupleEncoder tupleEncoder = (TupleEncoder) encoder;
+        } else if (dataEncoder instanceof TupleEncoder) {
+            TupleEncoder tupleEncoder = (TupleEncoder) dataEncoder;
             Validate.listSize("tuple encoder", 2, 5);
             switch (tupleEncoder.getOf().size()) {
                 case 2:
@@ -77,7 +77,7 @@ public class EncoderUtils {
                     );
             }
         }
-        throw new DataSourceFactoryException(encoder + " encoder not managed");
+        throw new DataSourceFactoryException(dataEncoder + " encoder not managed");
     }
 
 }

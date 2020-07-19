@@ -1,11 +1,9 @@
-package dataengine.pipeline.model.builder.source.factory;
+package dataengine.pipeline.core.source.factory;
 
-import dataengine.pipeline.core.source.factory.DataSourceCatalogException;
-import dataengine.pipeline.core.source.factory.DataSourceFactoryException;
+import dataengine.pipeline.core.source.composer.DataSourceComposerException;
 import dataengine.pipeline.core.source.DataSource;
 import dataengine.pipeline.core.source.DataSourceMerge;
-import dataengine.pipeline.core.source.factory.DataSourceCatalog;
-import dataengine.pipeline.core.source.factory.DataSourceFactory;
+import dataengine.pipeline.core.source.composer.DataSourceComposer;
 import dataengine.pipeline.model.description.source.component.Sql;
 import dataengine.spark.transformation.SqlTransformations;
 import lombok.Value;
@@ -18,10 +16,17 @@ public class SqlFactory implements DataSourceFactory {
     @Nonnull
     Sql sql;
     @Nonnull
-    DataSourceCatalog dataSourceCatalog;
+    DataSourceComposer dataSourceComposer;
 
     @Override
     public DataSource<?> build() throws DataSourceFactoryException {
+        DataSource<?> dataSource = getDataSource();
+        if (sql.getEncodedAs() == null)
+            return dataSource;
+        return dataSource.encodeAs(EncoderUtils.buildEncoder(sql.getEncodedAs()));
+    }
+
+    private DataSource<?> getDataSource() throws DataSourceFactoryException {
         Validate.multiInput(1, 5).accept(sql);
         switch (sql.getUsing().size()) {
             case 1:
@@ -81,8 +86,8 @@ public class SqlFactory implements DataSourceFactory {
 
     private DataSource<?> lookupDataSource(String name) throws DataSourceFactoryException {
         try {
-            return dataSourceCatalog.lookup(name);
-        } catch (DataSourceCatalogException e) {
+            return dataSourceComposer.lookup(name);
+        } catch (DataSourceComposerException e) {
             throw new DataSourceFactoryException("can't locate datasource with name " + name, e);
         }
     }
