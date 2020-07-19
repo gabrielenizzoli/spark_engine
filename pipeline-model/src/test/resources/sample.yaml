@@ -43,7 +43,7 @@ sinks:
     batches:
       - source: src
         components:
-          tx: { type: encode, using: src, as: { type: INT } }
+          tx: { type: encode, using: src, encodedAs: { type: INT } }
         sink: { type: batch, format: parquet, options: { path: 'abc' }, mode: OVERWRITE }
 
 pipelines:
