@@ -14,8 +14,8 @@ public class SparkSessionBase {
     @BeforeAll
     static void init() throws IOException {
         windowsNoisyLogsWorkaround();
-        if (SparkSession.getActiveSession().nonEmpty())
-            throw new IOException("session already exists");
+        //if (SparkSession.getActiveSession().nonEmpty())
+        //    throw new IOException("session already exists");
         sparkSession = SparkSession.builder().master("local").getOrCreate();
     }
 
