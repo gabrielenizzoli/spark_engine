@@ -10,9 +10,9 @@ import dataengine.pipeline.core.source.impl.DataSourceReference;
 import dataengine.pipeline.model.description.encoder.DataEncoder;
 import dataengine.pipeline.model.description.source.*;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import lombok.Value;
 import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.types.StructType;
@@ -36,15 +36,16 @@ public class DataSourceComposerImpl implements DataSourceComposer {
         return new DataSourceComposerImpl(componentCatalog);
     }
 
+    @Value
     private class DataSourceProxyComposer implements DataSourceComposer {
 
-        @Getter
-        private final Set<String> parentDataSourceNames = new HashSet<>();
+        @Nonnull
+        Set<String> parentDataSourceNames;
 
         @Override
-        public @Nonnull
-        DataSource<?> lookup(String dataSourceName) throws DataSourceComposerException {
-            parentDataSourceNames.add(dataSourceName);
+        public DataSource<?> lookup(String dataSourceName) throws DataSourceComposerException {
+            if (!parentDataSourceNames.contains(dataSourceName))
+                throw new DataSourceComposerException("this datasource composer does not provide a datasource with name " + dataSourceName + ", available datasources are " + parentDataSourceNames);
             return new DataSourceReference<>(() -> Optional.ofNullable(dataSourceInfos.get(dataSourceName)).map(DataSourceInfo::getDataSource).orElse(null));
         }
 
@@ -107,18 +108,16 @@ public class DataSourceComposerImpl implements DataSourceComposer {
             DataSourceComposerException {
 
         Component component = getComponent(dataSourceName);
+        StructType schema = getComponentSchema(component);
+        Set<String> dependencies = getComponentDependencies(component);
+        DataSource<?> dataSource = DataSourceFactories.factoryForComponent(component, new DataSourceProxyComposer(dependencies)).build();
 
-        DataSourceProxyComposer dataSourceProxyComposer = new DataSourceProxyComposer();
-        DataSource<?> dataSource = DataSourceFactories.factoryForComponent(component, dataSourceProxyComposer).build();
-
-        DataSourceInfo<?> dataSourceInfo = DataSourceInfoWithComponent.builder()
+        return DataSourceInfo.builder()
                 .dataSource((DataSource<Object>) dataSource)
+                .parentDataSourceNames(dependencies)
                 .component(component)
-                .parentDataSourceNames(dataSourceProxyComposer.getParentDataSourceNames())
-                .schema(getComponentSchema(component))
+                .schema(schema)
                 .build();
-
-        return dataSourceInfo;
     }
 
     @Nonnull
@@ -127,6 +126,17 @@ public class DataSourceComposerImpl implements DataSourceComposer {
         if (!componentLookup.isPresent())
             throw new DataSourceComposerException.ComponentNotFound("component for datasource " + dataSourceName + " does not exist");
         return componentLookup.get();
+    }
+
+    @Nonnull
+    private Set<String> getComponentDependencies(Component component) {
+        if (component instanceof TransformationComponentWithMultipleInputs) {
+            return new HashSet<>(((TransformationComponentWithMultipleInputs) component).getUsing());
+        }
+        if (component instanceof TransformationComponentWithSingleInput) {
+            return Collections.singleton(((TransformationComponentWithSingleInput) component).getUsing());
+        }
+        return Collections.emptySet();
     }
 
     @Nullable

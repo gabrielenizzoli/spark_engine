@@ -45,6 +45,8 @@ public class DataSourceFactories {
             return new UnionFactory((Union) component, catalog);
         } else if (component instanceof Sql) {
             return new SqlFactory((Sql) component, catalog);
+        } else if (component instanceof PlaceholderSchemaComponent) {
+            return new SqlFactory((Sql) component, catalog);
         }
         throw new DataSourceFactoryException("component " + component + " not managed");
     }
