@@ -1,27 +1,26 @@
 package dataengine.spark.sql;
 
+import dataengine.scala.compat.JavaToScalaFunction1;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.catalyst.analysis.UnresolvedRelation;
 import org.apache.spark.sql.catalyst.parser.ParseException;
 import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
-import scala.compat.java8.functionConverterImpls.FromJavaFunction;
 
 import javax.annotation.Nonnull;
-import java.util.Map;
+import java.util.List;
 import java.util.function.Function;
 
 @Value
 @Builder
-public class SparkSqlUnresolvedRelationResolver {
+public class SparkSqlPlanResolver {
 
     @Singular
     @Nonnull
-    Map<String, LogicalPlan> plans;
+    List<Function<LogicalPlan, LogicalPlan>> planMappers;
 
     private LogicalPlan getLogicalPlanForSql(SparkSession sparkSession, String sql) {
         LogicalPlan logicalPlanWithUnresolvedRelations = null;
@@ -39,23 +38,11 @@ public class SparkSqlUnresolvedRelationResolver {
 
     @SuppressWarnings("unchecked")
     private LogicalPlan resolveAsLogicalPlan(SparkSession sparkSession, String sql) {
-        LogicalPlan logicalPlanWithUnresolvedRelations = getLogicalPlanForSql(sparkSession, sql);
-        return logicalPlanWithUnresolvedRelations.mapChildren(new FromJavaFunction<LogicalPlan, LogicalPlan>(new UnresolvedRelationResolver()));
-    }
-
-    private class UnresolvedRelationResolver implements Function<LogicalPlan, LogicalPlan> {
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public LogicalPlan apply(LogicalPlan logicalPlan) {
-            if (!(logicalPlan instanceof UnresolvedRelation))
-                return logicalPlan.mapChildren(new FromJavaFunction<LogicalPlan, LogicalPlan>(this));
-            LogicalPlan resolvedRelation = plans.get(((UnresolvedRelation) logicalPlan).tableName());
-            if (resolvedRelation == null)
-                return logicalPlan.mapChildren(new FromJavaFunction<LogicalPlan, LogicalPlan>(this));
-            return resolvedRelation;
+        LogicalPlan logicalPlan = getLogicalPlanForSql(sparkSession, sql);
+        for (Function<LogicalPlan, LogicalPlan> planMapper : planMappers) {
+            logicalPlan = planMapper.apply(logicalPlan).mapChildren(new JavaToScalaFunction1<>(planMapper));
         }
-
+        return logicalPlan;
     }
 
 }
