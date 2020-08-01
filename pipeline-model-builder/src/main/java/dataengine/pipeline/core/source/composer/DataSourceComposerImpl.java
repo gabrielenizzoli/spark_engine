@@ -51,13 +51,6 @@ public class DataSourceComposerImpl implements DataSourceComposer {
 
     }
 
-    interface DataSourceProvider {
-        DataSourceInfo<?> dataSourceInfo(String dataSourceName) throws
-                ComponentCatalogException,
-                DataSourceFactoryException,
-                DataSourceComposerException;
-    }
-
     @Override
     @Nonnull
     public DataSource<?> lookup(String dataSourceName) throws DataSourceComposerException {
