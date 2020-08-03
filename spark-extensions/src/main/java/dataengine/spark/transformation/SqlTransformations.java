@@ -1,40 +1,41 @@
 package dataengine.spark.transformation;
 
-import dataengine.spark.sql.RelationResolver;
-import dataengine.spark.sql.SparkSqlPlanResolver;
+import dataengine.spark.sql.LogicalPlanMapper;
+import dataengine.spark.sql.relation.RelationResolver;
+import dataengine.spark.sql.SparkSqlPlanMapper;
+import lombok.SneakyThrows;
+import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
 public class SqlTransformations {
 
-    public static SparkSqlPlanResolver planResolver(Function<LogicalPlan, LogicalPlan> planMapper) {
-        return SparkSqlPlanResolver.builder().planMapper(planMapper).build();
+    public static SparkSqlPlanMapper planResolver(LogicalPlanMapper planMapper) {
+        return SparkSqlPlanMapper.builder().planMapper(planMapper).build();
     }
 
-    public static SparkSqlPlanResolver planResolvers(Function<LogicalPlan, LogicalPlan>... planMappers) {
-        return SparkSqlPlanResolver.builder().planMappers(Arrays.asList(planMappers)).build();
+    public static SparkSqlPlanMapper planResolvers(LogicalPlanMapper... planMappers) {
+        return SparkSqlPlanMapper.builder().planMappers(Arrays.asList(planMappers)).build();
     }
 
-    public static SparkSqlPlanResolver planResolvers(List<Function<LogicalPlan, LogicalPlan>> planMappers) {
-        return SparkSqlPlanResolver.builder().planMappers(planMappers).build();
+    public static SparkSqlPlanMapper planResolvers(List<LogicalPlanMapper> planMappers) {
+        return SparkSqlPlanMapper.builder().planMappers(planMappers).build();
     }
 
-    public static SparkSqlPlanResolver planResolvers(RelationResolver relationResolver, @Nullable List<Function<LogicalPlan, LogicalPlan>> otherMappers) {
-        SparkSqlPlanResolver.SparkSqlPlanResolverBuilder builder = SparkSqlPlanResolver.builder().planMapper(relationResolver);
+    public static SparkSqlPlanMapper planResolvers(RelationResolver relationResolver, @Nullable List<LogicalPlanMapper> otherMappers) {
+        SparkSqlPlanMapper.SparkSqlPlanMapperBuilder builder = SparkSqlPlanMapper.builder().planMapper(relationResolver);
         if (otherMappers != null && !otherMappers.isEmpty())
             builder.planMappers(otherMappers);
         return builder.build();
     }
 
-    public static SparkSqlPlanResolver planResolvers(RelationResolver relationResolver, @Nullable Function<LogicalPlan, LogicalPlan>... otherMappers) {
-        SparkSqlPlanResolver.SparkSqlPlanResolverBuilder builder = SparkSqlPlanResolver.builder().planMapper(relationResolver);
+    public static SparkSqlPlanMapper planResolvers(RelationResolver relationResolver, @Nullable LogicalPlanMapper... otherMappers) {
+        SparkSqlPlanMapper.SparkSqlPlanMapperBuilder builder = SparkSqlPlanMapper.builder().planMapper(relationResolver);
         if (otherMappers != null && otherMappers.length > 0)
             builder.planMappers(Arrays.asList(otherMappers));
         return builder.build();
@@ -42,11 +43,17 @@ public class SqlTransformations {
 
     public static <S> DataTransformation<S, Row> sql(@Nonnull String sourceName1, @Nonnull String sql) {
         return (s1) -> {
-            SparkSqlPlanResolver resolver = planResolver(RelationResolver.builder()
+            SparkSqlPlanMapper resolver = planResolver(RelationResolver.builder()
                     .plan(sourceName1, s1.logicalPlan())
                     .build());
-            return resolver.resolveAsDataset(SparkSession.active(), sql);
+            return getRowDataset(resolver, sql);
         };
+    }
+
+    // TODO remove this one and find a better solution!!
+    @SneakyThrows
+    public static Dataset<Row> getRowDataset(SparkSqlPlanMapper resolver, @Nonnull String sql) {
+        return resolver.mapAsDataset(SparkSession.active(), sql);
     }
 
     /**
@@ -63,11 +70,11 @@ public class SqlTransformations {
                                                                      @Nonnull String sourceName2,
                                                                      @Nonnull String sql) {
         return (s1, s2) -> {
-            SparkSqlPlanResolver resolver = planResolver(RelationResolver.builder()
+            SparkSqlPlanMapper resolver = planResolver(RelationResolver.builder()
                     .plan(sourceName1, s1.logicalPlan())
                     .plan(sourceName2, s2.logicalPlan())
                     .build());
-            return resolver.resolveAsDataset(SparkSession.active(), sql);
+            return getRowDataset(resolver, sql);
         };
     }
 
@@ -91,12 +98,12 @@ public class SqlTransformations {
             @Nonnull String sourceName3,
             @Nonnull String sql) {
         return (s1, s2, s3) -> {
-            SparkSqlPlanResolver resolver = planResolver(RelationResolver.builder()
+            SparkSqlPlanMapper resolver = planResolver(RelationResolver.builder()
                     .plan(sourceName1, s1.logicalPlan())
                     .plan(sourceName2, s2.logicalPlan())
                     .plan(sourceName3, s3.logicalPlan())
                     .build());
-            return resolver.resolveAsDataset(SparkSession.active(), sql);
+            return getRowDataset(resolver, sql);
         };
     }
 
@@ -121,13 +128,13 @@ public class SqlTransformations {
             @Nonnull String sourceName4,
             @Nonnull String sql) {
         return (s1, s2, s3, s4) -> {
-            SparkSqlPlanResolver resolver = planResolver(RelationResolver.builder()
+            SparkSqlPlanMapper resolver = planResolver(RelationResolver.builder()
                     .plan(sourceName1, s1.logicalPlan())
                     .plan(sourceName2, s2.logicalPlan())
                     .plan(sourceName3, s3.logicalPlan())
                     .plan(sourceName4, s4.logicalPlan())
                     .build());
-            return resolver.resolveAsDataset(SparkSession.active(), sql);
+            return getRowDataset(resolver, sql);
         };
     }
 
@@ -155,14 +162,14 @@ public class SqlTransformations {
             @Nonnull String sourceName5,
             @Nonnull String sql) {
         return (s1, s2, s3, s4, s5) -> {
-            SparkSqlPlanResolver resolver = planResolver(RelationResolver.builder()
+            SparkSqlPlanMapper resolver = planResolver(RelationResolver.builder()
                     .plan(sourceName1, s1.logicalPlan())
                     .plan(sourceName2, s2.logicalPlan())
                     .plan(sourceName3, s3.logicalPlan())
                     .plan(sourceName4, s4.logicalPlan())
                     .plan(sourceName5, s5.logicalPlan())
                     .build());
-            return resolver.resolveAsDataset(SparkSession.active(), sql);
+            return getRowDataset(resolver, sql);
         };
     }
 
@@ -193,7 +200,7 @@ public class SqlTransformations {
             @Nonnull String sourceName6,
             @Nonnull String sql) {
         return (s1, s2, s3, s4, s5, s6) -> {
-            SparkSqlPlanResolver resolver = planResolver(RelationResolver.builder()
+            SparkSqlPlanMapper resolver = planResolver(RelationResolver.builder()
                     .plan(sourceName1, s1.logicalPlan())
                     .plan(sourceName2, s2.logicalPlan())
                     .plan(sourceName3, s3.logicalPlan())
@@ -201,7 +208,7 @@ public class SqlTransformations {
                     .plan(sourceName5, s5.logicalPlan())
                     .plan(sourceName6, s6.logicalPlan())
                     .build());
-            return resolver.resolveAsDataset(SparkSession.active(), sql);
+            return getRowDataset(resolver, sql);
         };
     }
 
@@ -235,7 +242,7 @@ public class SqlTransformations {
             @Nonnull String sourceName7,
             @Nonnull String sql) {
         return (s1, s2, s3, s4, s5, s6, s7) -> {
-            SparkSqlPlanResolver resolver = planResolver(RelationResolver.builder()
+            SparkSqlPlanMapper resolver = planResolver(RelationResolver.builder()
                     .plan(sourceName1, s1.logicalPlan())
                     .plan(sourceName2, s2.logicalPlan())
                     .plan(sourceName3, s3.logicalPlan())
@@ -244,7 +251,7 @@ public class SqlTransformations {
                     .plan(sourceName6, s6.logicalPlan())
                     .plan(sourceName7, s7.logicalPlan())
                     .build());
-            return resolver.resolveAsDataset(SparkSession.active(), sql);
+            return getRowDataset(resolver, sql);
         };
     }
 
@@ -281,7 +288,7 @@ public class SqlTransformations {
             @Nonnull String sourceName8,
             @Nonnull String sql) {
         return (s1, s2, s3, s4, s5, s6, s7, s8) -> {
-            SparkSqlPlanResolver resolver = planResolver(RelationResolver.builder()
+            SparkSqlPlanMapper resolver = planResolver(RelationResolver.builder()
                     .plan(sourceName1, s1.logicalPlan())
                     .plan(sourceName2, s2.logicalPlan())
                     .plan(sourceName3, s3.logicalPlan())
@@ -291,7 +298,7 @@ public class SqlTransformations {
                     .plan(sourceName7, s7.logicalPlan())
                     .plan(sourceName8, s8.logicalPlan())
                     .build());
-            return resolver.resolveAsDataset(SparkSession.active(), sql);
+            return getRowDataset(resolver, sql);
         };
     }
 
@@ -331,7 +338,7 @@ public class SqlTransformations {
             @Nonnull String sourceName9,
             @Nonnull String sql) {
         return (s1, s2, s3, s4, s5, s6, s7, s8, s9) -> {
-            SparkSqlPlanResolver resolver = planResolver(RelationResolver.builder()
+            SparkSqlPlanMapper resolver = planResolver(RelationResolver.builder()
                     .plan(sourceName1, s1.logicalPlan())
                     .plan(sourceName2, s2.logicalPlan())
                     .plan(sourceName3, s3.logicalPlan())
@@ -342,7 +349,7 @@ public class SqlTransformations {
                     .plan(sourceName8, s8.logicalPlan())
                     .plan(sourceName9, s9.logicalPlan())
                     .build());
-            return resolver.resolveAsDataset(SparkSession.active(), sql);
+            return getRowDataset(resolver, sql);
         };
     }
 
@@ -385,7 +392,7 @@ public class SqlTransformations {
             @Nonnull String sourceName10,
             @Nonnull String sql) {
         return (s1, s2, s3, s4, s5, s6, s7, s8, s9, s10) -> {
-            SparkSqlPlanResolver resolver = planResolver(RelationResolver.builder()
+            SparkSqlPlanMapper resolver = planResolver(RelationResolver.builder()
                     .plan(sourceName1, s1.logicalPlan())
                     .plan(sourceName2, s2.logicalPlan())
                     .plan(sourceName3, s3.logicalPlan())
@@ -397,7 +404,7 @@ public class SqlTransformations {
                     .plan(sourceName9, s9.logicalPlan())
                     .plan(sourceName10, s10.logicalPlan())
                     .build());
-            return resolver.resolveAsDataset(SparkSession.active(), sql);
+            return getRowDataset(resolver, sql);
         };
     }
 }

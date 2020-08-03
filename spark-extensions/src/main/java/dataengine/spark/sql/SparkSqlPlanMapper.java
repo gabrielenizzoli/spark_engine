@@ -1,6 +1,5 @@
 package dataengine.spark.sql;
 
-import dataengine.scala.compat.JavaToScalaFunction1;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
@@ -12,15 +11,14 @@ import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.function.Function;
 
 @Value
 @Builder
-public class SparkSqlPlanResolver {
+public class SparkSqlPlanMapper {
 
     @Singular
     @Nonnull
-    List<Function<LogicalPlan, LogicalPlan>> planMappers;
+    List<LogicalPlanMapper> planMappers;
 
     private LogicalPlan getLogicalPlanForSql(SparkSession sparkSession, String sql) {
         LogicalPlan logicalPlanWithUnresolvedRelations = null;
@@ -32,17 +30,17 @@ public class SparkSqlPlanResolver {
         return logicalPlanWithUnresolvedRelations;
     }
 
-    public Dataset<Row> resolveAsDataset(SparkSession sparkSession, String sql) {
-        return Dataset.ofRows(sparkSession, resolveAsLogicalPlan(sparkSession, sql));
-    }
-
     @SuppressWarnings("unchecked")
-    private LogicalPlan resolveAsLogicalPlan(SparkSession sparkSession, String sql) {
+    private LogicalPlan mapAsLogicalPlan(SparkSession sparkSession, String sql) throws PlanMapperException {
         LogicalPlan logicalPlan = getLogicalPlanForSql(sparkSession, sql);
-        for (Function<LogicalPlan, LogicalPlan> planMapper : planMappers) {
-            logicalPlan = planMapper.apply(logicalPlan).mapChildren(new JavaToScalaFunction1<>(planMapper));
+        for (LogicalPlanMapper planMapper : planMappers) {
+            logicalPlan = planMapper.map(logicalPlan).mapChildren(planMapper.asScalaFunction());
         }
         return logicalPlan;
+    }
+
+    public Dataset<Row> mapAsDataset(SparkSession sparkSession, String sql) throws PlanMapperException {
+        return Dataset.ofRows(sparkSession, mapAsLogicalPlan(sparkSession, sql));
     }
 
 }
