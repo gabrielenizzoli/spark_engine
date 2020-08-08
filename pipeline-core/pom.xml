@@ -23,10 +23,6 @@
             <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.scala-lang.modules</groupId>
-            <artifactId>scala-java8-compat_${scala.version}</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_${scala.version}</artifactId>
             <scope>provided</scope>

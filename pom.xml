@@ -19,7 +19,6 @@
         <jsr305.version>3.0.2</jsr305.version>
         <spark.version>3.0.0</spark.version>
         <scala.version>2.12</scala.version>
-        <scalacompat.version>0.9.1</scalacompat.version>
         <fasterxml.jackson.version>2.10.0</fasterxml.jackson.version>
 
         <junit.version>5.6.2</junit.version>
@@ -57,12 +56,6 @@
                 <groupId>org.apache.spark</groupId>
                 <artifactId>spark-sql_${scala.version}</artifactId>
                 <version>${spark.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.scala-lang.modules</groupId>
-                <artifactId>scala-java8-compat_${scala.version}</artifactId>
-                <version>${scalacompat.version}</version>
             </dependency>
 
             <!-- project -->
