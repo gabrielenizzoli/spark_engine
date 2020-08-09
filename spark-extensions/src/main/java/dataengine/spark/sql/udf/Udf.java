@@ -4,14 +4,15 @@ import org.apache.spark.sql.api.java.*;
 import org.apache.spark.sql.types.DataType;
 
 import javax.annotation.Nonnull;
+import java.io.Serializable;
 
-public interface Udf {
+public interface Udf extends Serializable {
 
     @Nonnull
     String getName();
 
     @Nonnull
-    DataType getDataType();
+    DataType getReturnType();
 
     default <R> UDF0<R> getUdf0() {
         return null;
@@ -35,6 +36,29 @@ public interface Udf {
 
     default <I1, I2, I3, I4, I5, R> UDF5<I1, I2, I3, I4, I5, R> getUdf5() {
         return null;
+    }
+
+    static <I1, R> Udf ofUdf1(String name, DataType returnType, UDF1<I1, R> udf1) {
+
+        return new Udf() {
+            @Nonnull
+            @Override
+            public String getName() {
+                return name;
+            }
+
+            @Nonnull
+            @Override
+            public DataType getReturnType() {
+                return returnType;
+            }
+
+            @Override
+            public UDF1<I1, R> getUdf1() {
+                return udf1;
+            }
+
+        };
     }
 
 }

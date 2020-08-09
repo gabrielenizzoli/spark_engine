@@ -8,8 +8,8 @@ public interface DataTransformation<S, D> {
 
     Dataset<D> apply(Dataset<S> dataset);
 
-    default <D2> DataTransformation<S, D2> andThen(DataTransformation<D, D2> tx) {
-        return s -> tx.apply(apply(s));
+    default <D2> DataTransformation<S, D2> andThen(DataTransformation<D, D2> secondTransformation) {
+        return s -> secondTransformation.apply(this.apply(s));
     }
 
     default <D2> DataTransformation<S, D2> andThenEncode(Encoder<D2> encoder) {

@@ -1,0 +1,19 @@
+package dataengine.pipeline.model.description.udf;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import dataengine.pipeline.model.description.encoder.TupleEncoder;
+import lombok.Builder;
+import lombok.Value;
+
+import javax.annotation.Nonnull;
+import java.util.List;
+
+@Value
+@Builder(setterPrefix = "with")
+@JsonDeserialize(builder = UdfList.Builder.class)
+public class UdfList implements UdfLibrary {
+
+    @Nonnull
+    List<String> ofClasses;
+
+}

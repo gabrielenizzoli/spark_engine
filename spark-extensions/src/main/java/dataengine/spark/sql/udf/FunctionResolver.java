@@ -6,12 +6,15 @@ import dataengine.spark.sql.PlanMapperException;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
+import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.catalyst.analysis.UnresolvedFunction;
 import org.apache.spark.sql.catalyst.expressions.Expression;
 import org.apache.spark.sql.catalyst.expressions.PlanExpression;
 import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.Map;
 
 @Value
@@ -24,8 +27,23 @@ public class FunctionResolver implements LogicalPlanMapper {
 
     public static class FunctionResolverBuilder {
 
-        public FunctionResolverBuilder udf(Udf udf) {
+        public FunctionResolverBuilder udf(@Nullable Udf udf) {
+            if (udf == null)
+                return this;
             return expressionResolver(udf.getName(), new UdfExpressionResolver(udf));
+        }
+
+        public FunctionResolverBuilder udfs(@Nullable Collection<Udf> udfCollection) {
+            if (udfCollection == null)
+                return this;
+            udfCollection.forEach(this::udf);
+            return this;
+        }
+
+        public FunctionResolverBuilder udfs(@Nullable UdfCollection udfCollection) {
+            if (udfCollection == null)
+                return this;
+            return udfs(udfCollection.getUdfs());
         }
 
     }
@@ -39,10 +57,12 @@ public class FunctionResolver implements LogicalPlanMapper {
                 UnresolvedFunction unresolvedFunction = (UnresolvedFunction) expression;
                 String name = unresolvedFunction.name().funcName();
                 ExpressionResolver udfFactory = expressionResolvers.get(name);
-                if (udfFactory == null) {
-                    throw new PlanMapperException("can't resolve function " + name + " in expression " + expression);
+                if (udfFactory != null) {
+                    expression = udfFactory.resolve(unresolvedFunction);
+                } else if (!SparkSession.active().catalog().functionExists(name)) {
+                    // TODO should only accept predefined functions
+                    throw new FunctionResolverException("can't resolve function " + name + " in expression " + expression);
                 }
-                expression = udfFactory.resolve(unresolvedFunction);
             } else if (expression instanceof PlanExpression) {
                 PlanExpression<LogicalPlan> subquery = (PlanExpression<LogicalPlan>) expression;
                 expression = subquery.withNewPlan(FunctionResolver.this.map(subquery.plan()));
