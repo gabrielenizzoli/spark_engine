@@ -5,6 +5,7 @@ import dataengine.pipeline.model.description.source.TransformationComponentWithM
 import dataengine.pipeline.model.description.source.TransformationComponentWithSingleInput;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class Validate {
@@ -13,7 +14,7 @@ public class Validate {
         void accept(T t) throws DataSourceFactoryException;
     }
 
-    public static Validator<List<?>> listSize(String msg, Integer min, Integer max) {
+    public static Validator<List<?>> listSize(String msg, @Nullable Integer min, @Nullable Integer max) {
         return (in) -> {
             if (in == null || in.size() == 0)
                 throw new DataSourceFactoryException(msg + " list is null or empty");

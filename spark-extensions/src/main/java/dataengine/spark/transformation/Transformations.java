@@ -5,6 +5,7 @@ import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoder;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.catalyst.encoders.RowEncoder;
 import org.apache.spark.storage.StorageLevel;
 
 public class Transformations {
@@ -26,7 +27,11 @@ public class Transformations {
     }
 
     public static <S> DataTransformation<S, Row> encodeAsRow() {
-        return Dataset::toDF;
+        return d -> {
+            if (Row.class.isAssignableFrom(d.encoder().clsTag().runtimeClass()))
+                return (Dataset<Row>)d;
+            return d.toDF();
+        };
     }
 
     public static <S> DataTransformation<S, S> store() {
