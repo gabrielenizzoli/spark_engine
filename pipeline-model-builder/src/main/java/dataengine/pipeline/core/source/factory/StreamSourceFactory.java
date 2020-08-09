@@ -2,6 +2,7 @@ package dataengine.pipeline.core.source.factory;
 
 import dataengine.pipeline.core.source.DataSource;
 import dataengine.pipeline.core.source.impl.SparkSource;
+import dataengine.pipeline.core.source.utils.EncoderUtils;
 import dataengine.pipeline.model.description.source.component.StreamSource;
 import lombok.Value;
 

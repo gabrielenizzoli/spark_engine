@@ -15,6 +15,8 @@ import org.apache.spark.sql.types.DataTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collections;
 
 
@@ -27,11 +29,13 @@ public class SparkSqlPlanMapperTest extends SparkSessionBase {
         SparkSqlPlanMapper resolver = SparkSqlPlanMapper.builder()
                 .planMapper(FunctionResolver.builder()
                         .udf(new Udf() {
+                            @Nonnull
                             public String getName() {
                                 return "plusOne";
                             }
 
-                            public DataType getDataType() {
+                            @Nonnull
+                            public DataType getReturnType() {
                                 return DataTypes.IntegerType;
                             }
 
@@ -76,11 +80,13 @@ public class SparkSqlPlanMapperTest extends SparkSessionBase {
                 .planMapper(RelationResolver.builder().plan("table", logicalPlanWithData).build())
                 .planMapper(FunctionResolver.builder()
                         .udf(new Udf() {
+                            @Nonnull
                             public String getName() {
                                 return "plusOne";
                             }
 
-                            public DataType getDataType() {
+                            @Nonnull
+                            public DataType getReturnType() {
                                 return DataTypes.IntegerType;
                             }
 

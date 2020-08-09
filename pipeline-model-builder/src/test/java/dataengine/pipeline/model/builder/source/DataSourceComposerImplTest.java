@@ -27,7 +27,7 @@ class DataSourceComposerImplTest extends SparkSessionBase {
 
         // then
         Assertions.assertEquals(
-                Arrays.asList("a:xxx", "b:yyy"),
+                Arrays.asList("a-p1:xxx-p2", "b-p1:yyy-p2"),
                 dataSink.getRows().stream()
                         .map(r -> r.get(r.fieldIndex("str")) + ":" + r.getString(r.fieldIndex("str2")))
                         .sorted()

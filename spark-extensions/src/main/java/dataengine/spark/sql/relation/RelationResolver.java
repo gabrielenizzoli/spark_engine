@@ -45,7 +45,7 @@ public class RelationResolver implements LogicalPlanMapper {
             String name = unresolvedRelation.tableName();
             LogicalPlan resolvedRelation = plans.get(name);
             if (resolvedRelation == null) {
-                throw new PlanMapperException("can't resolve relation " + name + " in plan " + unresolvedRelation);
+                throw new RelationResolverException("can't resolve relation " + name + " in plan " + unresolvedRelation);
             }
             logicalPlan = resolvedRelation;
         } else {

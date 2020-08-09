@@ -58,7 +58,7 @@ public class UdfExpressionResolver implements FunctionResolver.ExpressionResolve
         }
 
         return new ScalaUDF(getScalaFunction(),
-                udf.getDataType(),
+                udf.getReturnType(),
                 unresolvedFunction.children(),
                 JavaConverters.asScalaBuffer(Collections.emptyList()),
                 Option.apply(unresolvedFunction.name().funcName()),

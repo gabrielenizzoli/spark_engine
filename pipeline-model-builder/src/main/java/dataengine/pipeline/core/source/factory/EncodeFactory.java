@@ -3,6 +3,7 @@ package dataengine.pipeline.core.source.factory;
 import dataengine.pipeline.core.source.DataSource;
 import dataengine.pipeline.core.source.composer.DataSourceComposer;
 import dataengine.pipeline.core.source.composer.DataSourceComposerException;
+import dataengine.pipeline.core.source.utils.EncoderUtils;
 import dataengine.pipeline.model.description.source.component.Encode;
 import lombok.Value;
 import org.apache.spark.sql.Encoder;

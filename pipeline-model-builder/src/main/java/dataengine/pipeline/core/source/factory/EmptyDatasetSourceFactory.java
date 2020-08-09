@@ -2,6 +2,7 @@ package dataengine.pipeline.core.source.factory;
 
 import dataengine.pipeline.core.source.DataSource;
 import dataengine.pipeline.core.source.impl.EmptyDatasetSource;
+import dataengine.pipeline.core.source.utils.EncoderUtils;
 import lombok.Value;
 
 import javax.annotation.Nonnull;

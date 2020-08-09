@@ -5,7 +5,7 @@ import dataengine.pipeline.core.source.GraphException;
 import dataengine.pipeline.core.source.GraphUtils;
 import dataengine.pipeline.core.source.factory.DataSourceFactories;
 import dataengine.pipeline.core.source.factory.DataSourceFactoryException;
-import dataengine.pipeline.core.source.factory.EncoderUtils;
+import dataengine.pipeline.core.source.utils.EncoderUtils;
 import dataengine.pipeline.core.source.impl.DataSourceReference;
 import dataengine.pipeline.model.description.encoder.DataEncoder;
 import dataengine.pipeline.model.description.source.*;

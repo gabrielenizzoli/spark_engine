@@ -4,7 +4,10 @@ import dataengine.pipeline.core.source.composer.DataSourceComposerException;
 import dataengine.pipeline.core.source.DataSource;
 import dataengine.pipeline.core.source.DataSourceMerge;
 import dataengine.pipeline.core.source.composer.DataSourceComposer;
+import dataengine.pipeline.core.source.utils.EncoderUtils;
+import dataengine.pipeline.core.source.utils.UdfUtils;
 import dataengine.pipeline.model.description.source.component.Sql;
+import dataengine.spark.sql.udf.UdfCollection;
 import dataengine.spark.transformation.SqlTransformations;
 import dataengine.spark.transformation.Transformations;
 import lombok.Value;
@@ -34,9 +37,11 @@ public class SqlFactory implements DataSourceFactory {
 
         Validate.multiInput(1, null).accept(sql);
 
+        UdfCollection udfCollection = UdfUtils.buildUdfCollection(sql.getUdfs());
+
         return DataSourceMerge.mergeAll(
                 getDataSources(),
-                SqlTransformations.sqlMerge(sql.getUsing(), sql.getSql())
+                SqlTransformations.sqlMerge(sql.getUsing(), sql.getSql(), udfCollection)
         );
     }
 
