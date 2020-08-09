@@ -1,6 +1,7 @@
 package dataengine.pipeline.core.source;
 
 import dataengine.spark.transformation.*;
+import org.apache.spark.sql.Row;
 
 import java.util.List;
 
@@ -19,6 +20,15 @@ public class DataSourceMerge {
                 .dataSource(dataSource)
                 .parentDataSources(otherDataSources)
                 .reducer(reducer)
+                .build();
+    }
+
+    public static <S, D> DataSource<D> mergeAll(
+            List<DataSource<S>> sources,
+            DataTransformationN<S, D> merger) {
+        return DataSourceN.<S, D>builder()
+                .parentDataSources(sources)
+                .transformation(merger)
                 .build();
     }
 

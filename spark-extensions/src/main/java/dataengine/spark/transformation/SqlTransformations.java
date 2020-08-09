@@ -1,8 +1,8 @@
 package dataengine.spark.transformation;
 
 import dataengine.spark.sql.LogicalPlanMapper;
-import dataengine.spark.sql.relation.RelationResolver;
 import dataengine.spark.sql.SparkSqlPlanMapper;
+import dataengine.spark.sql.relation.RelationResolver;
 import lombok.SneakyThrows;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -23,24 +23,6 @@ public class SqlTransformations {
         return SparkSqlPlanMapper.builder().planMappers(Arrays.asList(planMappers)).build();
     }
 
-    public static SparkSqlPlanMapper planResolvers(List<LogicalPlanMapper> planMappers) {
-        return SparkSqlPlanMapper.builder().planMappers(planMappers).build();
-    }
-
-    public static SparkSqlPlanMapper planResolvers(RelationResolver relationResolver, @Nullable List<LogicalPlanMapper> otherMappers) {
-        SparkSqlPlanMapper.SparkSqlPlanMapperBuilder builder = SparkSqlPlanMapper.builder().planMapper(relationResolver);
-        if (otherMappers != null && !otherMappers.isEmpty())
-            builder.planMappers(otherMappers);
-        return builder.build();
-    }
-
-    public static SparkSqlPlanMapper planResolvers(RelationResolver relationResolver, @Nullable LogicalPlanMapper... otherMappers) {
-        SparkSqlPlanMapper.SparkSqlPlanMapperBuilder builder = SparkSqlPlanMapper.builder().planMapper(relationResolver);
-        if (otherMappers != null && otherMappers.length > 0)
-            builder.planMappers(Arrays.asList(otherMappers));
-        return builder.build();
-    }
-
     public static <S> DataTransformation<S, Row> sql(@Nonnull String sourceName1, @Nonnull String sql) {
         return (s1) -> {
             SparkSqlPlanMapper resolver = planResolver(RelationResolver.builder()
@@ -54,6 +36,18 @@ public class SqlTransformations {
     @SneakyThrows
     public static Dataset<Row> getRowDataset(SparkSqlPlanMapper resolver, @Nonnull String sql) {
         return resolver.mapAsDataset(SparkSession.active(), sql);
+    }
+
+    public static DataTransformationN<Row, Row> sqlMerge(@Nonnull List<String> sourceNames, @Nonnull String sql) {
+        return (datasets) -> {
+
+            RelationResolver.RelationResolverBuilder builder = RelationResolver.builder();
+            for (int i = 0; i < sourceNames.size(); i++)
+                builder.plan(sourceNames.get(i), datasets.get(i).logicalPlan());
+            SparkSqlPlanMapper resolver = planResolver(builder.build());
+
+            return getRowDataset(resolver, sql);
+        };
     }
 
     /**
