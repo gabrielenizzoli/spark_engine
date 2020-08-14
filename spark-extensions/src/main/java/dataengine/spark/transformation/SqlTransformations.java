@@ -1,11 +1,11 @@
 package dataengine.spark.transformation;
 
 import dataengine.spark.sql.LogicalPlanMapper;
+import dataengine.spark.sql.PlanMapperException;
 import dataengine.spark.sql.SparkSqlPlanMapper;
 import dataengine.spark.sql.relation.RelationResolver;
 import dataengine.spark.sql.udf.FunctionResolver;
 import dataengine.spark.sql.udf.UdfCollection;
-import lombok.SneakyThrows;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -25,18 +25,20 @@ public class SqlTransformations {
         return SparkSqlPlanMapper.builder().planMappers(mappers).build();
     }
 
-    // TODO remove this one and find a better solution!!
-    @SneakyThrows
     private static Dataset<Row> getRowDataset(@Nullable SparkSqlPlanMapper resolver, @Nonnull String sql) {
         SparkSession sparkSession = SparkSession.active();
         if (resolver == null) {
             return sparkSession.sql(sql);
         }
-        return resolver.mapAsDataset(sparkSession, sql);
+        try {
+            return resolver.mapAsDataset(sparkSession, sql);
+        } catch (PlanMapperException e) {
+            throw new TransformationException("unable to map sql as a dataset: " + sql, e);
+        }
     }
 
     public static Dataset<Row> sqlSource(@Nonnull String sql, @Nullable UdfCollection udfCollection) {
-        SparkSqlPlanMapper resolver = udfCollection == null ? null :  planResolvers(FunctionResolver.builder().udfs(udfCollection).build());
+        SparkSqlPlanMapper resolver = udfCollection == null ? null : planResolvers(FunctionResolver.builder().udfs(udfCollection).build());
         return getRowDataset(resolver, sql);
     }
 
@@ -66,7 +68,7 @@ public class SqlTransformations {
         return (datasets) -> {
 
             if (datasets.size() != sourceNames.size()) {
-                // TODO throw exception
+                throw new TransformationException("datasets provided count (" + datasets.size() + ") different than source names count provided (" + sourceNames + ")");
             }
 
             // resolver sources

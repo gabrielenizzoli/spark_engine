@@ -1,18 +1,23 @@
 source1:
   type: sqlSource
-  sql: >
-    select explode(array(named_struct("num", 0, "str", "a"), named_struct("num", 1, "str", "b"))) as abc
+  sql: select explode(array(named_struct("num", 0, "str", "a"), named_struct("num", 1, "str", "b"))) as abc
+
 source2:
   type: sqlSource
   udfs:
     ofClasses:
       - dataengine.pipeline.model.builder.source.TestIntUdf
   sql: >
-    select explode(array(named_struct("zum", testIntUdf(1, 1), "stuff", "xxx"), named_struct("zum", testIntUdf(2, 1), "stuff", "yyy"))) as def
+    select explode(array(
+      named_struct("zum", testIntUdf(1, 1), "stuff", "xxx"),
+      named_struct("zum", testIntUdf(2, 1), "stuff", "yyy"))
+    ) as def
+
 source3:
   type: sqlSource
   sql: >
     select 1 as number
+
 tx:
   type: sql
   using: [source1, source2]
@@ -26,4 +31,4 @@ tx:
       testStrUdf(s2.def.stuff, "p2") as str2
     from source1 as s1
     join source2 as s2
-    on s1.abc.num = testIntUdf(s2.def.zum, -2)
+      on s1.abc.num = testIntUdf(s2.def.zum, -2)

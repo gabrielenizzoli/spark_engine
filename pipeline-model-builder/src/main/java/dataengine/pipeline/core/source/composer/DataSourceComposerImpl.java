@@ -2,7 +2,7 @@ package dataengine.pipeline.core.source.composer;
 
 import dataengine.pipeline.core.source.DataSource;
 import dataengine.pipeline.core.source.GraphException;
-import dataengine.pipeline.core.source.GraphUtils;
+import dataengine.pipeline.core.utils.GraphUtils;
 import dataengine.pipeline.core.source.factory.DataSourceFactories;
 import dataengine.pipeline.core.source.factory.DataSourceFactoryException;
 import dataengine.pipeline.core.source.utils.EncoderUtils;

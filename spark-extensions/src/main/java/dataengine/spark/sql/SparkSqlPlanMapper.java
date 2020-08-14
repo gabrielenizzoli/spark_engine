@@ -20,27 +20,33 @@ public class SparkSqlPlanMapper {
     @Nonnull
     List<LogicalPlanMapper> planMappers;
 
-    private LogicalPlan getLogicalPlanForSql(SparkSession sparkSession, String sql) {
-        LogicalPlan logicalPlanWithUnresolvedRelations = null;
-        try {
-            logicalPlanWithUnresolvedRelations = sparkSession.sessionState().sqlParser().parsePlan(sql);
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("bad sql", e);
-        }
-        return logicalPlanWithUnresolvedRelations;
+    public Dataset<Row> mapAsDataset(SparkSession sparkSession, String sql) throws PlanMapperException {
+        return Dataset.ofRows(sparkSession, mapAsLogicalPlan(sparkSession, sql));
     }
 
-    @SuppressWarnings("unchecked")
     private LogicalPlan mapAsLogicalPlan(SparkSession sparkSession, String sql) throws PlanMapperException {
-        LogicalPlan logicalPlan = getLogicalPlanForSql(sparkSession, sql);
-        for (LogicalPlanMapper planMapper : planMappers) {
-            logicalPlan = planMapper.map(logicalPlan).mapChildren(planMapper.asScalaFunction());
-        }
+        LogicalPlan logicalPlan = generateLogicalPlan(sparkSession, sql);
+        logicalPlan = remapLogicalPlan(logicalPlan, planMappers);
         return logicalPlan;
     }
 
-    public Dataset<Row> mapAsDataset(SparkSession sparkSession, String sql) throws PlanMapperException {
-        return Dataset.ofRows(sparkSession, mapAsLogicalPlan(sparkSession, sql));
+    private static LogicalPlan generateLogicalPlan(@Nonnull SparkSession sparkSession,
+                                                   @Nonnull String sql) throws PlanMapperException {
+        try {
+            return sparkSession.sessionState().sqlParser().parsePlan(sql);
+        } catch (ParseException e) {
+            throw  new PlanMapperException("can't parse sql: " + sql, e);
+        }
+    }
+
+    @Nonnull
+    private static LogicalPlan remapLogicalPlan(@Nonnull final LogicalPlan logicalPlan,
+                                                @Nonnull final List<LogicalPlanMapper> planMappers) throws PlanMapperException {
+        LogicalPlan remappedLogicalPlan = logicalPlan;
+        for (LogicalPlanMapper planMapper : planMappers) {
+            remappedLogicalPlan = planMapper.map(remappedLogicalPlan);
+        }
+        return remappedLogicalPlan;
     }
 
 }

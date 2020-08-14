@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.catalyst.FunctionIdentifier;
+import org.apache.spark.sql.catalyst.analysis.FunctionRegistry;
 import org.apache.spark.sql.catalyst.analysis.UnresolvedFunction;
 import org.apache.spark.sql.catalyst.expressions.Expression;
 import org.apache.spark.sql.catalyst.expressions.PlanExpression;
@@ -59,8 +61,7 @@ public class FunctionResolver implements LogicalPlanMapper {
                 ExpressionResolver udfFactory = expressionResolvers.get(name);
                 if (udfFactory != null) {
                     expression = udfFactory.resolve(unresolvedFunction);
-                } else if (!SparkSession.active().catalog().functionExists(name)) {
-                    // TODO should only accept predefined functions
+                } else if (!FunctionRegistry.expressions().keySet().contains(name)) {
                     throw new FunctionResolverException("can't resolve function " + name + " in expression " + expression);
                 }
             } else if (expression instanceof PlanExpression) {
