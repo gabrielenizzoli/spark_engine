@@ -4,6 +4,7 @@ import dataengine.pipeline.core.sink.impl.DataSinkCollectRows;
 import dataengine.pipeline.core.source.composer.DataSourceComposer;
 import dataengine.pipeline.core.source.composer.DataSourceComposerException;
 import dataengine.pipeline.core.source.composer.DataSourceComposerImpl;
+import dataengine.pipeline.model.description.source.ComponentCatalog;
 import dataengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.Row;
 import org.junit.jupiter.api.Assertions;
@@ -18,8 +19,8 @@ class DataSourceComposerImplTest extends SparkSessionBase {
     void testBuilder() throws DataSourceComposerException {
 
         // given
-        DataSourceComposerImpl dataSourceComposer = DataSourceComposerImpl
-                .ofCatalog(TestUtils.getComponentCatalog(null));
+        ComponentCatalog componentCatalog = TestUtils.getComponentCatalog(null);
+        DataSourceComposer dataSourceComposer = DataSourceComposerImpl.ofCatalog(componentCatalog);
 
         // when
         DataSinkCollectRows<Row> dataSink = new DataSinkCollectRows<>();

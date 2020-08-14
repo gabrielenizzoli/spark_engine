@@ -19,8 +19,7 @@ import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SqlTransformationsTest extends SparkSessionBase {
 
@@ -93,10 +92,12 @@ class SqlTransformationsTest extends SparkSessionBase {
                 DataTypes.createStructType(Collections.singletonList(DataTypes.createStructField("value", DataTypes.IntegerType, true))));
 
         // when - then
-        assertThrows(FunctionResolverException.class, () -> {
+        TransformationException e = assertThrows(TransformationException.class, () -> {
             Dataset<Row> outputDs = sqlTranformation1.andThen(sqlTranformation2).apply(dsInput);
             outputDs.count();
         });
+
+        assertEquals(FunctionResolverException.class, e.getCause().getClass());
     }
 
     @Test
@@ -118,10 +119,12 @@ class SqlTransformationsTest extends SparkSessionBase {
                 DataTypes.createStructType(Collections.singletonList(DataTypes.createStructField("value", DataTypes.IntegerType, true))));
 
         // when - then
-        assertThrows(RelationResolverException.class, () -> {
+        TransformationException e = assertThrows(TransformationException.class, () -> {
             Dataset<Row> outputDs = sqlTranformation1.andThen(sqlTranformation2).apply(dsInput);
             outputDs.count();
         });
+
+        assertEquals(RelationResolverException.class, e.getCause().getClass());
     }
 
 }

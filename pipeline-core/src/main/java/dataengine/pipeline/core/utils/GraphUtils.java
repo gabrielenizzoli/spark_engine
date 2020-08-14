@@ -1,8 +1,11 @@
-package dataengine.pipeline.core.source;
+package dataengine.pipeline.core.utils;
+
+import dataengine.pipeline.core.source.GraphException;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 
+// TODO move out of here
 public class GraphUtils {
 
     public static Set<List<String>> pathsToSources(@Nonnull Set<String> roots,

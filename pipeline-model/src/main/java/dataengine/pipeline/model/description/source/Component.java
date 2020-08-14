@@ -12,12 +12,15 @@ import dataengine.pipeline.model.description.source.component.*;
         @JsonSubTypes.Type(value = BatchSource.class, name = "batchSource"),
         @JsonSubTypes.Type(value = SqlSource.class, name = "sqlSource"),
         @JsonSubTypes.Type(value = StreamSource.class, name = "streamSource"),
+
         // transformation with single input
         @JsonSubTypes.Type(value = Encode.class, name = "encode"),
-        // transformation with multiple inputs
+
+        // transformation with many inputs
         @JsonSubTypes.Type(value = Merge.class, name = "merge"),
         @JsonSubTypes.Type(value = Union.class, name = "union"),
         @JsonSubTypes.Type(value = Sql.class, name = "sql"),
+
         // placeholders
         @JsonSubTypes.Type(value = PlaceholderSchemaComponent.class, name = "placeholder")
 })

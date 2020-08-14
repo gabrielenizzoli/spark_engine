@@ -27,10 +27,10 @@ public class Transformations {
     }
 
     public static <S> DataTransformation<S, Row> encodeAsRow() {
-        return d -> {
-            if (Row.class.isAssignableFrom(d.encoder().clsTag().runtimeClass()))
-                return (Dataset<Row>)d;
-            return d.toDF();
+        return dataset -> {
+            if (Row.class.isAssignableFrom(dataset.encoder().clsTag().runtimeClass()))
+                return (Dataset<Row>)dataset;
+            return dataset.toDF();
         };
     }
 
