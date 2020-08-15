@@ -6,8 +6,6 @@ import dataengine.spark.sql.PlanMapperException;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
-import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.catalyst.FunctionIdentifier;
 import org.apache.spark.sql.catalyst.analysis.FunctionRegistry;
 import org.apache.spark.sql.catalyst.analysis.UnresolvedFunction;
 import org.apache.spark.sql.catalyst.expressions.Expression;
@@ -35,17 +33,32 @@ public class FunctionResolver implements LogicalPlanMapper {
             return expressionResolver(udf.getName(), new UdfExpressionResolver(udf));
         }
 
-        public FunctionResolverBuilder udfs(@Nullable Collection<Udf> udfCollection) {
-            if (udfCollection == null)
+        public FunctionResolverBuilder udaf(@Nullable Udaf udaf) {
+            if (udaf == null)
                 return this;
-            udfCollection.forEach(this::udf);
+            return expressionResolver(udaf.getName(), new UdafExpressionResolver(udaf));
+        }
+
+        public FunctionResolverBuilder sqlFunction(@Nullable SqlFunction sqlFunction) {
+            if (sqlFunction instanceof Udf)
+                return udf((Udf)sqlFunction);
+            if (sqlFunction instanceof Udaf)
+                return udaf((Udaf)sqlFunction);
+            // TODO manage exception
             return this;
         }
 
-        public FunctionResolverBuilder udfs(@Nullable UdfCollection udfCollection) {
-            if (udfCollection == null)
+        public FunctionResolverBuilder sqlFunctions(@Nullable Collection<SqlFunction> sqlFunctionCollection) {
+            if (sqlFunctionCollection == null)
                 return this;
-            return udfs(udfCollection.getUdfs());
+            sqlFunctionCollection.forEach(this::sqlFunction);
+            return this;
+        }
+
+        public FunctionResolverBuilder sqlFunctions(@Nullable SqlFunctionCollection sqlFunctionCollection) {
+            if (sqlFunctionCollection == null)
+                return this;
+            return sqlFunctions(sqlFunctionCollection.getSqlFunctions());
         }
 
     }
@@ -58,9 +71,9 @@ public class FunctionResolver implements LogicalPlanMapper {
             if (expression instanceof UnresolvedFunction) {
                 UnresolvedFunction unresolvedFunction = (UnresolvedFunction) expression;
                 String name = unresolvedFunction.name().funcName();
-                ExpressionResolver udfFactory = expressionResolvers.get(name);
-                if (udfFactory != null) {
-                    expression = udfFactory.resolve(unresolvedFunction);
+                ExpressionResolver expressionResolver = expressionResolvers.get(name);
+                if (expressionResolver != null) {
+                    expression = expressionResolver.resolve(unresolvedFunction);
                 } else if (!FunctionRegistry.expressions().keySet().contains(name)) {
                     throw new FunctionResolverException("can't resolve function " + name + " in expression " + expression);
                 }

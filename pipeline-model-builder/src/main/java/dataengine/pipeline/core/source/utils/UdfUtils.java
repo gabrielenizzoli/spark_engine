@@ -3,8 +3,8 @@ package dataengine.pipeline.core.source.utils;
 import dataengine.pipeline.core.source.factory.DataSourceFactoryException;
 import dataengine.pipeline.model.description.udf.UdfLibrary;
 import dataengine.pipeline.model.description.udf.UdfList;
-import dataengine.spark.sql.udf.Udf;
-import dataengine.spark.sql.udf.UdfCollection;
+import dataengine.spark.sql.udf.SqlFunction;
+import dataengine.spark.sql.udf.SqlFunctionCollection;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -13,32 +13,32 @@ import java.util.List;
 
 public class UdfUtils {
 
-    public static UdfCollection buildUdfCollection(@Nullable UdfLibrary udfLibrary)
+    public static SqlFunctionCollection buildSqlFunctionCollection(@Nullable UdfLibrary udfLibrary)
             throws DataSourceFactoryException {
         if (udfLibrary == null) {
             return null;
         } else if (udfLibrary instanceof UdfList) {
             UdfList udfList = (UdfList) udfLibrary;
-            List<Udf> udfs = new ArrayList<>(udfList.getOfClasses().size());
-            for (String udfClass : udfList.getOfClasses()) {
-                udfs.add(getUdf(udfClass));
+            List<SqlFunction> sqlFunctions = new ArrayList<>(udfList.getOfClasses().size());
+            for (String sqlFunctionClass : udfList.getOfClasses()) {
+                sqlFunctions.add(getSqlFunction(sqlFunctionClass));
             }
-            return () -> udfs;
+            return () -> sqlFunctions;
         }
         throw new DataSourceFactoryException(udfLibrary + " udf library not managed");
 
     }
 
     @Nonnull
-    public static Udf getUdf(String udfClass) throws DataSourceFactoryException {
-        Udf udf = null;
+    public static SqlFunction getSqlFunction(String sqlFunctionClass) throws DataSourceFactoryException {
+        SqlFunction sqlFunction = null;
         try {
-            Class<Udf> c = (Class<Udf>) Class.forName(udfClass);
-             udf = c.newInstance();
+            Class<SqlFunction> c = (Class<SqlFunction>) Class.forName(sqlFunctionClass);
+            sqlFunction = c.newInstance();
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            throw new DataSourceFactoryException("udf class " + udfClass + " has problems creating instance", e);
+            throw new DataSourceFactoryException("udf/udaf class " + sqlFunctionClass + " has problems creating instance", e);
         }
-        return udf;
+        return sqlFunction;
     }
 
 }

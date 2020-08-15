@@ -1,14 +1,13 @@
 package dataengine.pipeline.core.source.impl;
 
 import dataengine.pipeline.core.source.DataSource;
-import dataengine.spark.sql.udf.UdfCollection;
+import dataengine.spark.sql.udf.SqlFunctionCollection;
 import dataengine.spark.transformation.SqlTransformations;
 import lombok.Builder;
 import lombok.Value;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoder;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,7 +20,7 @@ public class SparkSqlSource<T> implements DataSource<T> {
     @Nonnull
     String sql;
     @Nullable
-    UdfCollection udfCollection;
+    SqlFunctionCollection sqlFunctionCollection;
     @Nullable
     Encoder<T> encoder;
 
@@ -34,7 +33,7 @@ public class SparkSqlSource<T> implements DataSource<T> {
     }
 
     private Dataset<Row> getRowDataset() {
-        return SqlTransformations.sqlSource(sql, udfCollection);
+        return SqlTransformations.sqlSource(sql, sqlFunctionCollection);
     }
 
 }

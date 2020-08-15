@@ -4,12 +4,8 @@ import org.apache.spark.sql.api.java.*;
 import org.apache.spark.sql.types.DataType;
 
 import javax.annotation.Nonnull;
-import java.io.Serializable;
 
-public interface Udf extends Serializable {
-
-    @Nonnull
-    String getName();
+public interface Udf extends SqlFunction {
 
     @Nonnull
     DataType getReturnType();
