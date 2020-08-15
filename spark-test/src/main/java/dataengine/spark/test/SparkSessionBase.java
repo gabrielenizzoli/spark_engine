@@ -16,16 +16,13 @@ public class SparkSessionBase {
         windowsNoisyLogsWorkaround();
         //if (SparkSession.getActiveSession().nonEmpty())
         //    throw new IOException("session already exists");
-        sparkSession = SparkSession.builder().master("local").getOrCreate();
+        sparkSession = SparkSession.builder().master("local").config("spark.sql.streaming.forceDeleteTempCheckpointLocation", true).getOrCreate();
     }
 
     private static void windowsNoisyLogsWorkaround() {
-        // workaround to remove noisy test info for windows
         try {
-            File workaround = new File(".");
+            File workaround = new File(System.getenv("HADOOP_HOME")).getCanonicalFile();
             System.getProperties().put("hadoop.home.dir", workaround.getAbsolutePath());
-            new File("./bin").mkdirs();
-            new File("./bin/winutils.exe").createNewFile();
         } catch (Exception ignore) {
             // just ignore any issue, downside is more noise
         }
