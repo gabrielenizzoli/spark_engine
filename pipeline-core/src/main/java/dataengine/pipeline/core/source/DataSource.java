@@ -1,15 +1,19 @@
 package dataengine.pipeline.core.source;
 
 import dataengine.pipeline.core.sink.DataSink;
+import dataengine.pipeline.core.sink.impl.DataSinkShow;
 import dataengine.spark.transformation.DataTransformation;
 import dataengine.spark.transformation.DataTransformation2;
+import dataengine.spark.transformation.SqlTransformations;
 import dataengine.spark.transformation.Transformations;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoder;
 import org.apache.spark.sql.Row;
 import org.apache.spark.storage.StorageLevel;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public interface DataSource<T> extends Supplier<Dataset<T>> {
@@ -71,8 +75,27 @@ public interface DataSource<T> extends Supplier<Dataset<T>> {
         return DataSourceMerge.reduce(this, otherDataSources, reducer);
     }
 
+    default DataSource<T> union(DataSource<T>... otherDataSources) {
+        return reduce(Arrays.asList(otherDataSources), Dataset::union);
+    }
+
     default DataSource<T> union(List<DataSource<T>> otherDataSources) {
         return reduce(otherDataSources, Dataset::union);
+    }
+
+    default DataSource<T> peek(Consumer<DataSource<T>> peeker) {
+        peeker.accept(this);
+        return this;
+    }
+
+    // ==== UTILITIES ====
+
+    default void show() {
+        writeTo(new DataSinkShow<>());
+    }
+
+    default DataSource<Row> sql(String sql) {
+        return transform(SqlTransformations.sql("source", sql));
     }
 
 }

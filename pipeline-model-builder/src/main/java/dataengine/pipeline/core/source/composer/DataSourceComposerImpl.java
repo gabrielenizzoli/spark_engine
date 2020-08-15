@@ -2,11 +2,11 @@ package dataengine.pipeline.core.source.composer;
 
 import dataengine.pipeline.core.source.DataSource;
 import dataengine.pipeline.core.source.GraphException;
-import dataengine.pipeline.core.utils.GraphUtils;
 import dataengine.pipeline.core.source.factory.DataSourceFactories;
 import dataengine.pipeline.core.source.factory.DataSourceFactoryException;
-import dataengine.pipeline.core.source.utils.EncoderUtils;
 import dataengine.pipeline.core.source.impl.DataSourceReference;
+import dataengine.pipeline.core.source.utils.EncoderUtils;
+import dataengine.pipeline.core.utils.GraphUtils;
 import dataengine.pipeline.model.description.encoder.DataEncoder;
 import dataengine.pipeline.model.description.source.*;
 import lombok.AccessLevel;
@@ -128,17 +128,6 @@ public class DataSourceComposerImpl implements DataSourceComposer {
         return componentLookup.get();
     }
 
-    @Nonnull
-    private Set<String> getComponentDependencies(Component component) {
-        if (component instanceof TransformationComponentWithMultipleInputs) {
-            return new HashSet<>(((TransformationComponentWithMultipleInputs) component).getUsing());
-        }
-        if (component instanceof TransformationComponentWithSingleInput) {
-            return Collections.singleton(((TransformationComponentWithSingleInput) component).getUsing());
-        }
-        return Collections.emptySet();
-    }
-
     @Nullable
     private StructType getComponentSchema(Component component) throws DataSourceFactoryException {
         StructType schema = null;
@@ -152,10 +141,22 @@ public class DataSourceComposerImpl implements DataSourceComposer {
             SchemaComponent schemaComponent = (SchemaComponent) component;
             String schemaDdl = schemaComponent.getSchema();
             if (StringUtils.isNotBlank(schemaDdl)) {
-                schema = StructType.fromDDL(schemaComponent.getSchema());
+                // TODO may throw exception
+                schema = StructType.fromDDL(schemaDdl);
             }
         }
         return schema;
+    }
+
+    @Nonnull
+    private Set<String> getComponentDependencies(Component component) {
+        if (component instanceof TransformationComponentWithMultipleInputs) {
+            return new HashSet<>(((TransformationComponentWithMultipleInputs) component).getUsing());
+        }
+        if (component instanceof TransformationComponentWithSingleInput) {
+            return Collections.singleton(((TransformationComponentWithSingleInput) component).getUsing());
+        }
+        return Collections.emptySet();
     }
 
 }

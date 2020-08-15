@@ -5,7 +5,7 @@ import dataengine.spark.sql.PlanMapperException;
 import dataengine.spark.sql.SparkSqlPlanMapper;
 import dataengine.spark.sql.relation.RelationResolver;
 import dataengine.spark.sql.udf.FunctionResolver;
-import dataengine.spark.sql.udf.UdfCollection;
+import dataengine.spark.sql.udf.SqlFunctionCollection;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -37,8 +37,8 @@ public class SqlTransformations {
         }
     }
 
-    public static Dataset<Row> sqlSource(@Nonnull String sql, @Nullable UdfCollection udfCollection) {
-        SparkSqlPlanMapper resolver = udfCollection == null ? null : planResolvers(FunctionResolver.builder().udfs(udfCollection).build());
+    public static Dataset<Row> sqlSource(@Nonnull String sql, @Nullable SqlFunctionCollection sqlFunctionCollection) {
+        SparkSqlPlanMapper resolver = sqlFunctionCollection == null ? null : planResolvers(FunctionResolver.builder().sqlFunctions(sqlFunctionCollection).build());
         return getRowDataset(resolver, sql);
     }
 
@@ -48,11 +48,11 @@ public class SqlTransformations {
 
     public static <S> DataTransformation<S, Row> sql(@Nonnull String sourceName1,
                                                      @Nonnull String sql,
-                                                     @Nullable UdfCollection udfCollection) {
+                                                     @Nullable SqlFunctionCollection sqlFunctionCollection) {
         return (s1) -> {
             SparkSqlPlanMapper resolver = planResolvers(
                     RelationResolver.builder().plan(sourceName1, s1.logicalPlan()).build(),
-                    FunctionResolver.builder().udfs(udfCollection).build());
+                    FunctionResolver.builder().sqlFunctions(sqlFunctionCollection).build());
             return getRowDataset(resolver, sql);
         };
     }
@@ -64,7 +64,7 @@ public class SqlTransformations {
 
     public static DataTransformationN<Row, Row> sqlMerge(@Nonnull List<String> sourceNames,
                                                          @Nonnull String sql,
-                                                         @Nullable UdfCollection udfCollection) {
+                                                         @Nullable SqlFunctionCollection sqlFunctionCollection) {
         return (datasets) -> {
 
             if (datasets.size() != sourceNames.size()) {
@@ -77,7 +77,7 @@ public class SqlTransformations {
             RelationResolver relationResolver = relationResolverBuilder.build();
 
             // resolve udfs
-            FunctionResolver functionResolver = FunctionResolver.builder().udfs(udfCollection).build();
+            FunctionResolver functionResolver = FunctionResolver.builder().sqlFunctions(sqlFunctionCollection).build();
 
             // create resolver for logical plan
             SparkSqlPlanMapper resolver = planResolvers(relationResolver, functionResolver);
