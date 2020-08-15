@@ -1,12 +1,19 @@
 package dataengine.pipeline.model.builder.source;
 
 import dataengine.pipeline.core.sink.impl.DataSinkCollectRows;
+import dataengine.pipeline.core.sink.impl.SinkFormat;
+import dataengine.pipeline.core.sink.impl.SparkStreamSink;
 import dataengine.pipeline.core.source.composer.DataSourceComposer;
 import dataengine.pipeline.core.source.composer.DataSourceComposerException;
 import dataengine.pipeline.core.source.composer.DataSourceComposerImpl;
 import dataengine.pipeline.model.description.source.ComponentCatalog;
+import dataengine.pipeline.model.description.source.component.Encode;
 import dataengine.spark.test.SparkSessionBase;
+import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.streaming.OutputMode;
+import org.apache.spark.sql.streaming.StreamingQueryException;
+import org.apache.spark.sql.streaming.Trigger;
 import org.apache.spark.storage.StorageLevel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -48,9 +55,7 @@ class DataSourceComposerImplTest extends SparkSessionBase {
 
         // when
         DataSinkCollectRows<Row> dataSink = new DataSinkCollectRows<>();
-        dataSourceComposer.lookup("tx")
-                .cache(StorageLevel.MEMORY_ONLY())
-                .encodeAsRow().writeTo(dataSink);
+        dataSourceComposer.lookup("tx").encodeAsRow().writeTo(dataSink);
 
         // then
         Map<String, Double> avgs = dataSink.getRows().stream()
@@ -68,6 +73,33 @@ class DataSourceComposerImplTest extends SparkSessionBase {
         avgsExpected.put("d", 2.0);
 
         Assertions.assertEquals(avgsExpected, avgs);
+
+    }
+
+    @Test
+    void testStream() throws DataSourceComposerException, StreamingQueryException {
+
+        // given
+        ComponentCatalog componentCatalog = TestUtils.getComponentCatalog("testStreamComponentsCatalog");
+        DataSourceComposer dataSourceComposer = DataSourceComposerImpl.ofCatalog(componentCatalog);
+
+        // when
+        SparkStreamSink<Row> sparkSink = SparkStreamSink.<Row>builder()
+                .queryName("memoryTable")
+                .format(SinkFormat.builder().format("memory").build())
+                .trigger(Trigger.ProcessingTime(1000))
+                .outputMode(OutputMode.Append())
+                .build();
+        dataSourceComposer.lookup("tx").encodeAsRow().writeTo(sparkSink);
+        sparkSession.streams().awaitAnyTermination(5000);
+
+        // then - at least one event is recorded
+        long count = sparkSession.sql("select count(*) as count from memoryTable").as(Encoders.LONG()).collectAsList().get(0);
+        Assertions.assertTrue(count > 0);
+
+        // then - udf works ok
+        int casesWhereUdfIsWrong = sparkSession.sql("select value, valuePlusOne from memoryTable where value != valuePlusOne -1").collectAsList().size();
+        Assertions.assertEquals(0, casesWhereUdfIsWrong);
 
     }
 

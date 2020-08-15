@@ -32,11 +32,17 @@ public class SinkFormat {
     }
 
     <T> DataFrameWriter<T> configureBatch(DataFrameWriter<T> writer) {
-        return writer.format(format).options(options).partitionBy(partitionColumns.stream().toArray(String[]::new));
+        writer = writer.format(format).options(options);
+        if (!partitionColumns.isEmpty())
+            writer = writer.partitionBy(partitionColumns.stream().toArray(String[]::new));
+        return writer;
     }
 
     <T> DataStreamWriter<T> configureStream(DataStreamWriter<T> writer) {
-        return writer.format(format).options(options).partitionBy(partitionColumns.stream().toArray(String[]::new));
+        writer = writer.format(format).options(options);
+        if (!partitionColumns.isEmpty())
+            writer = writer.partitionBy(partitionColumns.stream().toArray(String[]::new));
+        return writer;
     }
 
 }
