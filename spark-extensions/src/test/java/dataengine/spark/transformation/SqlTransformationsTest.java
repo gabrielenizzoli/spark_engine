@@ -7,7 +7,6 @@ import dataengine.spark.sql.udf.Udaf;
 import dataengine.spark.sql.udf.Udf;
 import dataengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.*;
-import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 import org.apache.spark.sql.expressions.Aggregator;
 import org.apache.spark.sql.types.DataTypes;
 import org.junit.jupiter.api.Test;
@@ -125,22 +124,6 @@ class SqlTransformationsTest extends SparkSessionBase {
         public String getName() {
             return "summer";
         }
-    }
-
-    @Test
-    public void test() throws Throwable {
-        sparkSession.createDataFrame(
-                Arrays.asList(RowFactory.create("a", 1), RowFactory.create("a", 2), RowFactory.create("b", 1)),
-                DataTypes.createStructType(Arrays.asList(
-                        DataTypes.createStructField("key", DataTypes.StringType, true),
-                        DataTypes.createStructField("value", DataTypes.IntegerType, true)
-                ))).createOrReplaceTempView("table");
-
-        sparkSession.udf().register("stuff", org.apache.spark.sql.functions.udaf(new IntegerSummer(), Encoders.INT()));
-
-        LogicalPlan logicalPlan = sparkSession.sql("select key, summer(value) from table group by key").logicalPlan();
-
-        System.out.println(logicalPlan);
     }
 
     @Test
