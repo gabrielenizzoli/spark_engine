@@ -1,7 +1,6 @@
 package dataengine.pipeline.model.builder.source;
 
 import dataengine.spark.sql.udf.Udf;
-import org.apache.spark.sql.api.java.UDF1;
 import org.apache.spark.sql.api.java.UDF2;
 import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;

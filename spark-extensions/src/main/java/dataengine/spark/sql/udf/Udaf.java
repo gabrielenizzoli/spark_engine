@@ -5,12 +5,11 @@ import org.apache.spark.sql.expressions.Aggregator;
 
 import javax.annotation.Nonnull;
 
-public interface Udaf<IN, OUT, BUF> extends SqlFunction {
+public interface Udaf<IN, BUF, OUT> extends SqlFunction {
 
-    @Nonnull
     Encoder<IN> getInputEncoder();
 
     @Nonnull
-    Aggregator<IN, OUT, BUF> getAggregator();
+    Aggregator<IN, BUF, OUT> getAggregator();
 
 }

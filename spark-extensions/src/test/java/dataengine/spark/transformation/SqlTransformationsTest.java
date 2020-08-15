@@ -3,11 +3,10 @@ package dataengine.spark.transformation;
 import dataengine.spark.sql.relation.RelationResolverException;
 import dataengine.spark.sql.udf.FunctionResolverException;
 import dataengine.spark.sql.udf.SqlFunctionCollection;
-import dataengine.spark.sql.udf.Udaf;
+import dataengine.spark.sql.udf.UdafAggregator;
 import dataengine.spark.sql.udf.Udf;
 import dataengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.*;
-import org.apache.spark.sql.expressions.Aggregator;
 import org.apache.spark.sql.types.DataTypes;
 import org.junit.jupiter.api.Test;
 import scala.Tuple2;
@@ -71,7 +70,13 @@ class SqlTransformationsTest extends SparkSessionBase {
 
     }
 
-    public static class IntegerSummer extends Aggregator<Integer, Integer, Integer> {
+    public static class IntegerSummer extends UdafAggregator<Integer, Integer, Integer> {
+
+        @Nonnull
+        @Override
+        public String getName() {
+            return "summer";
+        }
 
         @Override
         public Integer zero() {
@@ -79,8 +84,8 @@ class SqlTransformationsTest extends SparkSessionBase {
         }
 
         @Override
-        public Integer reduce(Integer b, Integer a) {
-            return a + b;
+        public Integer reduce(Integer input, Integer buffer) {
+            return buffer + input;
         }
 
         @Override
@@ -89,8 +94,13 @@ class SqlTransformationsTest extends SparkSessionBase {
         }
 
         @Override
-        public Integer finish(Integer reduction) {
-            return reduction;
+        public Integer finish(Integer buffer) {
+            return buffer;
+        }
+
+        @Override
+        public Encoder<Integer> inputEncoder() {
+            return Encoders.INT();
         }
 
         @Override
@@ -103,27 +113,6 @@ class SqlTransformationsTest extends SparkSessionBase {
             return Encoders.INT();
         }
 
-    }
-
-    public static class SummerUdaf implements Udaf<Integer, Integer, Integer> {
-
-        @Nonnull
-        @Override
-        public Encoder<Integer> getInputEncoder() {
-            return Encoders.INT();
-        }
-
-        @Nonnull
-        @Override
-        public Aggregator<Integer, Integer, Integer> getAggregator() {
-            return new IntegerSummer();
-        }
-
-        @Nonnull
-        @Override
-        public String getName() {
-            return "summer";
-        }
     }
 
     @Test
@@ -142,7 +131,7 @@ class SqlTransformationsTest extends SparkSessionBase {
                 "select key, addOne(summer(addOne(value))) from table group by key",
                 SqlFunctionCollection.of(
                         Udf.<Integer, Integer>ofUdf1("addOne", DataTypes.IntegerType, i -> i + 1),
-                        new SummerUdaf())
+                        new IntegerSummer())
         );
 
         // when

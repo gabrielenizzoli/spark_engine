@@ -1,6 +1,5 @@
 package dataengine.pipeline.core.source.factory;
 
-import dataengine.pipeline.core.source.factory.DataSourceFactoryException;
 import dataengine.pipeline.model.description.source.TransformationComponentWithMultipleInputs;
 import dataengine.pipeline.model.description.source.TransformationComponentWithSingleInput;
 import org.apache.commons.lang3.StringUtils;

@@ -7,8 +7,6 @@ import org.apache.spark.sql.catalyst.encoders.ExpressionEncoder;
 import org.apache.spark.sql.catalyst.expressions.Expression;
 import org.apache.spark.sql.catalyst.expressions.NamedExpression;
 import org.apache.spark.sql.catalyst.expressions.aggregate.AggregateExpression;
-import org.apache.spark.sql.catalyst.expressions.aggregate.AggregateMode;
-import org.apache.spark.sql.catalyst.expressions.aggregate.Complete;
 import org.apache.spark.sql.catalyst.expressions.aggregate.Complete$;
 import org.apache.spark.sql.execution.aggregate.ScalaAggregator;
 import scala.Option;
