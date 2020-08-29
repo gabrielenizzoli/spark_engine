@@ -1,0 +1,5 @@
+show:
+  type: show
+
+collect:
+  type: collect

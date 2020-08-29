@@ -42,6 +42,7 @@ public class DataSourceComposerImpl implements DataSourceComposer {
         @Nonnull
         Set<String> parentDataSourceNames;
 
+        @Nonnull
         @Override
         public DataSource<?> lookup(String dataSourceName) throws DataSourceComposerException {
             if (!parentDataSourceNames.contains(dataSourceName))

@@ -18,8 +18,9 @@ import java.util.function.Supplier;
 
 public interface DataSource<T> extends Supplier<Dataset<T>> {
 
-    default void writeTo(DataSink<T> destination) {
+    default <S extends DataSink<T>> S writeTo(S destination) {
         destination.accept(get());
+        return destination;
     }
 
     default <D> DataSource<D> transform(DataTransformation<T, D> transformation) {

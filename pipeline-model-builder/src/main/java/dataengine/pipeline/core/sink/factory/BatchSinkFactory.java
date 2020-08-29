@@ -1,4 +1,4 @@
-package dataengine.pipeline.model.builder.sink;
+package dataengine.pipeline.core.sink.factory;
 
 import dataengine.pipeline.core.sink.DataSink;
 import dataengine.pipeline.core.sink.factory.DataSinkFactory;

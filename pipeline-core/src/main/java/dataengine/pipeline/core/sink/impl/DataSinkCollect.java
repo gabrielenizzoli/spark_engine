@@ -11,7 +11,7 @@ import java.util.List;
 
 @EqualsAndHashCode
 @ToString
-public class DataSinkCollectRows<T> implements DataSink<T> {
+public class DataSinkCollect<T> implements DataSink<T> {
 
     @Getter
     private final List<T> rows = new LinkedList<>();

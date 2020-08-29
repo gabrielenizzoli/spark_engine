@@ -1,7 +1,5 @@
-package dataengine.pipeline.model.builder.sink;
+package dataengine.pipeline.core.sink.factory;
 
-import dataengine.pipeline.core.sink.factory.DataSinkFactory;
-import dataengine.pipeline.core.sink.factory.DataSinkFactoryException;
 import dataengine.pipeline.model.description.sink.BatchSink;
 import dataengine.pipeline.model.description.sink.ShowSink;
 import dataengine.pipeline.model.description.sink.Sink;
