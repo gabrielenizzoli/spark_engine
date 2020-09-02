@@ -33,19 +33,4 @@ public class Transformations {
         };
     }
 
-    public static <S> DataTransformation<S, S> store() {
-        return new DataTransformation<S, S>() {
-
-            Dataset<S> storedDataset = null;
-
-            @Override
-            public Dataset<S> apply(Dataset<S> dataset) {
-                if (storedDataset != null)
-                    return storedDataset;
-                storedDataset = dataset;
-                return storedDataset;
-            }
-        };
-    }
-
 }

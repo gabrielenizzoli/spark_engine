@@ -1,13 +1,18 @@
 package dataengine.pipeline.model.builder.source;
 
-import dataengine.pipeline.core.sink.impl.DataSinkCollectRows;
+import dataengine.pipeline.core.Pipeline;
+import dataengine.pipeline.core.sink.DataSink;
+import dataengine.pipeline.core.sink.composer.DataSinkComposer;
+import dataengine.pipeline.core.sink.composer.DataSinkComposerException;
+import dataengine.pipeline.core.sink.composer.DataSinkComposerImpl;
+import dataengine.pipeline.core.sink.factory.DataSinkFactoryException;
+import dataengine.pipeline.core.sink.impl.DataSinkCollect;
 import dataengine.pipeline.core.sink.impl.SinkFormat;
 import dataengine.pipeline.core.sink.impl.SparkStreamSink;
 import dataengine.pipeline.core.source.composer.DataSourceComposer;
 import dataengine.pipeline.core.source.composer.DataSourceComposerException;
 import dataengine.pipeline.core.source.composer.DataSourceComposerImpl;
 import dataengine.pipeline.model.description.source.ComponentCatalog;
-import dataengine.pipeline.model.description.source.component.Encode;
 import dataengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
@@ -20,21 +25,20 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 class DataSourceComposerImplTest extends SparkSessionBase {
 
     @Test
-    void testBuilder() throws DataSourceComposerException {
+    void testBuilder() throws DataSourceComposerException, DataSinkComposerException {
 
         // given
-        ComponentCatalog componentCatalog = TestUtils.getComponentCatalog(null);
-        DataSourceComposer dataSourceComposer = DataSourceComposerImpl.ofCatalog(componentCatalog);
+        Pipeline pipeline = TestUtils.getPipeline(null);
 
         // when
-        DataSinkCollectRows<Row> dataSink = new DataSinkCollectRows<>();
-        dataSourceComposer.lookup("tx").encodeAsRow().writeTo(dataSink);
+        DataSinkCollect<Row> dataSink = (DataSinkCollect<Row>)pipeline.<Row>run("tx", "collect");
 
         // then
         Assertions.assertEquals(
@@ -47,15 +51,13 @@ class DataSourceComposerImplTest extends SparkSessionBase {
     }
 
     @Test
-    void testBuilderWithAggregation() throws DataSourceComposerException {
+    void testBuilderWithAggregation() throws DataSourceComposerException, DataSinkFactoryException, DataSinkComposerException {
 
         // given
-        ComponentCatalog componentCatalog = TestUtils.getComponentCatalog("testAggregationComponentsCatalog");
-        DataSourceComposer dataSourceComposer = DataSourceComposerImpl.ofCatalog(componentCatalog);
+        Pipeline pipeline = TestUtils.getPipeline("testAggregationComponentsCatalog");
 
         // when
-        DataSinkCollectRows<Row> dataSink = new DataSinkCollectRows<>();
-        dataSourceComposer.lookup("tx").encodeAsRow().writeTo(dataSink);
+        DataSinkCollect<Row> dataSink = (DataSinkCollect<Row>)pipeline.<Row>run("tx", "collect");
 
         // then
         Map<String, Double> avgs = dataSink.getRows().stream()
@@ -77,20 +79,13 @@ class DataSourceComposerImplTest extends SparkSessionBase {
     }
 
     @Test
-    void testStream() throws DataSourceComposerException, StreamingQueryException {
+    void testStream() throws DataSourceComposerException, StreamingQueryException, DataSinkComposerException {
 
         // given
-        ComponentCatalog componentCatalog = TestUtils.getComponentCatalog("testStreamComponentsCatalog");
-        DataSourceComposer dataSourceComposer = DataSourceComposerImpl.ofCatalog(componentCatalog);
+        Pipeline pipeline = TestUtils.getPipeline("testStreamComponentsCatalog");
 
         // when
-        SparkStreamSink<Row> sparkSink = SparkStreamSink.<Row>builder()
-                .queryName("memoryTable")
-                .format(SinkFormat.builder().format("memory").build())
-                .trigger(Trigger.ProcessingTime(1000))
-                .outputMode(OutputMode.Append())
-                .build();
-        dataSourceComposer.lookup("tx").encodeAsRow().writeTo(sparkSink);
+        pipeline.<Row>run("tx", "stream");
         sparkSession.streams().awaitAnyTermination(5000);
 
         // then - at least one event is recorded

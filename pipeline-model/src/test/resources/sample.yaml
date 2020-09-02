@@ -33,12 +33,12 @@ sinks:
     name: queryNameHere
     format: kafka
     options: { path: 'abc' }
-    trigger: { milliseconds: 60 }
+    trigger: { time: 60 }
     mode: APPEND
   out3:
     type: foreachBatch
     name: out3
-    trigger: { milliseconds: 60 }
+    trigger: { time: 60 }
     mode: APPEND
     batches:
       - source: src

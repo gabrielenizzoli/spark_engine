@@ -5,22 +5,28 @@ import lombok.Builder;
 import lombok.Value;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
 @JsonDeserialize(builder = StreamSink.Builder.class)
-public class StreamSink implements Sink {
+public class StreamSink implements Sink, SinkWithFormat {
 
     @Nonnull
     String name;
     @Nonnull
     String format;
-    @Nonnull
+    @Nullable
+    String checkpointLocation;
+    @Nullable
     Map<String, String> options;
-    @Nonnull
+    @Nullable
+    List<String> partitionColumns;
+    @Nullable
     Trigger trigger;
-    @Nonnull
+    @Nullable
     OutputMode mode;
 
     public enum OutputMode {

@@ -11,8 +11,6 @@ import javax.annotation.Nonnull;
 @JsonDeserialize(builder = ShowSink.Builder.class)
 public class ShowSink implements Sink {
 
-    @Nonnull
-    String using;
     @lombok.Builder.Default
     int numRows = 20;
     @lombok.Builder.Default

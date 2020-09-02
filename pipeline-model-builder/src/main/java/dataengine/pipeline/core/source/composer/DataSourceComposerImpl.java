@@ -42,6 +42,7 @@ public class DataSourceComposerImpl implements DataSourceComposer {
         @Nonnull
         Set<String> parentDataSourceNames;
 
+        @Nonnull
         @Override
         public DataSource<?> lookup(String dataSourceName) throws DataSourceComposerException {
             if (!parentDataSourceNames.contains(dataSourceName))
@@ -53,11 +54,11 @@ public class DataSourceComposerImpl implements DataSourceComposer {
 
     @Override
     @Nonnull
-    public DataSource<?> lookup(String dataSourceName) throws DataSourceComposerException {
+    public <T> DataSource<T> lookup(String dataSourceName) throws DataSourceComposerException {
 
         // get from cache
         if (dataSourceInfos.containsKey(dataSourceName))
-            return dataSourceInfos.get(dataSourceName).getDataSource();
+            return (DataSource<T>)dataSourceInfos.get(dataSourceName).getDataSource();
 
         try {
 
@@ -74,7 +75,7 @@ public class DataSourceComposerImpl implements DataSourceComposer {
             dataSourceInfos.clear();
             dataSourceInfos.putAll(stagingDataSourceInfos);
 
-            return dataSourceInfos.get(dataSourceName).getDataSource();
+            return (DataSource<T>)dataSourceInfos.get(dataSourceName).<T>getDataSource();
         } catch (GraphException | DataSourceFactoryException | ComponentCatalogException e) {
             throw new DataSourceComposerException("error while building datasource with name " + dataSourceName, e);
         }
