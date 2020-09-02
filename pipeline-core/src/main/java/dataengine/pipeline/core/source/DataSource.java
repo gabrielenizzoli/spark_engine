@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 
 public interface DataSource<T> extends Supplier<Dataset<T>> {
 
-    default <S extends DataSink<T>> S writeTo(S destination) {
+    default DataSink<T> writeTo(DataSink<T> destination) {
         destination.accept(get());
         return destination;
     }
@@ -35,15 +35,6 @@ public interface DataSource<T> extends Supplier<Dataset<T>> {
      */
     default DataSource<T> cache(StorageLevel storageLevel) {
         return transform(Transformations.cache(storageLevel));
-    }
-
-    /**
-     * DataSource that provides the same Dataset. Note that the Dataset data will not be cached.
-     *
-     * @return stored Dataset
-     */
-    default DataSource<T> store() {
-        return transform(Transformations.store());
     }
 
     default <D> DataSource<D> encodeAs(Encoder<D> encoder) {

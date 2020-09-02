@@ -1,6 +1,10 @@
-package dataengine.pipeline.core.sink.factory;
+package dataengine.pipeline.core.sink.composer;
 
 import dataengine.pipeline.core.sink.DataSink;
+import dataengine.pipeline.core.sink.composer.DataSinkComposer;
+import dataengine.pipeline.core.sink.composer.DataSinkComposerException;
+import dataengine.pipeline.core.sink.factory.*;
+import dataengine.pipeline.core.source.DataSource;
 import dataengine.pipeline.model.description.sink.*;
 import lombok.Value;
 
@@ -8,17 +12,20 @@ import javax.annotation.Nonnull;
 import java.util.Optional;
 
 @Value(staticConstructor = "ofCatalog")
-public class DataSinkFactoryBuilder {
+public class DataSinkComposerImpl implements DataSinkComposer {
 
     @Nonnull
     SinkCatalog sinkCatalog;
 
-    public <T> DataSink<T> lookup(String sinkName) {
+    @Override
+    @Nonnull
+    public <T> DataSink<T> lookup(String sinkName) throws DataSinkComposerException {
 
         try {
             Optional<Sink> sinkOptional = sinkCatalog.lookup(sinkName);
             Sink sink = sinkOptional.orElseThrow(() -> new SinkCatalogException("can't find sink with name " + sinkName));
-            DataSinkFactory<T> factory = getFactory(sink);
+            DataSinkFactory<T> factory = (DataSinkFactory<T>)DataSinkFactories.factoryFor(sink);
+            // TOD shouldit be always not null?
             if (factory != null) {
                 return factory.build();
             }
@@ -30,14 +37,5 @@ public class DataSinkFactoryBuilder {
 
     }
 
-    private <T> DataSinkFactory<T> getFactory(@Nonnull Sink sink) {
-        if (sink instanceof ShowSink) {
-            return new ShowSinkFactory((ShowSink) sink);
-        }
-        if (sink instanceof CollectSink) {
-            return new CollectSinkFactory();
-        }
-        return null;
-    }
 
 }

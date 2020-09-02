@@ -3,3 +3,10 @@ show:
 
 collect:
   type: collect
+
+stream:
+  type: stream
+  name: memoryTable
+  format: memory
+  trigger: { type: milliseconds, time: 1000 }
+  mode: APPEND

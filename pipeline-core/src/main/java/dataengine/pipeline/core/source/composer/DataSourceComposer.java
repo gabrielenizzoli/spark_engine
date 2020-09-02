@@ -8,6 +8,6 @@ import javax.annotation.Nonnull;
 public interface DataSourceComposer {
 
     @Nonnull
-    DataSource<?> lookup(String dataSourceName) throws DataSourceComposerException;
+    <T> DataSource<T> lookup(String dataSourceName) throws DataSourceComposerException;
 
 }

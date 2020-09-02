@@ -3,7 +3,12 @@ package dataengine.pipeline.model.builder.source;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import dataengine.pipeline.core.Pipeline;
+import dataengine.pipeline.core.sink.composer.DataSinkComposer;
+import dataengine.pipeline.core.sink.composer.DataSinkComposerImpl;
 import dataengine.pipeline.core.sink.factory.DataSinkFactory;
+import dataengine.pipeline.core.source.composer.DataSourceComposer;
+import dataengine.pipeline.core.source.composer.DataSourceComposerImpl;
 import dataengine.pipeline.model.description.sink.Sink;
 import dataengine.pipeline.model.description.sink.SinkCatalog;
 import dataengine.pipeline.model.description.sink.SinkCatalogException;
@@ -72,6 +77,16 @@ public class TestUtils {
             }
 
         };
+    }
+
+    public static Pipeline getPipeline(@Nullable String resourceName) {
+        DataSourceComposer dataSourceComposer = DataSourceComposerImpl.ofCatalog(TestUtils.getComponentCatalog(resourceName));
+        DataSinkComposer dataSinkComposer = DataSinkComposerImpl.ofCatalog(TestUtils.getSinkCatalog());
+
+        return Pipeline.builder()
+                .dataSourceComposer(dataSourceComposer)
+                .dataSinkComposer(dataSinkComposer)
+                .build();
     }
 
 }

@@ -7,6 +7,7 @@ import org.apache.spark.sql.DataFrameWriter;
 import org.apache.spark.sql.streaming.DataStreamWriter;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -16,11 +17,11 @@ public class SinkFormat {
 
     @Nonnull
     String format;
-    @Nonnull
-    @Singular
+    @Nullable
+    @Singular(ignoreNullCollections = true)
     Map<String, String> options;
-    @Nonnull
-    @Singular
+    @Nullable
+    @Singular(ignoreNullCollections = true)
     List<String> partitionColumns;
 
     public static class Builder {
@@ -32,15 +33,19 @@ public class SinkFormat {
     }
 
     <T> DataFrameWriter<T> configureBatch(DataFrameWriter<T> writer) {
-        writer = writer.format(format).options(options);
-        if (!partitionColumns.isEmpty())
+        writer = writer.format(format);
+        if (options != null && !options.isEmpty())
+            writer = writer.options(options);
+        if (partitionColumns != null && !partitionColumns.isEmpty())
             writer = writer.partitionBy(partitionColumns.stream().toArray(String[]::new));
         return writer;
     }
 
     <T> DataStreamWriter<T> configureStream(DataStreamWriter<T> writer) {
-        writer = writer.format(format).options(options);
-        if (!partitionColumns.isEmpty())
+        writer = writer.format(format);
+        if (options != null && !options.isEmpty())
+            writer = writer.options(options);
+        if (partitionColumns != null && !partitionColumns.isEmpty())
             writer = writer.partitionBy(partitionColumns.stream().toArray(String[]::new));
         return writer;
     }

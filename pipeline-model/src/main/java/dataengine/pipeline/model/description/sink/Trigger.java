@@ -10,7 +10,7 @@ import lombok.Value;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Trigger.TriggerTimeMs.class, name = "milliseconds"),
         @JsonSubTypes.Type(value = Trigger.TriggerOnce.class, name = "once"),
-        @JsonSubTypes.Type(value = Trigger.TriggerContinuous.class, name = "continuous")
+        @JsonSubTypes.Type(value = Trigger.TriggerContinuousMs.class, name = "continuous")
 })
 public interface Trigger {
 
@@ -18,7 +18,7 @@ public interface Trigger {
     @Builder(setterPrefix = "with")
     @JsonDeserialize(builder = TriggerTimeMs.Builder.class)
     class TriggerTimeMs implements Trigger {
-        long milliseconds;
+        long time;
     }
 
     @Value
@@ -29,8 +29,9 @@ public interface Trigger {
 
     @Value
     @Builder(setterPrefix = "with")
-    @JsonDeserialize(builder = TriggerContinuous.Builder.class)
-    class TriggerContinuous implements Trigger {
+    @JsonDeserialize(builder = TriggerContinuousMs.Builder.class)
+    class TriggerContinuousMs implements Trigger {
+        long milliseconds;
     }
 
 }

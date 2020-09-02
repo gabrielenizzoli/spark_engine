@@ -1,6 +1,10 @@
 package dataengine.pipeline.model.builder.source;
 
-import dataengine.pipeline.core.sink.factory.DataSinkFactoryBuilder;
+import dataengine.pipeline.core.Pipeline;
+import dataengine.pipeline.core.sink.DataSink;
+import dataengine.pipeline.core.sink.composer.DataSinkComposer;
+import dataengine.pipeline.core.sink.composer.DataSinkComposerException;
+import dataengine.pipeline.core.sink.composer.DataSinkComposerImpl;
 import dataengine.pipeline.core.sink.factory.DataSinkFactoryException;
 import dataengine.pipeline.core.sink.impl.DataSinkCollect;
 import dataengine.pipeline.core.sink.impl.SinkFormat;
@@ -15,6 +19,7 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.streaming.OutputMode;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.streaming.Trigger;
+import org.apache.spark.storage.StorageLevel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -27,18 +32,13 @@ import java.util.stream.Collectors;
 class DataSourceComposerImplTest extends SparkSessionBase {
 
     @Test
-    void testBuilder() throws DataSourceComposerException {
+    void testBuilder() throws DataSourceComposerException, DataSinkComposerException {
 
         // given
-        ComponentCatalog componentCatalog = TestUtils.getComponentCatalog(null);
-        DataSourceComposer dataSourceComposer = DataSourceComposerImpl.ofCatalog(componentCatalog);
-
-        DataSinkFactoryBuilder dataSinkFactoryBuilder = DataSinkFactoryBuilder
-                .ofCatalog(TestUtils.getSinkCatalog());
+        Pipeline pipeline = TestUtils.getPipeline(null);
 
         // when
-        DataSinkCollect<Row> dataSink = (DataSinkCollect<Row>)dataSinkFactoryBuilder.<Row>lookup("collect");
-        dataSourceComposer.lookup("tx").encodeAsRow().writeTo(dataSink);
+        DataSinkCollect<Row> dataSink = (DataSinkCollect<Row>)pipeline.<Row>run("tx", "collect");
 
         // then
         Assertions.assertEquals(
@@ -51,24 +51,19 @@ class DataSourceComposerImplTest extends SparkSessionBase {
     }
 
     @Test
-    void testBuilderWithAggregation() throws DataSourceComposerException, DataSinkFactoryException {
+    void testBuilderWithAggregation() throws DataSourceComposerException, DataSinkFactoryException, DataSinkComposerException {
 
         // given
-        DataSourceComposer dataSourceComposer = DataSourceComposerImpl
-                .ofCatalog(TestUtils.getComponentCatalog("testAggregationComponentsCatalog"));
-
-        DataSinkFactoryBuilder dataSinkFactoryBuilder = DataSinkFactoryBuilder
-                .ofCatalog(TestUtils.getSinkCatalog());
+        Pipeline pipeline = TestUtils.getPipeline("testAggregationComponentsCatalog");
 
         // when
-        DataSinkCollect<Row> dataSink = (DataSinkCollect<Row>)dataSinkFactoryBuilder.<Row>lookup("collect");
-        List<Row> rows = dataSourceComposer.lookup("tx").encodeAsRow().writeTo(dataSink).getRows();
+        DataSinkCollect<Row> dataSink = (DataSinkCollect<Row>)pipeline.<Row>run("tx", "collect");
 
         // then
-        Map<String, Double> avgs = rows.stream()
+        Map<String, Double> avgs = dataSink.getRows().stream()
                 .collect(Collectors.toMap(r -> r.getString(r.fieldIndex("key")), r -> r.getDouble(r.fieldIndex("avg"))));
 
-        Map<String, Double> avgsBuiltin = rows.stream()
+        Map<String, Double> avgsBuiltin = dataSink.getRows().stream()
                 .collect(Collectors.toMap(r -> r.getString(r.fieldIndex("key")), r -> r.getDouble(r.fieldIndex("avgBuiltin"))));
 
         Assertions.assertEquals(avgsBuiltin, avgs, () -> "test avg function does not match default avg function");
@@ -84,20 +79,13 @@ class DataSourceComposerImplTest extends SparkSessionBase {
     }
 
     @Test
-    void testStream() throws DataSourceComposerException, StreamingQueryException {
+    void testStream() throws DataSourceComposerException, StreamingQueryException, DataSinkComposerException {
 
         // given
-        ComponentCatalog componentCatalog = TestUtils.getComponentCatalog("testStreamComponentsCatalog");
-        DataSourceComposer dataSourceComposer = DataSourceComposerImpl.ofCatalog(componentCatalog);
+        Pipeline pipeline = TestUtils.getPipeline("testStreamComponentsCatalog");
 
         // when
-        SparkStreamSink<Row> sparkSink = SparkStreamSink.<Row>builder()
-                .queryName("memoryTable")
-                .format(SinkFormat.builder().format("memory").build())
-                .trigger(Trigger.ProcessingTime(1000))
-                .outputMode(OutputMode.Append())
-                .build();
-        dataSourceComposer.lookup("tx").encodeAsRow().writeTo(sparkSink);
+        pipeline.<Row>run("tx", "stream");
         sparkSession.streams().awaitAnyTermination(5000);
 
         // then - at least one event is recorded
