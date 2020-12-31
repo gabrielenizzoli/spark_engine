@@ -9,6 +9,13 @@ import java.util.function.Function;
 @FunctionalInterface
 public interface LogicalPlanMapper {
 
+    /**
+     * Maps an input logical plan in an output plan. The plan still needs to be compiled.
+     *
+     * @param logicalPlan The input logical plan
+     * @return The transformed input plan
+     * @throws PlanMapperException In case of abnormal input or operation, an exception may be thrown.
+     */
     LogicalPlan map(LogicalPlan logicalPlan) throws PlanMapperException;
 
     default JavaToScalaFunction1<LogicalPlan, LogicalPlan> asScalaFunction() {

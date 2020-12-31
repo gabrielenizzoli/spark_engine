@@ -1,7 +1,7 @@
 package dataengine.spark.sql;
 
 import dataengine.spark.sql.relation.RelationResolver;
-import dataengine.spark.sql.udf.FunctionResolver;
+import dataengine.spark.sql.function.FunctionResolver;
 import dataengine.spark.sql.udf.Udf;
 import dataengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.Dataset;
@@ -25,28 +25,28 @@ public class SparkSqlPlanMapperTest extends SparkSessionBase {
     public void testSqlUdfsResolver() throws PlanMapperException {
 
         // given
+        Udf udfPlusOne = new Udf() {
+            @Nonnull
+            public String getName() {
+                return "plusOne";
+            }
+
+            @Nonnull
+            public DataType getReturnType() {
+                return DataTypes.IntegerType;
+            }
+
+            public UDF1<Integer, Integer> getUdf1() {
+                return (Integer i) -> i + 1;
+            }
+        };
+
         SparkSqlPlanMapper resolver = SparkSqlPlanMapper.builder()
-                .planMapper(FunctionResolver.builder()
-                        .udf(new Udf() {
-                            @Nonnull
-                            public String getName() {
-                                return "plusOne";
-                            }
-
-                            @Nonnull
-                            public DataType getReturnType() {
-                                return DataTypes.IntegerType;
-                            }
-
-                            public UDF1<Integer, Integer> getUdf1() {
-                                return (Integer i) -> i + 1;
-                            }
-                        })
-                        .build())
+                .planMapper(FunctionResolver.builder().udf(udfPlusOne).build())
                 .build();
 
         // when
-        Dataset<Row> datasetResolved = resolver.mapAsDataset(sparkSession, "select * from (select plusOne(plusOne(-2)) as value, (select plusOne(9)) as ten)");
+        Dataset<Row> datasetResolved = resolver.compileSqlToDataset(sparkSession, "select * from (select plusOne(plusOne(-2)) as value, (select plusOne(9)) as ten)");
 
         // then
         Assertions.assertEquals(Collections.singletonList(0), datasetResolved.select("value").as(Encoders.INT()).collectAsList());
@@ -64,7 +64,7 @@ public class SparkSqlPlanMapperTest extends SparkSessionBase {
 
         // when
         Dataset<Row> datasetResolved = resolver
-                .mapAsDataset(sparkSession, "select * from (select value+1 as valueWithOperation, (select value from table) as valueSubquery from table)");
+                .compileSqlToDataset(sparkSession, "select * from (select value+1 as valueWithOperation, (select value from table) as valueSubquery from table)");
 
         // then
         Assertions.assertEquals(Collections.singletonList(101), datasetResolved.select("valueWithOperation").as(Encoders.INT()).collectAsList());
@@ -75,30 +75,29 @@ public class SparkSqlPlanMapperTest extends SparkSessionBase {
     public void testAllResolvers() throws PlanMapperException {
         // given
         LogicalPlan logicalPlanWithData = sparkSession.sql("select 100 as value").logicalPlan();
+        Udf udf = new Udf() {
+            @Nonnull
+            public String getName() {
+                return "plusOne";
+            }
+
+            @Nonnull
+            public DataType getReturnType() {
+                return DataTypes.IntegerType;
+            }
+
+            public UDF1<Integer, Integer> getUdf1() {
+                return (Integer i) -> i + 1;
+            }
+        };
         SparkSqlPlanMapper resolver = SparkSqlPlanMapper.builder()
                 .planMapper(RelationResolver.builder().plan("table", logicalPlanWithData).build())
-                .planMapper(FunctionResolver.builder()
-                        .udf(new Udf() {
-                            @Nonnull
-                            public String getName() {
-                                return "plusOne";
-                            }
-
-                            @Nonnull
-                            public DataType getReturnType() {
-                                return DataTypes.IntegerType;
-                            }
-
-                            public UDF1<Integer, Integer> getUdf1() {
-                                return (Integer i) -> i + 1;
-                            }
-                        })
-                        .build())
+                .planMapper(FunctionResolver.builder().udf(udf).build())
                 .build();
 
         // when
         Dataset<Row> datasetResolved = resolver
-                .mapAsDataset(sparkSession, "select * from (select value+1 as valueWithOperation, (select plusOne(value) from table) as valueSubquery from table)");
+                .compileSqlToDataset(sparkSession, "select * from (select value+1 as valueWithOperation, (select plusOne(value) from table) as valueSubquery from table)");
 
         // then
         Assertions.assertEquals(Collections.singletonList(101), datasetResolved.select("valueWithOperation").as(Encoders.INT()).collectAsList());

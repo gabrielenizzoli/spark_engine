@@ -1,7 +1,7 @@
 package dataengine.spark.transformation;
 
 import dataengine.spark.sql.relation.RelationResolverException;
-import dataengine.spark.sql.udf.FunctionResolverException;
+import dataengine.spark.sql.function.FunctionResolverException;
 import dataengine.spark.sql.udf.SqlFunctionCollection;
 import dataengine.spark.sql.udf.UdafAggregator;
 import dataengine.spark.sql.udf.Udf;

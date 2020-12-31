@@ -1,8 +1,9 @@
-package dataengine.spark.sql.udf;
+package dataengine.spark.sql.function;
 
 import dataengine.spark.sql.ExpressionMapper;
 import dataengine.spark.sql.LogicalPlanMapper;
 import dataengine.spark.sql.PlanMapperException;
+import dataengine.spark.sql.udf.*;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
@@ -23,27 +24,27 @@ public class FunctionResolver implements LogicalPlanMapper {
 
     @Nonnull
     @Singular
-    Map<String, ExpressionResolver> expressionResolvers;
+    Map<String, UnresolvedFunctionResolver> expressionResolvers;
 
     public static class FunctionResolverBuilder {
 
         public FunctionResolverBuilder udf(@Nullable Udf udf) {
             if (udf == null)
                 return this;
-            return expressionResolver(udf.getName(), new UdfExpressionResolver(udf));
+            return expressionResolver(udf.getName(), new UnresolvedUdfResolver(udf));
         }
 
         public FunctionResolverBuilder udaf(@Nullable Udaf udaf) {
             if (udaf == null)
                 return this;
-            return expressionResolver(udaf.getName(), new UdafExpressionResolver(udaf));
+            return expressionResolver(udaf.getName(), new UnresolvedUdafResolver(udaf));
         }
 
         public FunctionResolverBuilder sqlFunction(@Nullable SqlFunction sqlFunction) {
             if (sqlFunction instanceof Udf)
-                return udf((Udf)sqlFunction);
+                return udf((Udf) sqlFunction);
             if (sqlFunction instanceof Udaf)
-                return udaf((Udaf)sqlFunction);
+                return udaf((Udaf) sqlFunction);
             // TODO manage exception
             return this;
         }
@@ -63,7 +64,7 @@ public class FunctionResolver implements LogicalPlanMapper {
 
     }
 
-    public class UnresolvedFunctionMapper implements ExpressionMapper {
+    private class UnresolvedFunctionMapper implements ExpressionMapper {
 
         @SuppressWarnings("unchecked")
         public Expression map(Expression expression) throws PlanMapperException {
@@ -71,9 +72,9 @@ public class FunctionResolver implements LogicalPlanMapper {
             if (expression instanceof UnresolvedFunction) {
                 UnresolvedFunction unresolvedFunction = (UnresolvedFunction) expression;
                 String name = unresolvedFunction.name().funcName();
-                ExpressionResolver expressionResolver = expressionResolvers.get(name);
-                if (expressionResolver != null) {
-                    expression = expressionResolver.resolve(unresolvedFunction);
+                UnresolvedFunctionResolver unresolvedFunctionResolver = expressionResolvers.get(name);
+                if (unresolvedFunctionResolver != null) {
+                    expression = unresolvedFunctionResolver.resolve(unresolvedFunction);
                 } else if (!FunctionRegistry.expressions().keySet().contains(name)) {
                     throw new FunctionResolverException("can't resolve function " + name + " in expression " + expression);
                 }
@@ -91,12 +92,6 @@ public class FunctionResolver implements LogicalPlanMapper {
     public LogicalPlan map(LogicalPlan logicalPlan) throws PlanMapperException {
         logicalPlan = (LogicalPlan) logicalPlan.mapExpressions(new UnresolvedFunctionMapper().asScalaFunction());
         return logicalPlan.mapChildren(asScalaFunction());
-    }
-
-    public interface ExpressionResolver {
-
-        Expression resolve(UnresolvedFunction unresolvedFunction) throws PlanMapperException;
-
     }
 
 }

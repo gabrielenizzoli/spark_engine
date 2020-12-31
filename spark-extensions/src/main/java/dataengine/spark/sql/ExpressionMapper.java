@@ -9,6 +9,13 @@ import java.util.function.Function;
 @FunctionalInterface
 public interface ExpressionMapper {
 
+    /**
+     * Maps an input expression to an output one.
+     *
+     * @param expression Input expression
+     * @return Transformed expression.
+     * @throws PlanMapperException In case of abnormal input or operation, an exception may be thrown.
+     */
     Expression map(Expression expression) throws PlanMapperException;
 
     default JavaToScalaFunction1<Expression, Expression> asScalaFunction() {

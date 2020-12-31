@@ -22,38 +22,57 @@ public class RelationResolver implements LogicalPlanMapper {
     @Nonnull
     Map<String, LogicalPlan> plans;
 
-    public class PlanExpressionMapper implements ExpressionMapper {
+    @Override
+    public LogicalPlan map(LogicalPlan logicalPlan) throws PlanMapperException {
+
+        if (logicalPlan instanceof UnresolvedRelation) {
+            logicalPlan = resolveUnresolvedRelation(logicalPlan);
+        } else {
+            logicalPlan = resolveUnresolvedExpressions(logicalPlan);
+            logicalPlan = resolvedUnresolvedChildren(logicalPlan);
+        }
+
+        return logicalPlan;
+    }
+
+    @Nonnull
+    private LogicalPlan resolveUnresolvedRelation(LogicalPlan logicalPlan) throws RelationResolverException {
+        UnresolvedRelation unresolvedRelation = (UnresolvedRelation) logicalPlan;
+        String name = unresolvedRelation.tableName();
+        LogicalPlan resolvedRelation = plans.get(name);
+        if (resolvedRelation == null) {
+            throw new RelationResolverException("can't resolve relation " + name + " in plan " + unresolvedRelation);
+        }
+        return resolvedRelation;
+    }
+
+    private LogicalPlan resolveUnresolvedExpressions(LogicalPlan logicalPlan) {
+        return  (LogicalPlan) logicalPlan.mapExpressions(new PlanExpressionMapper(this).asScalaFunction());
+    }
+
+    private LogicalPlan resolvedUnresolvedChildren(LogicalPlan logicalPlan) {
+        return logicalPlan.mapChildren(asScalaFunction());
+    }
+
+    private static class PlanExpressionMapper implements ExpressionMapper {
+
+        private final RelationResolver relationResolver;
+
+        public PlanExpressionMapper(RelationResolver relationResolver) {
+            this.relationResolver = relationResolver;
+        }
 
         @SuppressWarnings("unchecked")
         public Expression map(Expression expression) throws PlanMapperException {
 
-             if (expression instanceof PlanExpression) {
+            if (expression instanceof PlanExpression) {
                 PlanExpression<LogicalPlan> subquery = (PlanExpression<LogicalPlan>) expression;
-                expression = subquery.withNewPlan(RelationResolver.this.map(subquery.plan()));
+                expression = subquery.withNewPlan(relationResolver.map(subquery.plan()));
             }
 
             return expression.mapChildren(asScalaFunction());
         }
 
-    }
-
-    @Override
-    public LogicalPlan map(LogicalPlan logicalPlan) throws PlanMapperException {
-
-        if (logicalPlan instanceof UnresolvedRelation) {
-            UnresolvedRelation unresolvedRelation = (UnresolvedRelation) logicalPlan;
-            String name = unresolvedRelation.tableName();
-            LogicalPlan resolvedRelation = plans.get(name);
-            if (resolvedRelation == null) {
-                throw new RelationResolverException("can't resolve relation " + name + " in plan " + unresolvedRelation);
-            }
-            logicalPlan = resolvedRelation;
-        } else {
-            logicalPlan = (LogicalPlan)logicalPlan.mapExpressions(new PlanExpressionMapper().asScalaFunction());
-            logicalPlan = logicalPlan.mapChildren(asScalaFunction());
-        }
-
-        return logicalPlan;
     }
 
 }

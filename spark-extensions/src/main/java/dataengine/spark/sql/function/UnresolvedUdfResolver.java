@@ -1,7 +1,8 @@
-package dataengine.spark.sql.udf;
+package dataengine.spark.sql.function;
 
 import dataengine.scala.compat.*;
 import dataengine.spark.sql.PlanMapperException;
+import dataengine.spark.sql.udf.Udf;
 import lombok.Value;
 import org.apache.spark.sql.catalyst.analysis.UnresolvedFunction;
 import org.apache.spark.sql.catalyst.expressions.Expression;
@@ -13,7 +14,7 @@ import javax.annotation.Nonnull;
 import java.util.Collections;
 
 @Value
-public class UdfExpressionResolver implements FunctionResolver.ExpressionResolver {
+public class UnresolvedUdfResolver implements UnresolvedFunctionResolver {
 
     @Nonnull
     Udf udf;

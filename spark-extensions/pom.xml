@@ -18,15 +18,9 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-        <!-- dependency>
-            <groupId>org.scala-lang.modules</groupId>
-            <artifactId>scala-java8-compat_${scala.version}</artifactId>
-            <version>0.9.1</version>
-            <scope>provided</scope>
-        </dependency -->
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_${scala.version}</artifactId>
+            <artifactId>spark-sql_${scala.major.version}</artifactId>
             <scope>provided</scope>
         </dependency>
 

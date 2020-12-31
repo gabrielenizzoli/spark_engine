@@ -20,11 +20,13 @@ public class SparkSqlPlanMapper {
     @Nonnull
     List<LogicalPlanMapper> planMappers;
 
-    public Dataset<Row> mapAsDataset(SparkSession sparkSession, String sql) throws PlanMapperException {
-        return Dataset.ofRows(sparkSession, mapAsLogicalPlan(sparkSession, sql));
+    public Dataset<Row> compileSqlToDataset(@Nonnull SparkSession sparkSession,
+                                            @Nonnull String sql) throws PlanMapperException {
+        return Dataset.ofRows(sparkSession, compileSqlToLogicalPlan(sparkSession, sql));
     }
 
-    private LogicalPlan mapAsLogicalPlan(SparkSession sparkSession, String sql) throws PlanMapperException {
+    private LogicalPlan compileSqlToLogicalPlan(@Nonnull SparkSession sparkSession,
+                                                @Nonnull String sql) throws PlanMapperException {
         LogicalPlan logicalPlan = generateLogicalPlan(sparkSession, sql);
         logicalPlan = remapLogicalPlan(logicalPlan, planMappers);
         return logicalPlan;

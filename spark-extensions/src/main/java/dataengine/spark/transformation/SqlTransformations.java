@@ -4,7 +4,7 @@ import dataengine.spark.sql.LogicalPlanMapper;
 import dataengine.spark.sql.PlanMapperException;
 import dataengine.spark.sql.SparkSqlPlanMapper;
 import dataengine.spark.sql.relation.RelationResolver;
-import dataengine.spark.sql.udf.FunctionResolver;
+import dataengine.spark.sql.function.FunctionResolver;
 import dataengine.spark.sql.udf.SqlFunctionCollection;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -31,7 +31,7 @@ public class SqlTransformations {
             return sparkSession.sql(sql);
         }
         try {
-            return resolver.mapAsDataset(sparkSession, sql);
+            return resolver.compileSqlToDataset(sparkSession, sql);
         } catch (PlanMapperException e) {
             throw new TransformationException("unable to map sql as a dataset: " + sql, e);
         }
