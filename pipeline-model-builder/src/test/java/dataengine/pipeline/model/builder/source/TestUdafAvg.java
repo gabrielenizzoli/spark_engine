@@ -1,13 +1,13 @@
 package dataengine.pipeline.model.builder.source;
 
-import dataengine.spark.sql.udf.UdafAggregator;
+import dataengine.spark.sql.udf.Udaf;
 import org.apache.spark.sql.Encoder;
 import org.apache.spark.sql.Encoders;
 import scala.Tuple2;
 
 import javax.annotation.Nonnull;
 
-public class TestUdafAvg extends UdafAggregator<Integer, Tuple2<Long, Integer>, Double> {
+public class TestUdafAvg extends Udaf.UdafAggregator<Integer, Tuple2<Long, Integer>, Double> {
 
     @Nonnull
     @Override

@@ -1,6 +1,6 @@
-package dataengine.spark.sql.udf;
+package dataengine.spark.sql.logiclaplan.functionresolver;
 
-import dataengine.spark.sql.PlanMapperException;
+import dataengine.spark.sql.logicalplan.PlanMapperException;
 
 public class FunctionResolverException extends PlanMapperException {
 

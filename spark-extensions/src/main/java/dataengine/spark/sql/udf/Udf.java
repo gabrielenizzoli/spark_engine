@@ -5,6 +5,11 @@ import org.apache.spark.sql.types.DataType;
 
 import javax.annotation.Nonnull;
 
+/**
+ * A utility factory class that returns a Udf.
+ * Many methods are provided to return the udf with the proper number of input parameters.
+ * The first method that return a non-empty Udf is the one used.
+ */
 public interface Udf extends SqlFunction {
 
     @Nonnull

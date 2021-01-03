@@ -1,9 +1,8 @@
 package dataengine.spark.transformation;
 
-import dataengine.spark.sql.relation.RelationResolverException;
-import dataengine.spark.sql.udf.FunctionResolverException;
-import dataengine.spark.sql.udf.SqlFunctionCollection;
-import dataengine.spark.sql.udf.UdafAggregator;
+import dataengine.spark.utils.UdafIntegerSummer;
+import dataengine.spark.sql.logicalplan.tableresolver.TableResolverException;
+import dataengine.spark.sql.logiclaplan.functionresolver.FunctionResolverException;
 import dataengine.spark.sql.udf.Udf;
 import dataengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.*;
@@ -11,23 +10,22 @@ import org.apache.spark.sql.types.DataTypes;
 import org.junit.jupiter.api.Test;
 import scala.Tuple2;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class SqlTransformationsTest extends SparkSessionBase {
+class TransformationsTest extends SparkSessionBase {
 
     @Test
     void sql() {
 
         // given
-        DataTransformation<Row, Row> sqlTranformation = SqlTransformations.sql(
+        DataTransformation<Row, Row> sqlTranformation = Transformations.sql(
                 "table",
                 "select testFunction(value) from table limit 1",
-                SqlFunctionCollection.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
+                List.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
 
         Dataset<Row> dsInput = sparkSession.createDataFrame(
                 Collections.singletonList(RowFactory.create(1)),
@@ -46,15 +44,15 @@ class SqlTransformationsTest extends SparkSessionBase {
     void sqlMultipleTransformations() {
 
         // given
-        DataTransformation<Row, Row> sqlTranformation1 = SqlTransformations.sql(
+        DataTransformation<Row, Row> sqlTranformation1 = Transformations.sql(
                 "table",
                 "select testFunction(value) as value from table",
-                SqlFunctionCollection.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
+                List.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
 
-        DataTransformation<Row, Row> sqlTranformation2 = SqlTransformations.sql(
+        DataTransformation<Row, Row> sqlTranformation2 = Transformations.sql(
                 "table",
                 "select testFunction(value) from table",
-                SqlFunctionCollection.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i * 10)));
+                List.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i * 10)));
 
         Dataset<Row> dsInput = sparkSession.createDataFrame(
                 Collections.singletonList(RowFactory.create(1)),
@@ -70,51 +68,6 @@ class SqlTransformationsTest extends SparkSessionBase {
 
     }
 
-    public static class IntegerSummer extends UdafAggregator<Integer, Integer, Integer> {
-
-        @Nonnull
-        @Override
-        public String getName() {
-            return "summer";
-        }
-
-        @Override
-        public Integer zero() {
-            return 0;
-        }
-
-        @Override
-        public Integer reduce(Integer input, Integer buffer) {
-            return buffer + input;
-        }
-
-        @Override
-        public Integer merge(Integer b1, Integer b2) {
-            return b1 + b2;
-        }
-
-        @Override
-        public Integer finish(Integer buffer) {
-            return buffer;
-        }
-
-        @Override
-        public Encoder<Integer> inputEncoder() {
-            return Encoders.INT();
-        }
-
-        @Override
-        public Encoder<Integer> bufferEncoder() {
-            return Encoders.INT();
-        }
-
-        @Override
-        public Encoder<Integer> outputEncoder() {
-            return Encoders.INT();
-        }
-
-    }
-
     @Test
     public void sqlWithUdaf() throws Throwable {
 
@@ -126,12 +79,12 @@ class SqlTransformationsTest extends SparkSessionBase {
                         DataTypes.createStructField("value", DataTypes.IntegerType, true)
                 )));
 
-        DataTransformation<Row, Row> sqlTranformation = SqlTransformations.sql(
+        DataTransformation<Row, Row> sqlTranformation = Transformations.sql(
                 "table",
                 "select key, addOne(summer(addOne(value))) from table group by key",
-                SqlFunctionCollection.of(
+                List.of(
                         Udf.<Integer, Integer>ofUdf1("addOne", DataTypes.IntegerType, i -> i + 1),
-                        new IntegerSummer())
+                        new UdafIntegerSummer())
         );
 
         // when
@@ -155,12 +108,12 @@ class SqlTransformationsTest extends SparkSessionBase {
     void sqlMultipleTransformationsWithFailedFunctionResolution() {
 
         // given
-        DataTransformation<Row, Row> sqlTranformation1 = SqlTransformations.sql(
+        DataTransformation<Row, Row> sqlTranformation1 = Transformations.sql(
                 "table",
                 "select testFunction(value) as value from table",
-                SqlFunctionCollection.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
+                List.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
 
-        DataTransformation<Row, Row> sqlTranformation2 = SqlTransformations.sql(
+        DataTransformation<Row, Row> sqlTranformation2 = Transformations.sql(
                 "table",
                 "select testFunction(value) from table");
 
@@ -181,15 +134,15 @@ class SqlTransformationsTest extends SparkSessionBase {
     void sqlMultipleTransformationsWithFailedTableResolution() {
 
         // given
-        DataTransformation<Row, Row> sqlTranformation1 = SqlTransformations.sql(
+        DataTransformation<Row, Row> sqlTranformation1 = Transformations.sql(
                 "table",
                 "select testFunction(value) as value from table",
-                SqlFunctionCollection.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
+                List.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
 
-        DataTransformation<Row, Row> sqlTranformation2 = SqlTransformations.sql(
+        DataTransformation<Row, Row> sqlTranformation2 = Transformations.sql(
                 "table2",
                 "select testFunction(value) from table",
-                SqlFunctionCollection.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
+                List.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
 
         Dataset<Row> dsInput = sparkSession.createDataFrame(
                 Collections.singletonList(RowFactory.create(1)),
@@ -201,7 +154,7 @@ class SqlTransformationsTest extends SparkSessionBase {
             outputDs.count();
         });
 
-        assertEquals(RelationResolverException.class, e.getCause().getClass());
+        assertEquals(TableResolverException.class, e.getCause().getClass());
     }
 
 }
