@@ -4,7 +4,7 @@ import dataengine.pipeline.core.sink.DataSink;
 import dataengine.spark.test.SparkSessionBase;
 import dataengine.spark.transformation.DataTransformation;
 import dataengine.spark.transformation.DataTransformation2;
-import dataengine.spark.transformation.SqlTransformations;
+import dataengine.spark.transformation.Transformations;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,8 +29,8 @@ class SqlTransformationsTest extends SparkSessionBase {
         List<Integer> data = new LinkedList<>();
         DataSource<Integer> dataSource = () -> sparkSession.createDataset(Arrays.asList(1, 2, 3, 4, 5, 6), Encoders.INT());
         DataSink<BigDecimal> dataSink = d -> data.addAll(d.collectAsList().stream().map(BigDecimal::intValue).collect(Collectors.toList()));
-        DataTransformation<Integer, Row> tx1 = SqlTransformations.sql("source", "select value*2 as value from source");
-        DataTransformation<Row, Row> tx2 = SqlTransformations.sql("source2", "select sum(value) as sumValue from source2");
+        DataTransformation<Integer, Row> tx1 = Transformations.sql("source", "select value*2 as value from source");
+        DataTransformation<Row, Row> tx2 = Transformations.sql("source2", "select sum(value) as sumValue from source2");
 
         // when
         dataSource
@@ -61,8 +61,8 @@ class SqlTransformationsTest extends SparkSessionBase {
         DataSource<TestBean> dataSource2 = () -> sparkSession.createDataset(Arrays.asList(TestBean.of(1, "one"), TestBean.of(6, "six")), Encoders.bean(TestBean.class));
         DataSink<TestBean> dataSink = d -> data.addAll(d.collectAsList());
 
-        DataTransformation2<Integer, TestBean, TestBean> tx = SqlTransformations
-                .<Integer, TestBean>sqlMerge("s1", "s2", "select * from (select b.value+1 as value, b.reference as reference from s1 as a join s2 as b on a.value = b.value) where value > 2")
+        DataTransformation2<Integer, TestBean, TestBean> tx = Transformations
+                .<Integer, TestBean>sql("s1", "s2", "select * from (select b.value+1 as value, b.reference as reference from s1 as a join s2 as b on a.value = b.value) where value > 2")
                 .andThenEncode(Encoders.bean(TestBean.class));
 
         // when

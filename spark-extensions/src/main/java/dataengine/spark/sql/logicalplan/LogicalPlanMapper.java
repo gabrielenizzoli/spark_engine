@@ -1,4 +1,4 @@
-package dataengine.spark.sql;
+package dataengine.spark.sql.logicalplan;
 
 import dataengine.scala.compat.JavaToScalaFunction1;
 import lombok.SneakyThrows;
@@ -6,6 +6,10 @@ import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 
 import java.util.function.Function;
 
+/**
+ * Maps a logical input plan to something different.
+ * The specific logic is obviously on the implementation.
+ */
 @FunctionalInterface
 public interface LogicalPlanMapper {
 
@@ -18,6 +22,14 @@ public interface LogicalPlanMapper {
      */
     LogicalPlan map(LogicalPlan logicalPlan) throws PlanMapperException;
 
+    default LogicalPlan mapChildrenOfLogicalPlan(LogicalPlan logicalPlan) {
+        return logicalPlan.mapChildren(asScalaFunction());
+    }
+
+    /**
+     * Utility that provides this mapper as a scala function (to be used with scala-specific apis).
+     * @return A scala function that implements this mapper
+     */
     default JavaToScalaFunction1<LogicalPlan, LogicalPlan> asScalaFunction() {
 
         Function<LogicalPlan, LogicalPlan> javaFunction = new Function<LogicalPlan, LogicalPlan>() {

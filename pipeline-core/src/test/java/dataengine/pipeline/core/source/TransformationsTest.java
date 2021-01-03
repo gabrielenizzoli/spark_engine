@@ -3,7 +3,6 @@ package dataengine.pipeline.core.source;
 import dataengine.pipeline.core.sink.DataSink;
 import dataengine.spark.test.SparkSessionBase;
 import dataengine.spark.transformation.DataTransformation;
-import dataengine.spark.transformation.SqlTransformations;
 import dataengine.spark.transformation.Transformations;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
@@ -26,7 +25,7 @@ class TransformationsTest extends SparkSessionBase {
         List<Integer> data = new LinkedList<>();
         DataSource<Integer> dataSource = () -> sparkSession.createDataset(Arrays.asList(1, 2, 3, 4, 5, 6), Encoders.INT());
         DataSink<BigDecimal> dataSink = d -> data.addAll(d.collectAsList().stream().map(BigDecimal::intValue).collect(Collectors.toList()));
-        DataTransformation<Integer, Row> tx1 = SqlTransformations.sql("source", "select value*2 as value from source where value = 5");
+        DataTransformation<Integer, Row> tx1 = Transformations.sql("source", "select value*2 as value from source where value = 5");
 
         // when
         dataSource

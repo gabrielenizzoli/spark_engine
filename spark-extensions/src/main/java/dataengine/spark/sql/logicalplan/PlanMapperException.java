@@ -1,4 +1,4 @@
-package dataengine.spark.sql;
+package dataengine.spark.sql.logicalplan;
 
 public class PlanMapperException extends Exception {
 

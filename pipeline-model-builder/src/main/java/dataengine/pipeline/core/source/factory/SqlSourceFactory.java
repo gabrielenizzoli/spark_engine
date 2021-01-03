@@ -19,7 +19,7 @@ public class SqlSourceFactory implements DataSourceFactory {
     public DataSource<?> build() throws DataSourceFactoryException {
         return SparkSqlSource.builder()
                 .sql(source.getSql())
-                .sqlFunctionCollection(UdfUtils.buildSqlFunctionCollection(source.getUdfs()))
+                .sqlFunctions(UdfUtils.buildSqlFunctionCollection(source.getUdfs()))
                 .encoder(EncoderUtils.buildEncoder(source.getEncodedAs()))
                 .build();
     }

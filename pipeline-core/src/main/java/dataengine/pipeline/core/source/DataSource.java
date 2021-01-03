@@ -4,7 +4,6 @@ import dataengine.pipeline.core.sink.DataSink;
 import dataengine.pipeline.core.sink.impl.DataSinkShow;
 import dataengine.spark.transformation.DataTransformation;
 import dataengine.spark.transformation.DataTransformation2;
-import dataengine.spark.transformation.SqlTransformations;
 import dataengine.spark.transformation.Transformations;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoder;
@@ -87,7 +86,7 @@ public interface DataSource<T> extends Supplier<Dataset<T>> {
     }
 
     default DataSource<Row> sql(String sql) {
-        return transform(SqlTransformations.sql("source", sql));
+        return transform(Transformations.sql("source", sql));
     }
 
 }

@@ -1,7 +1,6 @@
-package dataengine.spark.sql.function;
+package dataengine.spark.sql.logiclaplan.functionresolver;
 
 import dataengine.scala.compat.*;
-import dataengine.spark.sql.PlanMapperException;
 import dataengine.spark.sql.udf.Udf;
 import lombok.Value;
 import org.apache.spark.sql.catalyst.analysis.UnresolvedFunction;
@@ -14,12 +13,28 @@ import javax.annotation.Nonnull;
 import java.util.Collections;
 
 @Value
-public class UnresolvedUdfResolver implements UnresolvedFunctionResolver {
+public class UnresolvedUdfReplacer implements UnresolvedFunctionReplacer {
 
     @Nonnull
     Udf udf;
 
-    private JavaUdfToScalaFunction getScalaFunction() throws PlanMapperException {
+    public Expression replace(@Nonnull UnresolvedFunction unresolvedFunction) throws FunctionResolverException {
+
+        if (unresolvedFunction.children().size() != getArgumentsCount()) {
+            throw new FunctionResolverException("arguments provided for function " + unresolvedFunction + " do not match udf expected number " + udf);
+        }
+
+        return new ScalaUDF(getScalaFunction(),
+                udf.getReturnType(),
+                unresolvedFunction.children(),
+                JavaConverters.asScalaBuffer(Collections.emptyList()),
+                Option.apply(unresolvedFunction.name().funcName()),
+                true,
+                true);
+
+    }
+
+    private JavaUdfToScalaFunction getScalaFunction() throws FunctionResolverException {
         if (udf.getUdf0() != null)
             return new JavaUdf0ToScalaFunction0<>(udf.getUdf0());
         if (udf.getUdf1() != null)
@@ -32,10 +47,10 @@ public class UnresolvedUdfResolver implements UnresolvedFunctionResolver {
             return new JavaUdf4ToScalaFunction4<>(udf.getUdf4());
         if (udf.getUdf5() != null)
             return new JavaUdf5ToScalaFunction5<>(udf.getUdf5());
-        throw new PlanMapperException("no udf defined " + this);
+        throw new FunctionResolverException("no udf defined " + this);
     }
 
-    private int getArgumentsCount() throws PlanMapperException {
+    private int getArgumentsCount() throws FunctionResolverException {
         if (udf.getUdf0() != null)
             return 0;
         if (udf.getUdf1() != null)
@@ -48,24 +63,7 @@ public class UnresolvedUdfResolver implements UnresolvedFunctionResolver {
             return 4;
         if (udf.getUdf5() != null)
             return 5;
-        throw new PlanMapperException("no udf defined " + this);
-    }
-
-    public Expression resolve(UnresolvedFunction unresolvedFunction) throws PlanMapperException {
-
-        int argumentsCount = getArgumentsCount();
-        if (unresolvedFunction.children().size() != argumentsCount) {
-            throw new PlanMapperException("arguments provided for function " + unresolvedFunction + " do not match udf expected number " + udf);
-        }
-
-        return new ScalaUDF(getScalaFunction(),
-                udf.getReturnType(),
-                unresolvedFunction.children(),
-                JavaConverters.asScalaBuffer(Collections.emptyList()),
-                Option.apply(unresolvedFunction.name().funcName()),
-                true,
-                true);
-
+        throw new FunctionResolverException("no udf defined " + this);
     }
 
 }

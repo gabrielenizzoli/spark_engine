@@ -4,16 +4,17 @@ import dataengine.pipeline.core.source.factory.DataSourceFactoryException;
 import dataengine.pipeline.model.description.udf.UdfLibrary;
 import dataengine.pipeline.model.description.udf.UdfList;
 import dataengine.spark.sql.udf.SqlFunction;
-import dataengine.spark.sql.udf.SqlFunctionCollection;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class UdfUtils {
 
-    public static SqlFunctionCollection buildSqlFunctionCollection(@Nullable UdfLibrary udfLibrary)
+    public static Collection<SqlFunction> buildSqlFunctionCollection(@Nullable UdfLibrary udfLibrary)
             throws DataSourceFactoryException {
         if (udfLibrary == null) {
             return null;
@@ -23,7 +24,7 @@ public class UdfUtils {
             for (String sqlFunctionClass : udfList.getOfClasses()) {
                 sqlFunctions.add(getSqlFunction(sqlFunctionClass));
             }
-            return () -> sqlFunctions;
+            return Collections.unmodifiableList(sqlFunctions);
         }
         throw new DataSourceFactoryException(udfLibrary + " udf library not managed");
 

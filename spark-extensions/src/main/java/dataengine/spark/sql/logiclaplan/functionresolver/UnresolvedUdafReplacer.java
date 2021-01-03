@@ -1,6 +1,5 @@
-package dataengine.spark.sql.function;
+package dataengine.spark.sql.logiclaplan.functionresolver;
 
-import dataengine.spark.sql.PlanMapperException;
 import dataengine.spark.sql.udf.Udaf;
 import lombok.Value;
 import org.apache.spark.sql.catalyst.analysis.UnresolvedFunction;
@@ -15,17 +14,17 @@ import scala.Option;
 import javax.annotation.Nonnull;
 
 @Value
-public class UnresolvedUdafResolver implements UnresolvedFunctionResolver {
+public class UnresolvedUdafReplacer implements UnresolvedFunctionReplacer {
 
     @Nonnull
     Udaf udaf;
 
-    public Expression resolve(UnresolvedFunction unresolvedFunction) throws PlanMapperException {
+    public Expression replace(@Nonnull UnresolvedFunction unresolvedFunction) throws FunctionResolverException {
 
         ScalaAggregator scalaAggregator = new ScalaAggregator(
                 unresolvedFunction.children(),
                 udaf.getAggregator(),
-                (ExpressionEncoder) udaf.getInputEncoder(),
+                (ExpressionEncoder) udaf.inputEncoder(),
                 true,
                 true,
                 0,
