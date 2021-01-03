@@ -1,3 +1,7 @@
+---
+sort: 1
+---
+
 # The spark-extension module
 
 This module has the main utility functionalities that are needed in the rest of the project.
@@ -246,4 +250,3 @@ Dataset<Integer> newDs = Transformations
         .cache(StorageLevel.DISK_ONLY)
         .apply(ds);
 ```
-
