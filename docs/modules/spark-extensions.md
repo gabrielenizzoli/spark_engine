@@ -4,8 +4,9 @@ sort: 1
 
 # The spark-extension module
 
-This module only has spark as a dependency. 
-It provides some basic extension and manipulation utilities for handling functions, UDFs, logical plans, and datasets.
+This module has the main utility functionalities that are needed in the rest of the project.
+This module only depends on spark, with no additional libraries involved. 
+It provides some basic extension and manipulation facilities for handling UDFs, logical plans, and datasets.
 
 | Package | Language | Description |
 | ----------- | ----------- | ----------- |
@@ -88,13 +89,11 @@ This will allow for a fully controlled sql statement, where all the unknown elem
 No more surprises, with developers in a large organization defining (in unknown places) tables or udf.
 
 
-## Utilities 
-
-### package: dataengine.scala.compat
+## Utilities
 
 The main goals of facilities in this package is to have function wrappers between java and scala.
 
-#### Function/BiFunction wrappers
+### Function/BiFunction wrappers
 
 Two classes are provided to wrap generic java functions, depending on the number of the input parameters.
 
@@ -106,12 +105,13 @@ Two classes are provided to wrap generic java functions, depending on the number
 Example:
 ```java
 import java.util.function.Function;
+import dataengine.scala.compat.JavaToScalaFunction1;
 
 Function<Integer, Integer> javaFunction = i -> i+1;
 JavaToScalaFunction1<Integer, Integer> scalaFunction = new JavaToScalaFunction1<>(javaFunction);
 ```
 
-#### Udf Wrappers
+### Udf Wrappers
 
 Similar utilities with the same purpose as the ones above, but this time to wrap UDF java functions.
 
@@ -132,15 +132,13 @@ UDF1<Integer, Integer> javaUdf = i -> i+1;
 JavaUdf1ToScalaFunction1<Integer, Integer> scalaUdf = new JavaUdf1ToScalaFunction1<>(javaUdf);
 ```
 
-### package: dataengine.spark.transformation
-
-#### DatasetTransformations 
+### Dataset Transformations 
 
 These classes abstract and encapsulates some combination logic between datasets. 
 They are useful to divide and organize a complex data flow between many source and destination points. 
 Example of a simple transformation:
 ```java
-import dataengine.spark.transformation.*;
+import dataengine.spark.transformation.DataTransformation2;
 
 DataTransformation2<Integer, Integer, Integer> tx = (d1, d2) -> d1.as("d1").join(d2.as("d2"), col("d1.value").equalTo(col("d2.value")));
 
@@ -155,6 +153,10 @@ They allow for easy chaining additional changes to a new transformation object.
 This makes for an easier sequential reading of the code, and requires the developer to call `apply()` only once.
 Example:
 ```java
+import dataengine.spark.transformation.DataTransformation;
+import dataengine.spark.transformation.DataTransformation2;
+
+
 Dataset<Integer> ds1 = ...;
 Dataset<Long> ds2 = ...;
 DataTransformation2<Integer, Integer, Row> transformation1 = ...;
@@ -184,32 +186,67 @@ List of transformation classes available:
 | `DataTransformation10<S1, ..., S10, D>` | `Dataset<S1>`, ..., `Dataset<S10>` (10 datasets) | `Dataset<D>` | 10 input datasets of same or different types |
 | `DataTransformationN<S, D>` | `List<Dataset<S>>` | `Dataset<D>` | N input datasets of same type |
 
-#### Transformations 
+### Sql Transformations 
 
-The `Transformations` class holds additional method for creating new useful dataset transformations. Here a quick list with examples.
+The `Transformations` class has some `sql` method to quickly wrap a sql statement and a `SqlCompiler` together to create a transformation. 
 
-Creating transformations based on sql statements:
+Example on how to create **transformations based on sql statements**:
 ```java
+import dataengine.spark.transformation.Transformations;
+
 // 1 dataset
 var ds1 = ...;
 var sql = "select column from table";
 var newDs = Transformations.sql("table", sql).apply(ds1);
 
 // 2 datasets
-var ds1 = ...;
 var sql2 = "select table1.column from table1 join table2 on table1.column = table2.column";
-var newDs = Transformations.sql("table1", "table2", sql2).apply(ds1, ds2);
+var newDs2 = Transformations.sql("table1", "table2", sql2).apply(ds1, ds2);
 
 // if input datasets ate Dataset<Row>
-var newDs = Transformations.sql(List.of("table1", "table2"), sql2).apply(List.of(ds1, ds2));
+var newDs3 = Transformations.sql(List.of("table1", "table2"), sql2).apply(List.of(ds1, ds2));
 ```
 
-Creating transformations to cache or encode datasets. Example:
+Sql transformation methods in `dataengine.spark.transformation.Transformations` are:
+
+| Method | Parameters | Output | Note |
+| ----------- | ----------- | ----------- | ----------- |
+| `sql()` | `sourceName`, `sql` | `DataTransformation<S, Row>` | Transform an input dataset `Dataset<S>` to a `Dataset<Row>` using a sql statement defined in the `sql` variable, where the input dataset is referenced by the `sourceName` name. |
+| `sql()` | `sourceName`, `sql`, `sqlFunctions` | `DataTransformation<S, Row>` | Transform an input dataset `Dataset<S>` to a `Dataset<Row>` using a sql statement defined in the `sql` variable, where the input dataset is referenced by the `sourceName` name. Note that the list of functions in `sqlFunctions` will be used to resolve udfs in the sql statement. |
+| `sql()` | `sourceNames`, `sql` | `DataTransformationN<Row, Row>` | Transform a list of input datasets of type `Dataset<Row>` to a `Dataset<Row>` using a sql statement defined in the `sql` variable, where the input datasets are referenced by the value of the list `sourceNames`. |
+| `sql()` | `sourceNames`, `sql`, `sqlFunctions` | `DataTransformationN<Row, Row>` | Transform a list of input datasets of type `Dataset<Row>` to a `Dataset<Row>` using a sql statement defined in the `sql` variable, where the input datasets are referenced by the value of the list `sourceNames`. Note that the list of functions in `sqlFunctions` will be used to resolve udfs in the sql statement. |
+
+If you wish to enumerate the input datasets (and they all have different type) you can use these methods :
+
+| Method | Parameters | Output | Note |
+| ----------- | ----------- | ----------- | ----------- |
+| `sql()` | `sourceName1`, `sourceName2`, `sql` | `DataTransformation<S1, S2, Row>` | Transform input datasets of type `Dataset<S1>` and `Dataset<S2>` to a `Dataset<Row>` using a sql statement defined in the `sql` variable, where the input datasets are referenced by the `sourceName1` and `sourceName2` names respectively. |
+| `sql()` | `sourceName1`, `sourceName2`, `sourceName3`, `sql` | `DataTransformation<S1, S2, S3, Row>` | Transform input datasets of type `Dataset<S1>`, `Dataset<S2>`, and `Dataset<S3>` to a `Dataset<Row>` using a sql statement defined in the `sql` variable, where the input datasets are referenced by the `sourceName1`, `sourceName2` and `sourceName3` names respectively. |
+| ... | ... | ... | ... |
+
+### Other Transformations
+
+The `Transformations` class holds additional method for quickly creating new dataset transformations.
+
+Easily implement a **dataset transformation around a simple java function**. Example:
 ```java
+Dataset<Integer> ds = ...;
+
+// map function
+var newDs = Transformations.map((Integer i) -> i+1, Encoders.INT());
+
+// flat map function
+var newDsWithFlatMap = Transformations.flatMap((Integer i) -> IntStream.range(i, i+10).iterator(), Encoders.INT());
+```
+
+Chain transformations to **cache and/or encode datasets**. Example:
+```java
+import dataengine.spark.transformation.Transformations;
+
 Dataset<Row> ds = ...;
 
 Dataset<Integer> newDs = Transformations
-        .encdeAs(Encoders.INT)
+        .encodeAs(Encoders.INT)
         .cache(StorageLevel.DISK_ONLY)
         .apply(ds);
 ```

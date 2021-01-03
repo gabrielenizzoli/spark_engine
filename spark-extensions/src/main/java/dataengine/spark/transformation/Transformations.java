@@ -40,7 +40,7 @@ public class Transformations {
     public static <S> DataTransformation<S, Row> encodeAsRow() {
         return dataset -> {
             if (Row.class.isAssignableFrom(dataset.encoder().clsTag().runtimeClass()))
-                return (Dataset<Row>)dataset;
+                return (Dataset<Row>) dataset;
             return dataset.toDF();
         };
     }
@@ -154,4 +154,76 @@ public class Transformations {
             }
         };
     }
+
+    /**
+     * Applies a sql transformation to the 4 input datasets.
+     *
+     * @param sourceName1 name of input dataset #1
+     * @param sourceName2 name of input dataset #2
+     * @param sourceName3 name of input dataset #3
+     * @param sourceName4 name of input dataset #4
+     * @param sql         sql statement
+     * @param <S1>        type of the input dataset #1
+     * @param <S2>        type of the input dataset #2
+     * @param <S3>        type of the input dataset #3
+     * @param <S4>        type of the input dataset #4
+     * @return outcome of the transformation operation
+     */
+    public static <S1, S2, S3, S4> DataTransformation4<S1, S2, S3, S4, Row> sql(@Nonnull String sourceName1,
+                                                                                @Nonnull String sourceName2,
+                                                                                @Nonnull String sourceName3,
+                                                                                @Nonnull String sourceName4,
+                                                                                @Nonnull String sql) {
+        return (s1, s2, s3, s4) -> {
+            var tables = List.of(
+                    Table.ofDataset(sourceName1, s1),
+                    Table.ofDataset(sourceName2, s2),
+                    Table.ofDataset(sourceName3, s3),
+                    Table.ofDataset(sourceName4, s4));
+            try {
+                return SqlCompiler.sql(tables, Collections.emptyList(), sql);
+            } catch (PlanMapperException e) {
+                throw new TransformationException("issues compiling sql: " + sql, e);
+            }
+        };
+    }
+
+    /**
+     * Applies a sql transformation to the 5 input datasets.
+     *
+     * @param sourceName1 name of input dataset #1
+     * @param sourceName2 name of input dataset #2
+     * @param sourceName3 name of input dataset #3
+     * @param sourceName4 name of input dataset #4
+     * @param sourceName5 name of input dataset #5
+     * @param sql         sql statement
+     * @param <S1>        type of the input dataset #1
+     * @param <S2>        type of the input dataset #2
+     * @param <S3>        type of the input dataset #3
+     * @param <S4>        type of the input dataset #4
+     * @param <S5>        type of the input dataset #5
+     * @return outcome of the transformation operation
+     */
+    public static <S1, S2, S3, S4, S5> DataTransformation5<S1, S2, S3, S4, S5, Row> sql(@Nonnull String sourceName1,
+                                                                                        @Nonnull String sourceName2,
+                                                                                        @Nonnull String sourceName3,
+                                                                                        @Nonnull String sourceName4,
+                                                                                        @Nonnull String sourceName5,
+                                                                                        @Nonnull String sql) {
+        return (s1, s2, s3, s4, s5) -> {
+            var tables = List.of(
+                    Table.ofDataset(sourceName1, s1),
+                    Table.ofDataset(sourceName2, s2),
+                    Table.ofDataset(sourceName3, s3),
+                    Table.ofDataset(sourceName4, s4),
+                    Table.ofDataset(sourceName5, s5));
+            try {
+                return SqlCompiler.sql(tables, Collections.emptyList(), sql);
+            } catch (PlanMapperException e) {
+                throw new TransformationException("issues compiling sql: " + sql, e);
+            }
+        };
+    }
+
+
 }
