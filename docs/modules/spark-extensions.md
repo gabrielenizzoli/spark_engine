@@ -1,3 +1,7 @@
+---
+sort: 2
+---
+
 # The spark-extension module
 
 This module only has spark as a dependency. 
