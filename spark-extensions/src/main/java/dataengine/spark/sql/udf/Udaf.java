@@ -8,7 +8,8 @@ import javax.annotation.Nonnull;
 /**
  * A utility factory class that returns an Aggregator (the base class used by spark to implement a Udaf).
  * An aggregation is essentially a map-reduce job.
- * @param <IN> input type
+ *
+ * @param <IN>  input type
  * @param <BUF> buffer that accumulates the input, according to some provided logic
  * @param <OUT> the output of the accumulation
  */

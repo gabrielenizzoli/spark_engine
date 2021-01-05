@@ -1,11 +1,11 @@
 package dataengine.pipeline.core;
 
-import dataengine.pipeline.core.sink.DataSink;
-import dataengine.pipeline.core.sink.composer.DataSinkComposer;
-import dataengine.pipeline.core.sink.composer.DataSinkComposerException;
-import dataengine.pipeline.core.source.DataSource;
-import dataengine.pipeline.core.source.composer.DataSourceComposer;
-import dataengine.pipeline.core.source.composer.DataSourceComposerException;
+import dataengine.pipeline.core.consumer.DatasetConsumer;
+import dataengine.pipeline.core.consumer.catalog.DatasetConsumerCatalog;
+import dataengine.pipeline.core.consumer.catalog.DatasetConsumerCatalogException;
+import dataengine.pipeline.core.supplier.DatasetSupplier;
+import dataengine.pipeline.core.supplier.catalog.DatasetSupplierCatalog;
+import dataengine.pipeline.core.supplier.catalog.DatasetSupplierCatalogException;
 import lombok.Builder;
 import lombok.Value;
 
@@ -16,14 +16,15 @@ import javax.annotation.Nonnull;
 public class Pipeline {
 
     @Nonnull
-    DataSourceComposer dataSourceComposer;
+    DatasetSupplierCatalog datasetSupplierCatalog;
     @Nonnull
-    DataSinkComposer dataSinkComposer;
+    DatasetConsumerCatalog datasetConsumerCatalog;
 
-    public <T> DataSink<T> run(@Nonnull String sourceName, @Nonnull String sinkName) throws DataSourceComposerException, DataSinkComposerException {
-        DataSource<T> dataSource = dataSourceComposer.lookup(sourceName);
-        DataSink<T> dataSink = dataSinkComposer.lookup(sinkName);
-        return dataSource.writeTo(dataSink);
+    public <T> DatasetConsumer<T> run(@Nonnull String supplierName, @Nonnull String consumerName)
+            throws DatasetSupplierCatalogException, DatasetConsumerCatalogException {
+        DatasetSupplier<T> datasetSupplier = datasetSupplierCatalog.lookup(supplierName);
+        DatasetConsumer<T> datasetConsumer = datasetConsumerCatalog.lookup(consumerName);
+        return datasetSupplier.writeTo(datasetConsumer);
     }
 
 }

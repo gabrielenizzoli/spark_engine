@@ -1,8 +1,8 @@
 package dataengine.spark.sql.logicalplan;
 
+import dataengine.spark.sql.logicalplan.functionresolver.FunctionResolver;
 import dataengine.spark.sql.logicalplan.tableresolver.Table;
 import dataengine.spark.sql.logicalplan.tableresolver.TableResolver;
-import dataengine.spark.sql.logiclaplan.functionresolver.FunctionResolver;
 import dataengine.spark.sql.udf.SqlFunction;
 import lombok.Builder;
 import lombok.Singular;
@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Value
-@Builder(builderClassName = "Builder")
+@Builder
 public class SqlCompiler {
 
     @Singular

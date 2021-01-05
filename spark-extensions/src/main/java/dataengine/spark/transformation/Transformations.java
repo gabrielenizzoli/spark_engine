@@ -40,7 +40,7 @@ public class Transformations {
     public static <S> DataTransformation<S, Row> encodeAsRow() {
         return dataset -> {
             if (Row.class.isAssignableFrom(dataset.encoder().clsTag().runtimeClass()))
-                return (Dataset<Row>)dataset;
+                return (Dataset<Row>) dataset;
             return dataset.toDF();
         };
     }

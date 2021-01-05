@@ -24,7 +24,7 @@ public interface ExpressionMapper {
     Expression map(Expression expression) throws PlanMapperException;
 
     default LogicalPlan mapExpressionsInsideLogicalPlan(LogicalPlan logicalPlan) {
-        return  (LogicalPlan) logicalPlan.mapExpressions(asScalaFunction());
+        return (LogicalPlan) logicalPlan.mapExpressions(asScalaFunction());
     }
 
     default Expression mapChildrenOfExpression(Expression expression) {
@@ -33,6 +33,7 @@ public interface ExpressionMapper {
 
     /**
      * Utility that provides this mapper as a scala function (to be used with scala-specific apis).
+     *
      * @return A scala function that implements this mapper
      */
     default JavaToScalaFunction1<Expression, Expression> asScalaFunction() {

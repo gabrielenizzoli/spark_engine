@@ -31,7 +31,7 @@ var newDs = ds.select("column");
 While the programmatic interface is useful, many times **a full execution plan is better expressed as a set of separated sql statements**.
 When the statements are just too many, then it would be nice to be able to chain them without having to resort to a table catalog.
 These statements then can be tested in isolation, and finally connected at a later stage.
-A class called `SqlCompiler` allows chaining sql statements together as if they were a programmatic interface, bypassing the spark catalog. Example:
+A class called `SqlCompiler` allows to strictly define the input datasets in a sql statements. Example:
 
 ```java
 import dataengine.spark.sql.logicalplan.SqlCompiler;
@@ -82,9 +82,10 @@ var sqlCompiler = SqlCompiler.builder()
 var newDs = sqlCompiler.sql("select plusOne(column) from table")
 ```
 
-Note that a given `SqlCompiler` is only able to resolve the relations (aka, Tables) and udfs that are defined at the creation of the compiler itself.
+Note that a given `SqlCompiler` is only able to resolve the tables and UDFs that are defined at the creation of the compiler itself. 
+The compiler is then acting as a way to limit the scope of what a sql statement can *see*.
 Any other relation or udf that can't be resolved will result in an exception.
-This will allow for a fully controlled sql statement, where all the unknown elements (relations and udf) MUST be specified ahead of time.
+This will allow for a fully controlled sql statement, where all the unknown elements (relations and UDF) MUST be specified ahead of time.
 No more surprises, with developers in a large organization defining (in unknown places) tables or udf.
 
 

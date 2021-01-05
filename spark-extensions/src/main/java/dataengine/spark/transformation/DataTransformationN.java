@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @FunctionalInterface
-public interface DataTransformationN<S, D>  {
+public interface DataTransformationN<S, D> {
 
     Dataset<D> apply(List<Dataset<S>> datasets);
 

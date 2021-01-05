@@ -1,7 +1,7 @@
 package dataengine.pipeline.core;
 
-import dataengine.pipeline.core.sink.DataSink;
-import dataengine.pipeline.core.source.DataSource;
+import dataengine.pipeline.core.consumer.DatasetConsumer;
+import dataengine.pipeline.core.supplier.DatasetSupplier;
 import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.NonFinal;
@@ -9,7 +9,7 @@ import org.apache.spark.sql.Dataset;
 
 @Value
 @Builder
-public class Tap<T> implements DataSink<T>, DataSource<T> {
+public class Tap<T> implements DatasetConsumer<T>, DatasetSupplier<T> {
 
     @NonFinal
     Dataset<T> dataset;

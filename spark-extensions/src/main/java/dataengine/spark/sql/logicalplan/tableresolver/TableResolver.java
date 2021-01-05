@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.Map;
 
 @Value
-@Builder(builderClassName = "Builder")
+@Builder
 public class TableResolver implements LogicalPlanMapper {
 
     @Singular

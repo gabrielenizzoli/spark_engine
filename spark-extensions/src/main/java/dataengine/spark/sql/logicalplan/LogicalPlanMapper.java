@@ -28,6 +28,7 @@ public interface LogicalPlanMapper {
 
     /**
      * Utility that provides this mapper as a scala function (to be used with scala-specific apis).
+     *
      * @return A scala function that implements this mapper
      */
     default JavaToScalaFunction1<LogicalPlan, LogicalPlan> asScalaFunction() {
