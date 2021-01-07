@@ -1,7 +1,9 @@
 package dataengine.pipeline.datasetconsumer;
 
 import dataengine.pipeline.datasetconsumer.utils.*;
+import dataengine.pipeline.datasetfactory.ComponentDatasetFactory;
 import dataengine.pipeline.model.sink.*;
+import dataengine.pipeline.model.source.ComponentCatalog;
 import lombok.Builder;
 import lombok.Value;
 import org.apache.spark.sql.Row;
@@ -13,7 +15,11 @@ import javax.annotation.Nonnull;
 public class SinkDatasetConsumerFactory {
 
     @Nonnull
-    private SinkCatalog sinkCatalog;
+    SinkCatalog sinkCatalog;
+
+    public static SinkDatasetConsumerFactory of(SinkCatalog catalog) {
+        return SinkDatasetConsumerFactory.builder().sinkCatalog(catalog).build();
+    }
 
     public <T> DatasetConsumer<T> buildConsumer(String consumerName) throws DatasetConsumerException {
 

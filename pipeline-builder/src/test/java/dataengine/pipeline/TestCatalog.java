@@ -1,8 +1,11 @@
-package dataengine.pipeline.datasetbuilder;
+package dataengine.pipeline;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import dataengine.pipeline.model.sink.Sink;
+import dataengine.pipeline.model.sink.SinkCatalog;
+import dataengine.pipeline.model.sink.SinkCatalogException;
 import dataengine.pipeline.model.source.Component;
 import dataengine.pipeline.model.source.ComponentCatalog;
 import dataengine.pipeline.model.source.ComponentCatalogException;
@@ -32,11 +35,39 @@ public class TestCatalog {
             public void read() throws ComponentCatalogException {
                 try {
                     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-                    File yamlSource = new File("src/test/resources/" + Optional.ofNullable(resourceName).orElse("testComponentsCatalog") + ".yaml");
+                    File yamlSource = new File("src/test/resources/" + resourceName + ".yaml");
                     cachedSteps = mapper.readValue(yamlSource, new TypeReference<Map<String, Component>>() {
                     });
                 } catch (Exception e) {
                     throw new ComponentCatalogException("can't build", e);
+                }
+            }
+
+        };
+    }
+
+    @Nonnull
+    public static SinkCatalog getSinkCatalog(@Nullable String resourceName) {
+        return new SinkCatalog() {
+
+            private Map<String, Sink> cachedSteps;
+
+            @Override
+            @Nonnull
+            public Optional<Sink> lookup(String name) throws SinkCatalogException {
+                if (cachedSteps == null)
+                    read();
+                return Optional.ofNullable(cachedSteps.get(name));
+            }
+
+            public void read() throws SinkCatalogException {
+                try {
+                    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+                    File yamlSource = new File("src/test/resources/" + resourceName + ".yaml");
+                    cachedSteps = mapper.readValue(yamlSource, new TypeReference<Map<String, Sink>>() {
+                    });
+                } catch (Exception e) {
+                    throw new SinkCatalogException("can't build", e);
                 }
             }
 

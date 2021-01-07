@@ -24,6 +24,10 @@ public class ComponentDatasetFactory implements DatasetFactory {
     @lombok.Builder.Default
     Map<String, Dataset<?>> datasetCache = new HashMap<>();
 
+    public static ComponentDatasetFactory of(ComponentCatalog catalog) {
+        return ComponentDatasetFactory.builder().componentCatalog(catalog).build();
+    }
+
     @Nonnull
     @Override
     public <T> Dataset<T> buildDataset(String name) throws DatasetFactoryException {

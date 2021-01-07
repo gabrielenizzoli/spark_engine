@@ -1,5 +1,6 @@
 package dataengine.pipeline.datasetbuilder;
 
+import dataengine.pipeline.TestCatalog;
 import dataengine.pipeline.datasetfactory.ComponentDatasetFactory;
 import dataengine.pipeline.datasetfactory.DatasetFactoryException;
 import dataengine.pipeline.model.source.ComponentCatalogFromMap;

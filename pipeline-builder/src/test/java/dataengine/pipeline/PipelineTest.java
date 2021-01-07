@@ -51,4 +51,23 @@ class PipelineTest extends SparkSessionBase {
         assertEquals(List.of("value01"), list);
 
     }
+
+    @Test
+    void runWithYamlCatalogs() throws DatasetConsumerException, DatasetFactoryException {
+
+        // given
+
+        var pipe = Pipeline.builder()
+                .datasetConsumerFactory(SinkDatasetConsumerFactory.of(TestCatalog.getSinkCatalog("testSinks")))
+                .datasetFactory(ComponentDatasetFactory.of(TestCatalog.getComponentCatalog("testPipeline")))
+                .build();
+
+        // when
+        var list = ((CollectConsumer<String>) pipe.<String>run("sql", "collect")).getList();
+
+        // then
+        assertEquals(List.of("value"), list);
+
+    }
+
 }
