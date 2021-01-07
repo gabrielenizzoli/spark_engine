@@ -2,7 +2,7 @@ package dataengine.pipeline.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import dataengine.pipeline.model.collection.Pipelines;
+import dataengine.pipeline.model.pipeline.Pipelines;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

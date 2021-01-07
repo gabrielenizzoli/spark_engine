@@ -20,11 +20,11 @@ source2:
 
 tx:
   type: sql
-  using: [source1, source2]
+  using: [ source1, source2 ]
   udfs:
     ofClasses:
-      - dataengine.pipeline.builder.dataset.TestUdafAvg
-      - dataengine.pipeline.builder.dataset.TestIntUdf
+      - dataengine.pipeline.datasetbuilder.TestUdafAvg
+      - dataengine.pipeline.datasetbuilder.TestIntUdf
   sql: >
     select
       key,

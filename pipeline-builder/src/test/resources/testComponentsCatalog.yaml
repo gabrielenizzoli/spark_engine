@@ -6,7 +6,7 @@ source2:
   type: sql
   udfs:
     ofClasses:
-      - dataengine.pipeline.builder.dataset.TestIntUdf
+      - dataengine.pipeline.datasetbuilder.TestIntUdf
   sql: >
     select explode(array(
       named_struct("zum", testIntUdf(1, 1), "stuff", "xxx"),
@@ -20,11 +20,11 @@ source3:
 
 tx:
   type: sql
-  using: [source1, source2]
+  using: [ source1, source2 ]
   udfs:
     ofClasses:
-      - dataengine.pipeline.builder.dataset.TestStrUdf
-      - dataengine.pipeline.builder.dataset.TestIntUdf
+      - dataengine.pipeline.datasetbuilder.TestStrUdf
+      - dataengine.pipeline.datasetbuilder.TestIntUdf
   sql: >
     select
       testStrUdf(s1.abc.str, "p1") as str,

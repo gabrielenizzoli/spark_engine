@@ -5,10 +5,10 @@ source:
 
 tx:
   type: sql
-  using: [source]
+  using: [ source ]
   udfs:
     ofClasses:
-      - dataengine.pipeline.builder.dataset.TestLongUdf
+      - dataengine.pipeline.datasetbuilder.TestLongUdf
   sql: >
     select
       *,

@@ -33,10 +33,7 @@
         <module>pipeline-builder</module>
 
         <!-- deprecated -->
-        <module>pipeline-core</module>
         <module>pipeline-model-supplier</module>
-        <module>pipeline-model-builder</module>
-        <module>pipeline</module>
     </modules>
 
     <dependencyManagement>
