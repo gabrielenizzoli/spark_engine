@@ -117,7 +117,14 @@ public class Factories {
         var sqlFunctions = UdfUtils.buildSqlFunctionCollection(sqlComponent.getUdfs());
         var rowEncoder = Transformations.encodeAsRow();
         var parentDf = parentDs.stream().map(ds -> (Dataset<Object>) ds).map(rowEncoder::apply).collect(Collectors.toList());
-        return (Dataset<T>) Transformations.sql(sqlComponent.getUsing(), sqlComponent.getSql(), sqlFunctions).apply(parentDf);
+
+        var tx = Transformations.sql(sqlComponent.getUsing(), sqlComponent.getSql(), sqlFunctions);
+        if (sqlComponent.getEncodedAs() != null) {
+            var encode = EncoderUtils.buildEncoder(sqlComponent.getEncodedAs());
+            tx = tx.andThenEncode(encode);
+        }
+
+        return (Dataset<T>) tx.apply(parentDf);
     }
 
     private static <T> Dataset<T> getStreamDataset(StreamSource streamSource) throws DatasetFactoryException {

@@ -8,7 +8,7 @@ source2:
     select explode(array(named_struct("zum", 1, "stuff", "xxx"), named_struct("zum", 2, "stuff", "yyy"))) as def
 tx:
   type: sql
-  using: [source1, source2]
+  using: [ source1, source2 ]
   sql: >
     select
       s1.abc.str as str,

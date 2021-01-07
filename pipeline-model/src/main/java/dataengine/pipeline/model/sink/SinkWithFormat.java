@@ -9,8 +9,10 @@ public interface SinkWithFormat extends Sink {
 
     @Nonnull
     String getFormat();
+
     @Nullable
     Map<String, String> getOptions();
+
     @Nullable
     List<String> getPartitionColumns();
 

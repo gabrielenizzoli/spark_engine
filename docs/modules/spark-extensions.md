@@ -4,8 +4,8 @@ sort: 1
 
 # The spark-extension module
 
-This module only has spark as a dependency. 
-It provides some basic extension and manipulation utilities for handling functions, UDFs, logical plans, and datasets.
+This module only has spark as a dependency. It provides some basic extension and manipulation utilities for handling
+functions, UDFs, logical plans, and datasets.
 
 | Package | Language | Description |
 | ----------- | ----------- | ----------- |
@@ -15,35 +15,39 @@ It provides some basic extension and manipulation utilities for handling functio
 
 ## SqlCompiler
 
-In spark sql, to be able to reference a table or a udf, a developer must first register the table or udf in a catalog. Example with spark sql:
+In spark sql, to be able to reference a table or a udf, a developer must first register the table or udf in a catalog.
+Example with spark sql:
+
 ```java
-var ds = ...;
-ds.createOrReplaceTempView("table");
-var dsNew = spark.sql("select column from table");
+var ds=...;
+        ds.createOrReplaceTempView("table");
+        var dsNew=spark.sql("select column from table");
 ```
 
-Contrary to that, the programmatic interface does not need this but simply requires a reference to the dataset. Example with programmatic interface:
+Contrary to that, the programmatic interface does not need this but simply requires a reference to the dataset. Example
+with programmatic interface:
+
 ```java
-var ds = ...;
-var newDs = ds.select("column");
+var ds=...;
+        var newDs=ds.select("column");
 ```
 
-While the programmatic interface is useful, many times **a full execution plan is better expressed as a set of separated sql statements**.
-When the statements are just too many, then it would be nice to be able to chain them without having to resort to a table catalog.
-These statements then can be tested in isolation, and finally connected at a later stage.
+While the programmatic interface is useful, many times **a full execution plan is better expressed as a set of separated
+sql statements**. When the statements are just too many, then it would be nice to be able to chain them without having
+to resort to a table catalog. These statements then can be tested in isolation, and finally connected at a later stage.
 A class called `SqlCompiler` allows to strictly define the input datasets in a sql statements. Example:
 
 ```java
 import dataengine.spark.sql.logicalplan.SqlCompiler;
 import dataengine.spark.sql.logicalplan.tableresolver.Table;
 
-var ds = ...;
-        
-var sqlCompiler = SqlCompiler.builder()
-        .tableResolver(Table.ofDataset("table", ds))
+var ds=...;
+
+        var sqlCompiler=SqlCompiler.builder()
+        .tableResolver(Table.ofDataset("table",ds))
         .build();
 
-var newDs = sqlCompiler.compileSqlToDataset(sparkSession, "select column from table")
+        var newDs=sqlCompiler.compileSqlToDataset(sparkSession,"select column from table")
 ```
 
 The same is possible with UDFs (and UDAFs). Example:
@@ -72,24 +76,23 @@ public class UdfPlusOne implements Udf {
     }
 }
 
-var ds = ...;
-        
-var sqlCompiler = SqlCompiler.builder()
-        .tableResolver(Table.ofDataset("table", ds))
+    var ds = ...;
+
+        var sqlCompiler=SqlCompiler.builder()
+        .tableResolver(Table.ofDataset("table",ds))
         .functionResolver(new UdfPlusOne())
         .build();
 
-var newDs = sqlCompiler.sql("select plusOne(column) from table")
+        var newDs=sqlCompiler.sql("select plusOne(column) from table")
 ```
 
-Note that a given `SqlCompiler` is only able to resolve the tables and UDFs that are defined at the creation of the compiler itself. 
-The compiler is then acting as a way to limit the scope of what a sql statement can *see*.
-Any other relation or udf that can't be resolved will result in an exception.
-This will allow for a fully controlled sql statement, where all the unknown elements (relations and UDF) MUST be specified ahead of time.
-No more surprises, with developers in a large organization defining (in unknown places) tables or udf.
+Note that a given `SqlCompiler` is only able to resolve the tables and UDFs that are defined at the creation of the
+compiler itself. The compiler is then acting as a way to limit the scope of what a sql statement can *see*. Any other
+relation or udf that can't be resolved will result in an exception. This will allow for a fully controlled sql
+statement, where all the unknown elements (relations and UDF) MUST be specified ahead of time. No more surprises, with
+developers in a large organization defining (in unknown places) tables or udf.
 
-
-## Utilities 
+## Utilities
 
 ### package: dataengine.scala.compat
 
@@ -105,11 +108,12 @@ Two classes are provided to wrap generic java functions, depending on the number
 | `JavaToScalaFunction2` | `scala.Function2` | `java.util.function.BiFunction` |
 
 Example:
+
 ```java
 import java.util.function.Function;
 
-Function<Integer, Integer> javaFunction = i -> i+1;
-JavaToScalaFunction1<Integer, Integer> scalaFunction = new JavaToScalaFunction1<>(javaFunction);
+Function<Integer, Integer> javaFunction=i->i+1;
+        JavaToScalaFunction1<Integer, Integer> scalaFunction=new JavaToScalaFunction1<>(javaFunction);
 ```
 
 #### Udf Wrappers
@@ -126,51 +130,52 @@ Similar utilities with the same purpose as the ones above, but this time to wrap
 | `JavaUdf1ToScalaFunction5` | `scala.Function5` | `org.apache.spark.sql.api.java.UDF5` |
 
 Example:
+
 ```java
 import org.apache.spark.sql.api.java.UDF1;
 
-UDF1<Integer, Integer> javaUdf = i -> i+1;
-JavaUdf1ToScalaFunction1<Integer, Integer> scalaUdf = new JavaUdf1ToScalaFunction1<>(javaUdf);
+UDF1<Integer, Integer> javaUdf=i->i+1;
+        JavaUdf1ToScalaFunction1<Integer, Integer> scalaUdf=new JavaUdf1ToScalaFunction1<>(javaUdf);
 ```
 
 ### package: dataengine.spark.transformation
 
-#### DatasetTransformations 
+#### DatasetTransformations
 
-These classes abstract and encapsulates some combination logic between datasets. 
-They are useful to divide and organize a complex data flow between many source and destination points. 
-Example of a simple transformation:
+These classes abstract and encapsulates some combination logic between datasets. They are useful to divide and organize
+a complex data flow between many source and destination points. Example of a simple transformation:
+
 ```java
 import dataengine.spark.transformation.*;
 
-DataTransformation2<Integer, Integer, Integer> tx = (d1, d2) -> d1.as("d1").join(d2.as("d2"), col("d1.value").equalTo(col("d2.value")));
+DataTransformation2<Integer, Integer, Integer> tx=(d1,d2)->d1.as("d1").join(d2.as("d2"),col("d1.value").equalTo(col("d2.value")));
 
-var ds1 = ...;
-var ds2 = ...;
-var dsResult = tx.apply(ds1, ds2);
+        var ds1=...;
+        var ds2=...;
+        var dsResult=tx.apply(ds1,ds2);
 ```
 
-Each transformation interface has a method called `apply()` that takes a variable number of datasets and provides, as an output, a dataset.
-Every transformation class moreover has 2 additional useful methods, called `andThen` and `andThenEncode`.
-They allow for easy chaining additional changes to a new transformation object. 
-This makes for an easier sequential reading of the code, and requires the developer to call `apply()` only once.
-Example:
+Each transformation interface has a method called `apply()` that takes a variable number of datasets and provides, as an
+output, a dataset. Every transformation class moreover has 2 additional useful methods, called `andThen`
+and `andThenEncode`. They allow for easy chaining additional changes to a new transformation object. This makes for an
+easier sequential reading of the code, and requires the developer to call `apply()` only once. Example:
+
 ```java
-Dataset<Integer> ds1 = ...;
-Dataset<Long> ds2 = ...;
-DataTransformation2<Integer, Integer, Row> transformation1 = ...;
-DataTransformation<Row, Row> transformation2 = ...;
+Dataset<Integer> ds1=...;
+        Dataset<Long> ds2=...;
+        DataTransformation2<Integer, Integer, Row> transformation1=...;
+        DataTransformation<Row, Row> transformation2=...;
 
 // without chaining
-Dataset<SampleClass> dsNewWithoutChaining = transformation2
-        .apply(transformation1.apply(ds1, ds2))
+        Dataset<SampleClass> dsNewWithoutChaining=transformation2
+        .apply(transformation1.apply(ds1,ds2))
         .as(Encoders.bean(SampleClass.class));
 
 // with chaining
-Dataset<SampleClass> dsNewWithChaining = transformation1
+        Dataset<SampleClass> dsNewWithChaining=transformation1
         .andThen(transformation2)
         .andThenEncode(Encoders.bean(SampleClass.class))
-        .apply(ds1, ds2);
+        .apply(ds1,ds2);
 
 ```
 
@@ -185,31 +190,34 @@ List of transformation classes available:
 | `DataTransformation10<S1, ..., S10, D>` | `Dataset<S1>`, ..., `Dataset<S10>` (10 datasets) | `Dataset<D>` | 10 input datasets of same or different types |
 | `DataTransformationN<S, D>` | `List<Dataset<S>>` | `Dataset<D>` | N input datasets of same type |
 
-#### Transformations 
+#### Transformations
 
-The `Transformations` class holds additional method for creating new useful dataset transformations. Here a quick list with examples.
+The `Transformations` class holds additional method for creating new useful dataset transformations. Here a quick list
+with examples.
 
 Creating transformations based on sql statements:
+
 ```java
 // 1 dataset
-var ds1 = ...;
-var sql = "select column from table";
-var newDs = Transformations.sql("table", sql).apply(ds1);
+var ds1=...;
+        var sql="select column from table";
+        var newDs=Transformations.sql("table",sql).apply(ds1);
 
 // 2 datasets
-var ds1 = ...;
-var sql2 = "select table1.column from table1 join table2 on table1.column = table2.column";
-var newDs = Transformations.sql("table1", "table2", sql2).apply(ds1, ds2);
+        var ds1=...;
+        var sql2="select table1.column from table1 join table2 on table1.column = table2.column";
+        var newDs=Transformations.sql("table1","table2",sql2).apply(ds1,ds2);
 
 // if input datasets ate Dataset<Row>
-var newDs = Transformations.sql(List.of("table1", "table2"), sql2).apply(List.of(ds1, ds2));
+        var newDs=Transformations.sql(List.of("table1","table2"),sql2).apply(List.of(ds1,ds2));
 ```
 
 Creating transformations to cache or encode datasets. Example:
-```java
-Dataset<Row> ds = ...;
 
-Dataset<Integer> newDs = Transformations
+```java
+Dataset<Row> ds=...;
+
+        Dataset<Integer> newDs=Transformations
         .encdeAs(Encoders.INT)
         .cache(StorageLevel.DISK_ONLY)
         .apply(ds);

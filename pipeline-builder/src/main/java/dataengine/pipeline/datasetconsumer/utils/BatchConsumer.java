@@ -21,13 +21,14 @@ public class BatchConsumer<T> implements DatasetConsumer<T> {
     SaveMode saveMode;
 
     @Override
-    public void readFrom(Dataset<T> dataset) {
+    public DatasetConsumer<T> readFrom(Dataset<T> dataset) {
         if (dataset.isStreaming())
             throw new IllegalArgumentException("input dataset is a streaming dataset");
 
         var writer = format.configureBatch(dataset.write());
         Optional.ofNullable(saveMode).ifPresent(m -> writer.mode(saveMode));
         writer.save();
+        return this;
     }
 
     public static SaveMode getBatchSaveMode(BatchSink batchSink) {

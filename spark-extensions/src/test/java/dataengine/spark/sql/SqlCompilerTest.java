@@ -4,15 +4,12 @@ import dataengine.spark.sql.logicalplan.PlanMapperException;
 import dataengine.spark.sql.logicalplan.SqlCompiler;
 import dataengine.spark.sql.logicalplan.tableresolver.Table;
 import dataengine.spark.test.SparkSessionBase;
-import dataengine.spark.transformation.DataTransformation2;
-import dataengine.spark.transformation.Transformations;
 import dataengine.spark.utils.UdafIntegerSummer;
 import dataengine.spark.utils.UdfPlusOne;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.catalyst.parser.ParseException;
-import org.apache.spark.sql.execution.ExplainMode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

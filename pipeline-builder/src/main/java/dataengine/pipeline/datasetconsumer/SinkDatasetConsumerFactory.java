@@ -1,22 +1,21 @@
 package dataengine.pipeline.datasetconsumer;
 
-import dataengine.pipeline.datasetconsumer.utils.BatchConsumer;
-import dataengine.pipeline.datasetconsumer.utils.CollectConsumer;
-import dataengine.pipeline.datasetconsumer.utils.DatasetWriterFormat;
-import dataengine.pipeline.datasetconsumer.utils.StreamConsumer;
+import dataengine.pipeline.datasetconsumer.utils.*;
 import dataengine.pipeline.model.sink.*;
+import lombok.Builder;
 import lombok.Value;
 import org.apache.spark.sql.Row;
 
 import javax.annotation.Nonnull;
 
 @Value
-public class SinkDatasetConsumerFactory<T> {
+@Builder
+public class SinkDatasetConsumerFactory {
 
     @Nonnull
     private SinkCatalog sinkCatalog;
 
-    public DatasetConsumer<T> buildConsumer(String consumerName) throws DatasetConsumerException {
+    public <T> DatasetConsumer<T> buildConsumer(String consumerName) throws DatasetConsumerException {
 
         if (consumerName == null || consumerName.isBlank())
             throw new DatasetConsumerException("consumer name is null or blank: [" + consumerName + "]");
@@ -35,10 +34,12 @@ public class SinkDatasetConsumerFactory<T> {
         }
     }
 
-    private DatasetConsumer<T> getConsumer(Sink sink) throws DatasetConsumerException {
+    private <T> DatasetConsumer<T> getConsumer(Sink sink) throws DatasetConsumerException {
         if (sink instanceof ShowSink) {
             var show = (ShowSink) sink;
-            return (ds) -> ds.show(show.getNumRows(), show.getTruncate());
+            return (DatasetConsumer<T>)ShowConsumer.builder()
+                    .count(show.getNumRows()).truncate(show.getTruncate())
+                    .build();
         }
 
         if (sink instanceof CollectSink) {

@@ -31,7 +31,7 @@ public class StreamConsumer<T> implements DatasetConsumer<T> {
     OutputMode outputMode;
 
     @Override
-    public void readFrom(Dataset<T> dataset) {
+    public DatasetConsumer<T> readFrom(Dataset<T> dataset) {
         if (!dataset.isStreaming())
             throw new IllegalArgumentException("input dataset is not a streaming dataset");
 
@@ -44,6 +44,8 @@ public class StreamConsumer<T> implements DatasetConsumer<T> {
         } catch (TimeoutException e) {
             throw new IllegalStateException("error starting stream", e);
         }
+
+        return this;
     }
 
     public static Trigger getStreamTrigger(StreamSink streamSink) {
