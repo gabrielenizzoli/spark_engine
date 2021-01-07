@@ -2,7 +2,7 @@ package dataengine.pipeline.core.consumer.factory;
 
 import dataengine.pipeline.core.consumer.DatasetConsumer;
 import dataengine.pipeline.core.consumer.impl.BatchConsumer;
-import dataengine.pipeline.model.description.sink.BatchSink;
+import dataengine.pipeline.model.sink.BatchSink;
 import lombok.Value;
 import org.apache.spark.sql.SaveMode;
 

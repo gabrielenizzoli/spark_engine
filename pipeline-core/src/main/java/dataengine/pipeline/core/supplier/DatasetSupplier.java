@@ -2,6 +2,8 @@ package dataengine.pipeline.core.supplier;
 
 import dataengine.pipeline.core.consumer.DatasetConsumer;
 import dataengine.pipeline.core.consumer.impl.ShowConsumer;
+import dataengine.pipeline.core.supplier.impl.DatasetSupplier1;
+import dataengine.pipeline.core.supplier.impl.DatasetSupplierMerge;
 import dataengine.spark.transformation.DataTransformation;
 import dataengine.spark.transformation.DataTransformation2;
 import dataengine.spark.transformation.Transformations;
@@ -25,8 +27,8 @@ public interface DatasetSupplier<T> extends Supplier<Dataset<T>> {
         return DatasetSupplier1.of(this, transformation);
     }
 
-    default DatasetSupplier<Row> sql(String sql) {
-        return transform(Transformations.sql("source", sql));
+    default DatasetSupplier<Row> sql(String sourceName, String sql) {
+        return transform(Transformations.sql(sourceName, sql));
     }
 
 
@@ -57,9 +59,9 @@ public interface DatasetSupplier<T> extends Supplier<Dataset<T>> {
      * 2-way merge operation between data provided by this DatasetSupplier and another one.
      *
      * @param otherDatasetSupplier Second DatasetSupplier
-     * @param merger          Merge operation
-     * @param <T2>            Type of second DatasetSupplier.
-     * @param <D>             Return type of merge operation.
+     * @param merger               Merge operation
+     * @param <T2>                 Type of second DatasetSupplier.
+     * @param <D>                  Return type of merge operation.
      * @return Resulting DatasetSupplier
      */
     default <T2, D> DatasetSupplier<D> mergeWith(DatasetSupplier<T2> otherDatasetSupplier, DataTransformation2<T, T2, D> merger) {

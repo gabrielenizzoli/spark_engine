@@ -2,7 +2,9 @@ package dataengine.pipeline.core.consumer.catalog;
 
 import dataengine.pipeline.core.consumer.DatasetConsumer;
 import dataengine.pipeline.core.consumer.factory.*;
-import dataengine.pipeline.model.description.sink.*;
+import dataengine.pipeline.model.sink.Sink;
+import dataengine.pipeline.model.sink.SinkCatalog;
+import dataengine.pipeline.model.sink.SinkCatalogException;
 import lombok.Value;
 
 import javax.annotation.Nonnull;

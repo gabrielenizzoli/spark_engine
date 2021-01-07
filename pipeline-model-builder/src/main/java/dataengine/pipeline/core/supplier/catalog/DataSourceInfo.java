@@ -1,7 +1,7 @@
 package dataengine.pipeline.core.supplier.catalog;
 
 import dataengine.pipeline.core.supplier.DatasetSupplier;
-import dataengine.pipeline.model.description.source.Component;
+import dataengine.pipeline.model.source.Component;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;

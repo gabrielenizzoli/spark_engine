@@ -1,6 +1,7 @@
 package dataengine.pipeline.core.supplier;
 
 import dataengine.pipeline.core.consumer.DatasetConsumer;
+import dataengine.pipeline.core.supplier.impl.DatasetSupplierMerge;
 import dataengine.spark.test.SparkSessionBase;
 import dataengine.spark.transformation.DataTransformation;
 import dataengine.spark.transformation.DataTransformation2;
@@ -29,13 +30,11 @@ class SqlTransformationsTest extends SparkSessionBase {
         List<Integer> data = new LinkedList<>();
         DatasetSupplier<Integer> datasetSupplier = () -> sparkSession.createDataset(Arrays.asList(1, 2, 3, 4, 5, 6), Encoders.INT());
         DatasetConsumer<BigDecimal> datasetConsumer = d -> data.addAll(d.collectAsList().stream().map(BigDecimal::intValue).collect(Collectors.toList()));
-        DataTransformation<Integer, Row> tx1 = Transformations.sql("source", "select value*2 as value from source");
-        DataTransformation<Row, Row> tx2 = Transformations.sql("source2", "select sum(value) as sumValue from source2");
 
         // when
         datasetSupplier
-                .transform(tx1)
-                .transform(tx2)
+                .sql("source", "select value*2 as value from source")
+                .sql("source2", "select sum(value) as sumValue from source2")
                 .encodeAs(Encoders.DECIMAL())
                 .writeTo(datasetConsumer);
 

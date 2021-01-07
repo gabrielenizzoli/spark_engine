@@ -1,9 +1,9 @@
 package dataengine.pipeline.core.supplier.factory;
 
 import dataengine.pipeline.core.supplier.DatasetSupplier;
-import dataengine.pipeline.core.supplier.impl.SparkSource;
+import dataengine.pipeline.core.supplier.impl.SourceSupplier;
 import dataengine.pipeline.core.supplier.utils.EncoderUtils;
-import dataengine.pipeline.model.description.source.component.BatchSource;
+import dataengine.pipeline.model.source.component.BatchSource;
 import lombok.Value;
 
 import javax.annotation.Nonnull;
@@ -16,11 +16,11 @@ public class BatchSourceFactory implements DatasetSupplierFactory {
 
     @Override
     public DatasetSupplier<?> build() throws DatasetSupplierFactoryException {
-        return SparkSource.builder()
+        return SourceSupplier.builder()
                 .format(source.getFormat())
                 .options(source.getOptions())
                 .encoder(EncoderUtils.buildEncoder(source.getEncodedAs()))
-                .type(SparkSource.SourceType.BATCH)
+                .type(SourceSupplier.SourceType.BATCH)
                 .build();
     }
 

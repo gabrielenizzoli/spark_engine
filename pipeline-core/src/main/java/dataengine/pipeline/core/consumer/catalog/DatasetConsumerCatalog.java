@@ -8,6 +8,6 @@ import javax.annotation.Nonnull;
 public interface DatasetConsumerCatalog {
 
     @Nonnull
-    <T> DatasetConsumer<T> lookup(String dataSinkName) throws DatasetConsumerCatalogException;
+    <T> DatasetConsumer<T> lookup(String datasetConsumerName) throws DatasetConsumerCatalogException;
 
 }

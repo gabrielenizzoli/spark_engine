@@ -1,7 +1,9 @@
 package dataengine.pipeline.core.consumer.impl;
 
 import dataengine.pipeline.core.consumer.DatasetConsumer;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Value;
 import org.apache.spark.sql.Dataset;
 
 import java.util.LinkedList;

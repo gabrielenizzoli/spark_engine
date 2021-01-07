@@ -1,8 +1,9 @@
 package dataengine.pipeline.core.supplier.factory;
 
 import dataengine.pipeline.core.supplier.DatasetSupplier;
-import dataengine.pipeline.core.supplier.impl.EmptyDatasetSource;
+import dataengine.pipeline.core.supplier.impl.EmptyDatasetSupplier;
 import dataengine.pipeline.core.supplier.utils.EncoderUtils;
+import dataengine.pipeline.model.source.component.EmptySource;
 import lombok.Value;
 
 import javax.annotation.Nonnull;
@@ -11,11 +12,11 @@ import javax.annotation.Nonnull;
 public class EmptyDatasetSourceFactory implements DatasetSupplierFactory {
 
     @Nonnull
-    dataengine.pipeline.model.description.source.component.EmptyDatasetSource source;
+    EmptySource source;
 
     @Override
     public DatasetSupplier<?> build() throws DatasetSupplierFactoryException {
-        return EmptyDatasetSource.builder()
+        return EmptyDatasetSupplier.builder()
                 .encoder(EncoderUtils.buildEncoder(source.getEncodedAs()))
                 .build();
     }

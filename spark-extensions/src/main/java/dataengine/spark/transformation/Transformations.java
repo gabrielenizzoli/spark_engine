@@ -9,6 +9,7 @@ import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoder;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
 import org.apache.spark.storage.StorageLevel;
 
 import javax.annotation.Nonnull;
@@ -20,6 +21,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Transformations {
+
+    public static <S, D> DataTransformationN<S, D> empty(SparkSession sparkSession, Encoder<D> encoder) {
+        return (sources) -> sparkSession.emptyDataset(encoder);
+    }
+
+    public static <S> DataTransformationN<S, Row> empty(SparkSession sparkSession) {
+        return (sources) -> sparkSession.emptyDataFrame();
+    }
 
     public static <S, D> DataTransformation<S, D> map(MapFunction<S, D> map, Encoder<D> encoder) {
         return s -> s.map(map, encoder);
@@ -92,7 +101,7 @@ public class Transformations {
                 throw new TransformationException("datasets provided count (" + datasets.size() + ") different than source names count provided (" + sourceNames + ")");
             }
 
-            var tables = IntStream.range(0, sourceNames.size()).mapToObj(i -> Table.ofDataset(sourceNames.get(i), datasets.get(i))).collect(Collectors.toList());
+            var tables = sourceNames.isEmpty() ? List.<Table>of() : IntStream.range(0, sourceNames.size()).mapToObj(i -> Table.ofDataset(sourceNames.get(i), datasets.get(i))).collect(Collectors.toList());
             try {
                 return SqlCompiler.sql(tables, sqlFunctions, sql);
             } catch (PlanMapperException e) {

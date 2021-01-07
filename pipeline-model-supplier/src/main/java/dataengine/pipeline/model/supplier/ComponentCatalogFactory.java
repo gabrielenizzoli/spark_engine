@@ -3,9 +3,9 @@ package dataengine.pipeline.model.supplier;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import dataengine.pipeline.model.description.source.Component;
-import dataengine.pipeline.model.description.source.ComponentCatalog;
-import dataengine.pipeline.model.description.source.ComponentCatalogFromMap;
+import dataengine.pipeline.model.source.Component;
+import dataengine.pipeline.model.source.ComponentCatalog;
+import dataengine.pipeline.model.source.ComponentCatalogFromMap;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;

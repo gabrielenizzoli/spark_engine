@@ -3,9 +3,9 @@ package dataengine.pipeline.core.supplier.factory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dataengine.pipeline.core.supplier.DatasetSupplier;
-import dataengine.pipeline.core.supplier.impl.EmptyDataframeSource;
-import dataengine.pipeline.core.supplier.impl.InlineJsonDataframeSource;
-import dataengine.pipeline.model.description.source.component.InlineDataframeSource;
+import dataengine.pipeline.core.supplier.impl.EmptyDataframeSupplier;
+import dataengine.pipeline.core.supplier.impl.InlineJsonSupplier;
+import dataengine.pipeline.model.source.component.InlineSource;
 import lombok.Value;
 
 import javax.annotation.Nonnull;
@@ -19,7 +19,7 @@ public class InlineDataframeSourceFactory implements DatasetSupplierFactory {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Nonnull
-    InlineDataframeSource source;
+    InlineSource source;
 
     @Override
     public DatasetSupplier<?> build() throws DatasetSupplierFactoryException {
@@ -31,12 +31,12 @@ public class InlineDataframeSourceFactory implements DatasetSupplierFactory {
                 .orElse(Collections.emptyList());
 
         if (json.isEmpty()) {
-            return EmptyDataframeSource.builder()
+            return EmptyDataframeSupplier.builder()
                     .schema(source.getSchema())
                     .build();
         }
         
-        return InlineJsonDataframeSource.builder()
+        return InlineJsonSupplier.builder()
                 .schema(source.getSchema())
                 .json(json)
                 .build();

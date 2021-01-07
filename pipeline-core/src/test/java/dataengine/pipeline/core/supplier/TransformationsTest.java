@@ -1,8 +1,11 @@
 package dataengine.pipeline.core.supplier;
 
 import dataengine.pipeline.core.consumer.DatasetConsumer;
+import dataengine.pipeline.core.supplier.impl.DatasetSupplier2;
+import dataengine.pipeline.core.supplier.impl.InlineObjectSupplier;
 import dataengine.spark.test.SparkSessionBase;
 import dataengine.spark.transformation.DataTransformation;
+import dataengine.spark.transformation.DataTransformation2;
 import dataengine.spark.transformation.Transformations;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
@@ -36,6 +39,31 @@ class TransformationsTest extends SparkSessionBase {
         // then
         Assertions.assertEquals(Collections.singletonList(10), data);
 
+    }
+
+    @Test
+    void testJoin() {
+
+        // given
+        var supplier1 = InlineObjectSupplier.<Integer>builder()
+                .objects(List.of(1, 2, 3, 5))
+                .encoder(Encoders.INT()).build();
+
+        var supplier2 = InlineObjectSupplier.<Integer>builder()
+                .objects(List.of(3, 4, 5))
+                .encoder(Encoders.INT()).build();
+
+        DataTransformation2<Integer, Integer, Row> join = Transformations.sql("source1", "source2", "select source1.value from source1 join source2 on source1.value = source2.value");
+
+        // when
+        var joinSupplier = DatasetSupplier2.<Integer, Integer, Row>builder()
+                .parentDatasetSupplier1(supplier1)
+                .parentDatasetSupplier2(supplier2)
+                .transformation(join)
+                .build();
+
+        // then
+        Assertions.assertEquals(List.of(3, 5), joinSupplier.get().select("value").as(Encoders.INT()).collectAsList());
     }
 
 

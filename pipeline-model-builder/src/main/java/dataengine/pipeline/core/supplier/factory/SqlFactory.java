@@ -1,12 +1,12 @@
 package dataengine.pipeline.core.supplier.factory;
 
 import dataengine.pipeline.core.supplier.DatasetSupplier;
-import dataengine.pipeline.core.supplier.DatasetSupplierMerge;
+import dataengine.pipeline.core.supplier.impl.DatasetSupplierMerge;
 import dataengine.pipeline.core.supplier.catalog.DatasetSupplierCatalog;
 import dataengine.pipeline.core.supplier.catalog.DatasetSupplierCatalogException;
 import dataengine.pipeline.core.supplier.utils.EncoderUtils;
 import dataengine.pipeline.core.supplier.utils.UdfUtils;
-import dataengine.pipeline.model.description.source.component.Sql;
+import dataengine.pipeline.model.source.component.Sql;
 import dataengine.spark.transformation.Transformations;
 import lombok.Value;
 import org.apache.spark.sql.Row;

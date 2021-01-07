@@ -1,7 +1,7 @@
 package dataengine.pipeline.core.supplier.factory;
 
-import dataengine.pipeline.model.description.source.TransformationComponentWithMultipleInputs;
-import dataengine.pipeline.model.description.source.TransformationComponentWithSingleInput;
+import dataengine.pipeline.model.source.TransformationComponentWithMultipleInputs;
+import dataengine.pipeline.model.source.TransformationComponentWithSingleInput;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;

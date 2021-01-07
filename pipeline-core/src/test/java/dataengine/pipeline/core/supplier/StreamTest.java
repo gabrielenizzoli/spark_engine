@@ -2,7 +2,7 @@ package dataengine.pipeline.core.supplier;
 
 import dataengine.pipeline.core.consumer.impl.DatasetWriterFormat;
 import dataengine.pipeline.core.consumer.impl.StreamConsumer;
-import dataengine.pipeline.core.supplier.impl.SparkSource;
+import dataengine.pipeline.core.supplier.impl.SourceSupplier;
 import dataengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
@@ -18,8 +18,8 @@ public class StreamTest extends SparkSessionBase {
     public void testStream() throws StreamingQueryException {
 
         // given - stream with source and sink
-        SparkSource<Row> sparkSource = SparkSource.<Row>builder()
-                .type(SparkSource.SourceType.STREAM)
+        SourceSupplier<Row> sourceSupplier = SourceSupplier.<Row>builder()
+                .type(SourceSupplier.SourceType.STREAM)
                 .format("rate")
                 .option("rowsPerSecond ", "1")
                 .build();
@@ -31,7 +31,7 @@ public class StreamTest extends SparkSessionBase {
                 .outputMode(OutputMode.Append())
                 .build();
 
-        sparkSource.writeTo(sparkSink);
+        sourceSupplier.writeTo(sparkSink);
 
         // when - stream is run
         sparkSession.streams().awaitAnyTermination(5000);

@@ -1,7 +1,7 @@
 package dataengine.pipeline.core.consumer.factory;
 
 import dataengine.pipeline.core.consumer.impl.DatasetWriterFormat;
-import dataengine.pipeline.model.description.sink.*;
+import dataengine.pipeline.model.sink.*;
 
 import javax.annotation.Nonnull;
 

@@ -4,15 +4,19 @@ import dataengine.spark.sql.logicalplan.PlanMapperException;
 import dataengine.spark.sql.logicalplan.SqlCompiler;
 import dataengine.spark.sql.logicalplan.tableresolver.Table;
 import dataengine.spark.test.SparkSessionBase;
+import dataengine.spark.transformation.DataTransformation2;
+import dataengine.spark.transformation.Transformations;
 import dataengine.spark.utils.UdafIntegerSummer;
 import dataengine.spark.utils.UdfPlusOne;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.catalyst.parser.ParseException;
+import org.apache.spark.sql.execution.ExplainMode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -62,7 +66,6 @@ public class SqlCompilerTest extends SparkSessionBase {
         // when
         Dataset<Row> datasetResolved = sqlCompiler
                 .sql(sparkSession, "select * from (select value+1 as valueWithOperation, (select value-1 from table2) as valueSubqueryFromTable2 from table)");
-        System.out.println(datasetResolved.logicalPlan().treeString());
 
         // then
         Assertions.assertEquals(Collections.singletonList(101), datasetResolved.select("valueWithOperation").as(Encoders.INT()).collectAsList());
@@ -100,6 +103,25 @@ public class SqlCompilerTest extends SparkSessionBase {
 
         // then
         Assertions.assertEquals(Collections.singletonList(10), datasetResolved.select("value").as(Encoders.INT()).collectAsList());
+
+    }
+
+    @Test
+    void testSqlWithJoin() throws PlanMapperException {
+
+        // given
+        var sqlCompiler = SqlCompiler.builder()
+                .tableResolver(
+                        Table.ofDataset("source1", sparkSession.createDataset(Arrays.asList(1, 2, 3), Encoders.INT())),
+                        Table.ofDataset("source2", sparkSession.createDataset(Arrays.asList(2, 3, 4), Encoders.INT())))
+                .functionResolver(new UdafIntegerSummer())
+                .build();
+
+        // when
+        var datasetResolved = sqlCompiler.sql(sparkSession, "select source1.value as value from source1 join source2 on source1.value = source2.value");
+
+        // then
+        Assertions.assertEquals(List.of(2, 3), datasetResolved.select("value").as(Encoders.INT()).collectAsList());
 
     }
 

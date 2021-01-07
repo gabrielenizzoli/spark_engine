@@ -1,8 +1,8 @@
 package dataengine.pipeline.core.supplier.factory;
 
 import dataengine.pipeline.core.supplier.DatasetSupplier;
-import dataengine.pipeline.core.supplier.DatasetSupplierError;
-import dataengine.pipeline.model.description.source.component.PlaceholderSchemaComponent;
+import dataengine.pipeline.core.supplier.impl.DatasetSupplierError;
+import dataengine.pipeline.model.source.component.PlaceholderSchemaComponent;
 import lombok.Value;
 
 import javax.annotation.Nonnull;

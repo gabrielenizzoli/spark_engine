@@ -4,7 +4,7 @@ import dataengine.pipeline.core.supplier.DatasetSupplier;
 import dataengine.pipeline.core.supplier.catalog.DatasetSupplierCatalog;
 import dataengine.pipeline.core.supplier.catalog.DatasetSupplierCatalogException;
 import dataengine.pipeline.core.supplier.utils.EncoderUtils;
-import dataengine.pipeline.model.description.source.component.Encode;
+import dataengine.pipeline.model.source.component.Encode;
 import lombok.Value;
 import org.apache.spark.sql.Encoder;
 

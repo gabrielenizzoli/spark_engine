@@ -1,6 +1,5 @@
 package dataengine.pipeline.core.utils;
 
-import dataengine.pipeline.core.supplier.GraphException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

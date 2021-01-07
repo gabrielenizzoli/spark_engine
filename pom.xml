@@ -29,8 +29,11 @@
         <module>utilities</module>
         <module>spark-test</module>
         <module>spark-extensions</module>
-        <module>pipeline-core</module>
         <module>pipeline-model</module>
+        <module>pipeline-builder</module>
+
+        <!-- deprecated -->
+        <module>pipeline-core</module>
         <module>pipeline-model-supplier</module>
         <module>pipeline-model-builder</module>
         <module>pipeline</module>

@@ -2,7 +2,7 @@ package dataengine.pipeline.core.consumer.factory;
 
 import dataengine.pipeline.core.consumer.DatasetConsumer;
 import dataengine.pipeline.core.consumer.impl.ShowConsumer;
-import dataengine.pipeline.model.description.sink.ShowSink;
+import dataengine.pipeline.model.sink.ShowSink;
 import lombok.Value;
 
 import javax.annotation.Nonnull;

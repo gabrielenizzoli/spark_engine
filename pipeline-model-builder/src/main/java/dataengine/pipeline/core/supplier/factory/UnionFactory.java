@@ -3,7 +3,7 @@ package dataengine.pipeline.core.supplier.factory;
 import dataengine.pipeline.core.supplier.DatasetSupplier;
 import dataengine.pipeline.core.supplier.catalog.DatasetSupplierCatalog;
 import dataengine.pipeline.core.supplier.catalog.DatasetSupplierCatalogException;
-import dataengine.pipeline.model.description.source.component.Union;
+import dataengine.pipeline.model.source.component.Union;
 import lombok.Value;
 
 import javax.annotation.Nonnull;

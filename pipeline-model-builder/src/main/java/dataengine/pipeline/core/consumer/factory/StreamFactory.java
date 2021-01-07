@@ -2,7 +2,7 @@ package dataengine.pipeline.core.consumer.factory;
 
 import dataengine.pipeline.core.consumer.DatasetConsumer;
 import dataengine.pipeline.core.consumer.impl.StreamConsumer;
-import dataengine.pipeline.model.description.sink.StreamSink;
+import dataengine.pipeline.model.sink.StreamSink;
 import lombok.Value;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.streaming.OutputMode;
@@ -31,11 +31,11 @@ public class StreamFactory<T> implements DatasetConsumerFactory<T> {
     private Trigger getStreamTrigger() {
         if (streamSink.getTrigger() == null)
             return null;
-        if (streamSink.getTrigger() instanceof dataengine.pipeline.model.description.sink.Trigger.TriggerContinuousMs)
-            return Trigger.Continuous(((dataengine.pipeline.model.description.sink.Trigger.TriggerContinuousMs)streamSink.getTrigger()).getMilliseconds());
-        if (streamSink.getTrigger() instanceof dataengine.pipeline.model.description.sink.Trigger.TriggerTimeMs)
-            return Trigger.ProcessingTime(((dataengine.pipeline.model.description.sink.Trigger.TriggerTimeMs)streamSink.getTrigger()).getTime());
-        if (streamSink.getTrigger() instanceof dataengine.pipeline.model.description.sink.Trigger.TriggerOnce)
+        if (streamSink.getTrigger() instanceof dataengine.pipeline.model.sink.Trigger.TriggerContinuousMs)
+            return Trigger.Continuous(((dataengine.pipeline.model.sink.Trigger.TriggerContinuousMs)streamSink.getTrigger()).getMilliseconds());
+        if (streamSink.getTrigger() instanceof dataengine.pipeline.model.sink.Trigger.TriggerTimeMs)
+            return Trigger.ProcessingTime(((dataengine.pipeline.model.sink.Trigger.TriggerTimeMs)streamSink.getTrigger()).getTime());
+        if (streamSink.getTrigger() instanceof dataengine.pipeline.model.sink.Trigger.TriggerOnce)
             return Trigger.Once();
         // TODO fix this
         return null;

@@ -1,8 +1,8 @@
 package dataengine.pipeline.model.supplier;
 
-import dataengine.pipeline.model.description.source.Component;
-import dataengine.pipeline.model.description.source.ComponentCatalog;
-import dataengine.pipeline.model.description.source.ComponentCatalogException;
+import dataengine.pipeline.model.source.Component;
+import dataengine.pipeline.model.source.ComponentCatalog;
+import dataengine.pipeline.model.source.ComponentCatalogException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

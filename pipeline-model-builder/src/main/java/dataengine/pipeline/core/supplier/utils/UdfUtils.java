@@ -1,8 +1,8 @@
 package dataengine.pipeline.core.supplier.utils;
 
 import dataengine.pipeline.core.supplier.factory.DatasetSupplierFactoryException;
-import dataengine.pipeline.model.description.udf.UdfLibrary;
-import dataengine.pipeline.model.description.udf.UdfList;
+import dataengine.pipeline.model.udf.UdfLibrary;
+import dataengine.pipeline.model.udf.UdfList;
 import dataengine.spark.sql.udf.SqlFunction;
 
 import javax.annotation.Nonnull;

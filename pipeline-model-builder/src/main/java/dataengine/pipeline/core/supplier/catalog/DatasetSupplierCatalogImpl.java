@@ -1,14 +1,14 @@
 package dataengine.pipeline.core.supplier.catalog;
 
 import dataengine.pipeline.core.supplier.DatasetSupplier;
-import dataengine.pipeline.core.supplier.GraphException;
+import dataengine.pipeline.core.utils.GraphException;
 import dataengine.pipeline.core.supplier.factory.DataSourceFactories;
 import dataengine.pipeline.core.supplier.factory.DatasetSupplierFactoryException;
-import dataengine.pipeline.core.supplier.impl.DatasetSupplierReference;
+import dataengine.pipeline.core.supplier.impl.ReferenceSupplier;
 import dataengine.pipeline.core.supplier.utils.EncoderUtils;
 import dataengine.pipeline.core.utils.GraphUtils;
-import dataengine.pipeline.model.description.encoder.DataEncoder;
-import dataengine.pipeline.model.description.source.*;
+import dataengine.pipeline.model.encoder.DataEncoder;
+import dataengine.pipeline.model.source.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -47,7 +47,7 @@ public class DatasetSupplierCatalogImpl implements DatasetSupplierCatalog {
         public DatasetSupplier<?> lookup(String dataSourceName) throws DatasetSupplierCatalogException {
             if (!parentDataSourceNames.contains(dataSourceName))
                 throw new DatasetSupplierCatalogException("this datasource composer does not provide a datasource with name " + dataSourceName + ", available datasources are " + parentDataSourceNames);
-            return new DatasetSupplierReference<>(() -> Optional.ofNullable(dataSourceInfos.get(dataSourceName)).map(DataSourceInfo::getDatasetSupplier).orElse(null));
+            return new ReferenceSupplier<>(() -> Optional.ofNullable(dataSourceInfos.get(dataSourceName)).map(DataSourceInfo::getDatasetSupplier).orElseThrow(() -> new DatasetSupplierFactoryException("no dataset supplier found")));
         }
 
     }

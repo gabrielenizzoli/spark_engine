@@ -2,9 +2,9 @@ package dataengine.pipeline.core.supplier.utils;
 
 import dataengine.pipeline.core.supplier.factory.DatasetSupplierFactoryException;
 import dataengine.pipeline.core.supplier.factory.Validate;
-import dataengine.pipeline.model.description.encoder.DataEncoder;
-import dataengine.pipeline.model.description.encoder.TupleEncoder;
-import dataengine.pipeline.model.description.encoder.ValueEncoder;
+import dataengine.pipeline.model.encoder.DataEncoder;
+import dataengine.pipeline.model.encoder.TupleEncoder;
+import dataengine.pipeline.model.encoder.ValueEncoder;
 import org.apache.spark.sql.Encoder;
 import org.apache.spark.sql.Encoders;
 

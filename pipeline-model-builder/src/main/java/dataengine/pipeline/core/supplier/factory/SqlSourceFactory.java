@@ -1,10 +1,10 @@
 package dataengine.pipeline.core.supplier.factory;
 
 import dataengine.pipeline.core.supplier.DatasetSupplier;
-import dataengine.pipeline.core.supplier.impl.SparkSqlSource;
+import dataengine.pipeline.core.supplier.impl.SqlSupplier;
 import dataengine.pipeline.core.supplier.utils.EncoderUtils;
 import dataengine.pipeline.core.supplier.utils.UdfUtils;
-import dataengine.pipeline.model.description.source.component.SqlSource;
+import dataengine.pipeline.model.source.component.SqlSource;
 import lombok.Value;
 
 import javax.annotation.Nonnull;
@@ -17,7 +17,7 @@ public class SqlSourceFactory implements DatasetSupplierFactory {
 
     @Override
     public DatasetSupplier<?> build() throws DatasetSupplierFactoryException {
-        return SparkSqlSource.builder()
+        return SqlSupplier.builder()
                 .sql(source.getSql())
                 .sqlFunctions(UdfUtils.buildSqlFunctionCollection(source.getUdfs()))
                 .encoder(EncoderUtils.buildEncoder(source.getEncodedAs()))
