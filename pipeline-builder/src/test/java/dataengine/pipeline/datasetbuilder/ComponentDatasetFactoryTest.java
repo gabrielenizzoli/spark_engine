@@ -1,6 +1,7 @@
 package dataengine.pipeline.datasetbuilder;
 
 import dataengine.pipeline.TestCatalog;
+import dataengine.pipeline.datasetfactory.DatasetFactoryException;
 import dataengine.pipeline.datasetfactory.impl.ComponentDatasetFactory;
 import dataengine.pipeline.model.component.catalog.ComponentCatalogFromMap;
 import dataengine.pipeline.model.component.impl.InlineComponent;
@@ -149,7 +150,7 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
         var factory = ComponentDatasetFactory.builder().componentCatalog(catalog).build();
 
         // then
-        assertThrows(DatasetFactoryException.CircularReference.class, () -> factory.buildDataset("source2"));
+        assertThrows(DatasetFactoryException.DatasetCircularReference.class, () -> factory.buildDataset("source2"));
 
     }
 
