@@ -2,7 +2,7 @@ package dataengine.pipeline.model.pipeline;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import dataengine.pipeline.model.sink.Sink;
-import dataengine.pipeline.model.source.Component;
+import dataengine.pipeline.model.component.Component;
 import lombok.Builder;
 import lombok.Value;
 

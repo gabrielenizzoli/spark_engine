@@ -2,6 +2,7 @@ package dataengine.pipeline.model.sink;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import dataengine.pipeline.model.sink.impl.*;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({

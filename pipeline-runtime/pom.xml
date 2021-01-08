@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>pipeline-builder</artifactId>
+    <artifactId>pipeline-runtime</artifactId>
 
     <parent>
         <groupId>dataengine</groupId>
@@ -15,19 +15,6 @@
     <dependencies>
 
         <dependency>
-            <groupId>dataengine</groupId>
-            <artifactId>spark-extensions</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>dataengine</groupId>
-            <artifactId>pipeline-runtime</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>dataengine</groupId>
-            <artifactId>pipeline-model</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
@@ -35,17 +22,6 @@
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_${scala.major.version}</artifactId>
             <scope>provided</scope>
-        </dependency>
-
-        <!-- test -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>dataengine</groupId>
-            <artifactId>spark-test</artifactId>
         </dependency>
 
     </dependencies>

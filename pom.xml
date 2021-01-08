@@ -30,6 +30,8 @@
         <module>spark-test</module>
         <module>spark-extensions</module>
         <module>pipeline-model</module>
+        <module>pipeline-runtime</module>
+
         <module>pipeline-builder</module>
 
         <!-- deprecated -->
@@ -66,7 +68,7 @@
             </dependency>
             <dependency>
                 <groupId>dataengine</groupId>
-                <artifactId>pipeline-core</artifactId>
+                <artifactId>pipeline-runtime</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -76,7 +78,7 @@
             </dependency>
             <dependency>
                 <groupId>dataengine</groupId>
-                <artifactId>pipeline-model-builder</artifactId>
+                <artifactId>pipeline-builder</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

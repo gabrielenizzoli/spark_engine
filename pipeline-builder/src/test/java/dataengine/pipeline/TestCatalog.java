@@ -4,11 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import dataengine.pipeline.model.sink.Sink;
-import dataengine.pipeline.model.sink.SinkCatalog;
-import dataengine.pipeline.model.sink.SinkCatalogException;
-import dataengine.pipeline.model.source.Component;
-import dataengine.pipeline.model.source.ComponentCatalog;
-import dataengine.pipeline.model.source.ComponentCatalogException;
+import dataengine.pipeline.model.sink.catalog.SinkCatalog;
+import dataengine.pipeline.model.sink.catalog.SinkCatalogException;
+import dataengine.pipeline.model.component.Component;
+import dataengine.pipeline.model.component.catalog.ComponentCatalog;
+import dataengine.pipeline.model.component.catalog.ComponentCatalogException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

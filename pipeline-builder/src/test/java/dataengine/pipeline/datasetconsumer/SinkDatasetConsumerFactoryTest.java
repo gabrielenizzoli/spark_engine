@@ -1,8 +1,9 @@
 package dataengine.pipeline.datasetconsumer;
 
-import dataengine.pipeline.datasetconsumer.utils.CollectConsumer;
-import dataengine.pipeline.model.sink.CollectSink;
-import dataengine.pipeline.model.sink.SinkCatalogFromMap;
+import dataengine.pipeline.datasetconsumer.impl.CollectConsumer;
+import dataengine.pipeline.datasetconsumer.impl.SinkDatasetConsumerFactory;
+import dataengine.pipeline.model.sink.impl.CollectSink;
+import dataengine.pipeline.model.sink.catalog.SinkCatalogFromMap;
 import dataengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.Encoders;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class SinkDatasetConsumerFactoryTest extends SparkSessionBase {
 
     @Test
-    void buildConsumer() throws DatasetConsumerException {
+    void buildConsumer() throws DatasetConsumerFactoryException {
 
         // given
         var catalog = SinkCatalogFromMap.of(Map.of("get", CollectSink.builder().build()));

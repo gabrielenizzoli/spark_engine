@@ -1,11 +1,10 @@
 package dataengine.pipeline.datasetbuilder;
 
 import dataengine.pipeline.TestCatalog;
-import dataengine.pipeline.datasetfactory.ComponentDatasetFactory;
-import dataengine.pipeline.datasetfactory.DatasetFactoryException;
-import dataengine.pipeline.model.source.ComponentCatalogFromMap;
-import dataengine.pipeline.model.source.component.InlineSource;
-import dataengine.pipeline.model.source.component.Sql;
+import dataengine.pipeline.datasetfactory.impl.ComponentDatasetFactory;
+import dataengine.pipeline.model.component.catalog.ComponentCatalogFromMap;
+import dataengine.pipeline.model.component.impl.InlineComponent;
+import dataengine.pipeline.model.component.impl.SqlComponent;
 import dataengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
@@ -32,11 +31,11 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
 
         // given
         var componentMap = Map.of(
-                "inlineSrc", InlineSource.builder()
+                "inlineSrc", InlineComponent.builder()
                         .withData(List.of(Map.of("col1", "valueNotExpected", "col2", "value12"), Map.of("col1", "valueExpected", "col2", "value22")))
                         .withSchema(DataTypes.createStructType(List.of(DataTypes.createStructField("col1", DataTypes.StringType, true), DataTypes.createStructField("col2", DataTypes.StringType, true))).toDDL())
                         .build(),
-                "sql", Sql.builder().withUsing(List.of("inlineSrc")).withSql("select col1 from inlineSrc where col2 like 'value22'").build()
+                "sql", SqlComponent.builder().withUsing(List.of("inlineSrc")).withSql("select col1 from inlineSrc where col2 like 'value22'").build()
         );
         var catalog = ComponentCatalogFromMap.of(componentMap);
         var factory = ComponentDatasetFactory.builder().componentCatalog(catalog).build();
@@ -54,12 +53,12 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
 
         // given
         var componentMap = Map.of(
-                "sqlSrc", Sql.builder().withSql("select 'value01' as clo1, 'value22' as col2").build(),
-                "inlineSrc", InlineSource.builder()
+                "sqlSrc", SqlComponent.builder().withSql("select 'value01' as clo1, 'value22' as col2").build(),
+                "inlineSrc", InlineComponent.builder()
                         .withData(List.of(Map.of("col1", "valueNotExpected", "col2", "value12"), Map.of("col1", "valueExpected", "col2", "value22")))
                         .withSchema(DataTypes.createStructType(List.of(DataTypes.createStructField("col1", DataTypes.StringType, true), DataTypes.createStructField("col2", DataTypes.StringType, true))).toDDL())
                         .build(),
-                "sql", Sql.builder().withUsing(List.of("inlineSrc", "sqlSrc")).withSql("select col1 from inlineSrc join sqlSrc on inlineSrc.col2 = sqlSrc.col2").build()
+                "sql", SqlComponent.builder().withUsing(List.of("inlineSrc", "sqlSrc")).withSql("select col1 from inlineSrc join sqlSrc on inlineSrc.col2 = sqlSrc.col2").build()
         );
         var catalog = ComponentCatalogFromMap.of(componentMap);
         var factory = ComponentDatasetFactory.builder().componentCatalog(catalog).build();
@@ -77,11 +76,11 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
 
         // given
         var componentMap = Map.of(
-                "inlineSrc", InlineSource.builder()
+                "inlineSrc", InlineComponent.builder()
                         .withData(List.of(Map.of("col1", "valueNotExpected", "col2", "value12"), Map.of("col1", "valueExpected", "col2", "value22")))
                         .withSchema(DataTypes.createStructType(List.of(DataTypes.createStructField("col1", DataTypes.StringType, true), DataTypes.createStructField("col2", DataTypes.StringType, true))).toDDL())
                         .build(),
-                "sql", Sql.builder().withUsing(List.of("wrongSrcName")).withSql("select col1 from inlineSrc where col2 like 'value22'").build()
+                "sql", SqlComponent.builder().withUsing(List.of("wrongSrcName")).withSql("select col1 from inlineSrc where col2 like 'value22'").build()
         );
         var catalog = ComponentCatalogFromMap.of(componentMap);
         var factory = ComponentDatasetFactory.builder().componentCatalog(catalog).build();
