@@ -10,17 +10,19 @@
     <packaging>pom</packaging>
 
     <properties>
+        <revision>0.2</revision>
+
+        <!-- params -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
-        <revision>0.1</revision>
+        <!-- packages -->
         <jsr305.version>3.0.2</jsr305.version>
         <spark.version>3.0.0</spark.version>
         <scala.major.version>2.12</scala.major.version>
         <fasterxml.jackson.version>2.10.0</fasterxml.jackson.version>
-
         <junit.version>5.6.2</junit.version>
         <lombok.version>1.18.12</lombok.version>
     </properties>
@@ -31,44 +33,24 @@
         <module>spark-extensions</module>
         <module>pipeline-model</module>
         <module>pipeline-runtime</module>
-
         <module>pipeline-builder</module>
 
         <!-- deprecated -->
         <module>pipeline-model-supplier</module>
     </modules>
-         
+
     <distributionManagement>
         <repository>
-           <id>github</id>
-           <name>GitHub Packages</name>
-           <url>https://maven.pkg.github.com/gabrielenizzoli/spark_engine</url>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/gabrielenizzoli/spark_engine</url>
         </repository>
     </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
 
-            <dependency>
-                <groupId>com.google.code.findbugs</groupId>
-                <artifactId>jsr305</artifactId>
-                <version>${jsr305.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.spark</groupId>
-                <artifactId>spark-sql_${scala.major.version}</artifactId>
-                <version>${spark.version}</version>
-            </dependency>
-
-            <!-- project -->
+            <!-- modules -->
             <dependency>
                 <groupId>dataengine</groupId>
                 <artifactId>spark-extensions</artifactId>
@@ -95,7 +77,25 @@
                 <version>${project.version}</version>
             </dependency>
 
-            <!-- fasterxml -->
+            <!-- packages -->
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>${jsr305.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.spark</groupId>
+                <artifactId>spark-sql_${scala.major.version}</artifactId>
+                <version>${spark.version}</version>
+            </dependency>
+
+            <!-- packages: fasterxml -->
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-yaml</artifactId>
@@ -107,7 +107,7 @@
                 <version>${fasterxml.jackson.version}</version>
             </dependency>
 
-            <!-- testing -->
+            <!-- packages: testing -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>

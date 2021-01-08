@@ -156,29 +156,21 @@ and `andThenEncode`. They allow for easy chaining additional changes to a new tr
 easier sequential reading of the code, and requires the developer to call `apply()` only once. Example:
 
 ```java
-<<<<<<< HEAD
-Dataset<Integer> ds1=...;
-        Dataset<Long> ds2=...;
-        DataTransformation2<Integer, Integer, Row> transformation1=...;
-        DataTransformation<Row, Row> transformation2=...;
-=======
 import dataengine.spark.transformation.DataTransformation;
 import dataengine.spark.transformation.DataTransformation2;
-
 
 Dataset<Integer> ds1 = ...;
 Dataset<Long> ds2 = ...;
 DataTransformation2<Integer, Integer, Row> transformation1 = ...;
 DataTransformation<Row, Row> transformation2 = ...;
->>>>>>> master
 
 // without chaining
-        Dataset<SampleClass> dsNewWithoutChaining=transformation2
+Dataset<SampleClass> dsNewWithoutChaining=transformation2
         .apply(transformation1.apply(ds1,ds2))
         .as(Encoders.bean(SampleClass.class));
 
 // with chaining
-        Dataset<SampleClass> dsNewWithChaining=transformation1
+Dataset<SampleClass> dsNewWithChaining=transformation1
         .andThen(transformation2)
         .andThenEncode(Encoders.bean(SampleClass.class))
         .apply(ds1,ds2);
@@ -201,7 +193,6 @@ List of transformation classes available:
 The `Transformations` class has some `sql` method to quickly wrap a sql statement and a `SqlCompiler` together to create a transformation. 
 
 Example on how to create **transformations based on sql statements**:
->>>>>>> master
 ```java
 import dataengine.spark.transformation.Transformations;
 
