@@ -14,6 +14,7 @@ Master branch status: ![Build](https://github.com/gabrielenizzoli/spark_engine/w
 ## Versions supported
 
 We are just focused on the latest versions right now. So if you use it, be aware that it will only work with:
+
 * Java: 1.11
 * Scala 2.12
 * Spark: 3.0.0

@@ -1,0 +1,9 @@
+source1:
+  type: sql
+  using: [ source2 ]
+  sql: select 1 from source2 limit 1
+
+source2:
+  type: sql
+  using: [ source1 ]
+  sql: select 1 from source1 limit 1

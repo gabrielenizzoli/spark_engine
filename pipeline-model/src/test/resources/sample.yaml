@@ -12,7 +12,7 @@ components:
   txTest:
     type: encode
     using: source1
-    encodedAs: { schema: tuple, of: [{ type: STRING }, { type: BINARY }] }
+    encodedAs: { schema: tuple, of: [ { type: STRING }, { type: BINARY } ] }
   tx:
     type: encode
     using: source1

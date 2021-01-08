@@ -1,12 +1,16 @@
 package dataengine.spark.transformation;
 
-import dataengine.spark.utils.UdafIntegerSummer;
+import dataengine.spark.sql.logicalplan.functionresolver.FunctionResolverException;
 import dataengine.spark.sql.logicalplan.tableresolver.TableResolverException;
-import dataengine.spark.sql.logiclaplan.functionresolver.FunctionResolverException;
 import dataengine.spark.sql.udf.Udf;
 import dataengine.spark.test.SparkSessionBase;
-import org.apache.spark.sql.*;
+import dataengine.spark.utils.UdafIntegerSummer;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Encoders;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.types.DataTypes;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import scala.Tuple2;
 
@@ -155,6 +159,22 @@ class TransformationsTest extends SparkSessionBase {
         });
 
         assertEquals(TableResolverException.class, e.getCause().getClass());
+    }
+
+    @Test
+    void sqlWithJoin() {
+
+        // given
+        var ds1 = sparkSession.createDataset(Arrays.asList(1, 2, 3), Encoders.INT());
+        var ds2 = sparkSession.createDataset(Arrays.asList(2, 3, 4), Encoders.INT());
+
+        // when
+        DataTransformation2<Integer, Integer, Row> join = Transformations
+                .sql("source1", "source2", "select source1.value from source1 join source2 on source1.value = source2.value");
+
+        // then
+        Assertions.assertEquals(List.of(2, 3), join.apply(ds1, ds2).select("value").as(Encoders.INT()).collectAsList());
+
     }
 
 }

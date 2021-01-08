@@ -1,0 +1,4 @@
+sql:
+  type: sql
+  sql: select 'value' as column
+  encodedAs: { schema: value, type: STRING }

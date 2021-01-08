@@ -6,10 +6,12 @@ import dataengine.spark.sql.logicalplan.PlanMapperException;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
+import org.apache.spark.sql.catalyst.AliasIdentifier;
 import org.apache.spark.sql.catalyst.analysis.UnresolvedRelation;
 import org.apache.spark.sql.catalyst.expressions.Expression;
 import org.apache.spark.sql.catalyst.expressions.PlanExpression;
 import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
+import org.apache.spark.sql.catalyst.plans.logical.SubqueryAlias;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,7 +20,7 @@ import java.util.Collection;
 import java.util.Map;
 
 @Value
-@Builder(builderClassName = "Builder")
+@Builder
 public class TableResolver implements LogicalPlanMapper {
 
     @Singular
@@ -69,7 +71,7 @@ public class TableResolver implements LogicalPlanMapper {
         if (resolvedRelation == null) {
             throw new TableResolverException("can't resolve relation " + unresolvedRelation.tableName() + " in plan " + unresolvedRelation);
         }
-        return resolvedRelation;
+        return new SubqueryAlias(new AliasIdentifier(unresolvedRelation.tableName()), resolvedRelation);
     }
 
     private LogicalPlan resolveUnresolvedExpressions(LogicalPlan logicalPlan) {
