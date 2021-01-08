@@ -37,6 +37,14 @@
         <!-- deprecated -->
         <module>pipeline-model-supplier</module>
     </modules>
+         
+    <distributionManagement>
+        <repository>
+           <id>github</id>
+           <name>GitHub Packages</name>
+           <url>https://maven.pkg.github.com/gabrielenizzoli/spark_engine</url>
+        </repository>
+    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
