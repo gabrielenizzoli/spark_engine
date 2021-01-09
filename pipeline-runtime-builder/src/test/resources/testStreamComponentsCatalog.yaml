@@ -1,0 +1,16 @@
+source:
+  type: streamSource
+  format: rate
+  options: { rowsPerSecond: 1 }
+
+tx:
+  type: sql
+  using: [ source ]
+  udfs:
+    ofClasses:
+      - dataengine.pipeline.runtime.builder.dataset.TestLongUdf
+  sql: >
+    select
+      *,
+      testLongUdf(value, 1) as valuePlusOne
+    from source

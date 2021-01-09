@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <revision>0.2</revision>
+        <revision>0.3</revision>
 
         <!-- params -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -28,15 +28,12 @@
     </properties>
 
     <modules>
-        <module>utilities</module>
         <module>spark-test</module>
         <module>spark-extensions</module>
-        <module>pipeline-model</module>
         <module>pipeline-runtime</module>
-        <module>pipeline-builder</module>
-
-        <!-- deprecated -->
-        <module>pipeline-model-supplier</module>
+        <module>pipeline-model</module>
+        <module>pipeline-model-builder</module>
+        <module>pipeline-runtime-builder</module>
     </modules>
 
     <distributionManagement>
@@ -73,7 +70,7 @@
             </dependency>
             <dependency>
                 <groupId>dataengine</groupId>
-                <artifactId>pipeline-model-supplier</artifactId>
+                <artifactId>pipeline-model-builder</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

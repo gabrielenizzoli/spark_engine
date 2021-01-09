@@ -16,11 +16,10 @@ import java.util.List;
 @JsonDeserialize(builder = TransformComponent.Builder.class)
 public class TransformComponent implements Component, TransformationComponentWithMultipleInputs {
 
+    @Nullable
+    List<String> using;
     @Nonnull
-    @lombok.Builder.Default
-    List<String> using = List.of();
-    @Nonnull
-    String with;
+    String transformWith;
     @Nullable
     DataEncoder encodedAs;
 

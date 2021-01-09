@@ -79,7 +79,7 @@ public class Transformations {
      * @param sql         sql statement
      * @return outcome of the transformation operation
      */
-    public static DataTransformationN<Row, Row> sql(@Nonnull List<String> sourceNames,
+    public static DataTransformationN<Row, Row> sql(@Nullable List<String> sourceNames,
                                                     @Nonnull String sql) {
         return sql(sourceNames, sql, Collections.emptyList());
     }
@@ -87,21 +87,34 @@ public class Transformations {
     /**
      * Applies a sql transformation to all the input datasets of rows.
      *
-     * @param sourceNames  name of the input datasets
-     * @param sql          sql statement
-     * @param sqlFunctions a list of sql functions to be resolved in the sql statement
+     * @param nullableSourceNames name of the input datasets
+     * @param sql                 sql statement
+     * @param sqlFunctions        a list of sql functions to be resolved in the sql statement
      * @return outcome of the transformation operation
      */
-    public static DataTransformationN<Row, Row> sql(@Nonnull List<String> sourceNames,
+    public static DataTransformationN<Row, Row> sql(@Nullable List<String> nullableSourceNames,
                                                     @Nonnull String sql,
                                                     @Nullable Collection<SqlFunction> sqlFunctions) {
+
+        // cleanup names
+        var sourceNames = nullableSourceNames == null ?
+                List.<String>of() :
+                nullableSourceNames.stream().map(String::strip).filter(source -> !source.isBlank()).collect(Collectors.toList());
+
         return (datasets) -> {
+
 
             if (datasets.size() != sourceNames.size()) {
                 throw new TransformationException("datasets provided count (" + datasets.size() + ") different than source names count provided (" + sourceNames + ")");
             }
 
-            var tables = sourceNames.isEmpty() ? List.<Table>of() : IntStream.range(0, sourceNames.size()).mapToObj(i -> Table.ofDataset(sourceNames.get(i), datasets.get(i))).collect(Collectors.toList());
+            var tables = sourceNames.isEmpty() ?
+                    List.<Table>of() :
+                    IntStream
+                            .range(0, sourceNames.size())
+                            .mapToObj(i -> Table.ofDataset(sourceNames.get(i), datasets.get(i)))
+                            .collect(Collectors.toList());
+
             try {
                 return SqlCompiler.sql(tables, sqlFunctions, sql);
             } catch (PlanMapperException e) {
