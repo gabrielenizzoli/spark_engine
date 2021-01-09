@@ -17,9 +17,8 @@ import java.util.List;
 @JsonDeserialize(builder = SqlComponent.Builder.class)
 public class SqlComponent implements Component, TransformationComponentWithMultipleInputs {
 
-    @Nonnull
-    @lombok.Builder.Default
-    List<String> using = List.of();
+    @Nullable
+    List<String> using;
     @Nonnull
     String sql;
     @Nullable
