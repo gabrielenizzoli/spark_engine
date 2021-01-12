@@ -3,6 +3,7 @@ package dataengine.pipeline.runtime.builder.datasetconsumer;
 import dataengine.pipeline.model.sink.impl.StreamSink;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumer;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerException;
+import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerFactoryException;
 import lombok.Builder;
 import lombok.Value;
 import org.apache.commons.lang3.StringUtils;
@@ -49,7 +50,7 @@ public class StreamConsumer<T> implements DatasetConsumer<T> {
         return this;
     }
 
-    public static Trigger getStreamTrigger(StreamSink streamSink) {
+    public static Trigger getStreamTrigger(StreamSink streamSink) throws DatasetConsumerFactoryException {
         if (streamSink.getTrigger() == null)
             return null;
         if (streamSink.getTrigger() instanceof dataengine.pipeline.model.sink.impl.Trigger.TriggerContinuousMs)
@@ -58,11 +59,10 @@ public class StreamConsumer<T> implements DatasetConsumer<T> {
             return Trigger.ProcessingTime(((dataengine.pipeline.model.sink.impl.Trigger.TriggerTimeMs) streamSink.getTrigger()).getTime());
         if (streamSink.getTrigger() instanceof dataengine.pipeline.model.sink.impl.Trigger.TriggerOnce)
             return Trigger.Once();
-        // TODO fix this
-        return null;
+        throw new DatasetConsumerFactoryException.UnmanagedParameter("unmanaged stream trigger: " + streamSink.getTrigger());
     }
 
-    public static OutputMode getStreamOutputMode(StreamSink streamSink) {
+    public static OutputMode getStreamOutputMode(StreamSink streamSink) throws DatasetConsumerFactoryException {
         if (streamSink.getMode() == null)
             return null;
         switch (streamSink.getMode()) {
@@ -73,8 +73,7 @@ public class StreamConsumer<T> implements DatasetConsumer<T> {
             case UPDATE:
                 return OutputMode.Update();
         }
-        // TODO fix this
-        return null;
+        throw new DatasetConsumerFactoryException.UnmanagedParameter("unmanaged stream output mode: " + streamSink.getTrigger());
     }
 
 }

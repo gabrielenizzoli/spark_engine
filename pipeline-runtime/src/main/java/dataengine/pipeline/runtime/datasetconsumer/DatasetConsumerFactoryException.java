@@ -26,4 +26,12 @@ public class DatasetConsumerFactoryException extends Exception {
 
     }
 
+    public static class UnmanagedParameter extends DatasetConsumerFactoryException {
+
+        public UnmanagedParameter(String str) {
+            super(str);
+        }
+
+    }
+
 }

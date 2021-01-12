@@ -3,6 +3,7 @@ package dataengine.pipeline.runtime.builder.datasetconsumer;
 import dataengine.pipeline.model.sink.impl.BatchSink;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumer;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerException;
+import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerFactoryException;
 import lombok.Builder;
 import lombok.Value;
 import org.apache.spark.sql.Dataset;
@@ -32,7 +33,7 @@ public class BatchConsumer<T> implements DatasetConsumer<T> {
         return this;
     }
 
-    public static SaveMode getBatchSaveMode(BatchSink batchSink) {
+    public static SaveMode getBatchSaveMode(BatchSink batchSink) throws DatasetConsumerFactoryException {
         if (batchSink.getMode() == null)
             return null;
         switch (batchSink.getMode()) {
@@ -45,8 +46,7 @@ public class BatchConsumer<T> implements DatasetConsumer<T> {
             case ERROR_IF_EXISTS:
                 return SaveMode.ErrorIfExists;
         }
-        // TODO fix this
-        return null;
+        throw new DatasetConsumerFactoryException.UnmanagedParameter("unmanaged batch save mode: " + batchSink.getMode());
     }
 
 }
