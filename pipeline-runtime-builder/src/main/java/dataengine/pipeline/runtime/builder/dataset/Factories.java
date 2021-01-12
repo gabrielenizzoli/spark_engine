@@ -2,11 +2,11 @@ package dataengine.pipeline.runtime.builder.dataset;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
 import dataengine.pipeline.model.component.SourceComponent;
 import dataengine.pipeline.model.component.TransformationComponentWithMultipleInputs;
 import dataengine.pipeline.model.component.TransformationComponentWithSingleInput;
 import dataengine.pipeline.model.component.impl.*;
+import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
 import dataengine.spark.transformation.DataTransformationN;
 import dataengine.spark.transformation.Transformations;
 import org.apache.spark.sql.Dataset;
@@ -73,25 +73,35 @@ public class Factories {
     }
 
     @Nullable
-    private static <T> Dataset<T> getInlineDataframeSourceDataset(InlineComponent inlineComponent) {
-        List<String> json = Optional.ofNullable(inlineComponent.getData()).orElse(List.of())
-                .stream()
-                .map(map -> {
-                    try {
-                        return OBJECT_MAPPER.writeValueAsString(map);
-                    } catch (JsonProcessingException e) {
-                        // TODO error
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+    private static <T> Dataset<T> getInlineDataframeSourceDataset(InlineComponent inlineComponent) throws DatasetFactoryException {
+        List<String> json = parseJson(inlineComponent);
 
         var schema = StructType.fromDDL(inlineComponent.getSchema());
         var reader = SparkSession.active().read().schema(schema);
         var jsonDs = SparkSession.active().createDataset(json, Encoders.STRING());
 
         return (Dataset<T>) reader.json(jsonDs);
+
+    }
+
+    private static List<String> parseJson(InlineComponent inlineComponent) throws DatasetFactoryException {
+        List<String> json = null;
+        try {
+            json = Optional.ofNullable(inlineComponent.getData()).orElse(List.of())
+                    .stream()
+                    .map(map -> {
+                        try {
+                            return OBJECT_MAPPER.writeValueAsString(map);
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        } catch (Throwable t) {
+            throw new DatasetFactoryException("issue with inline dataset generation", t);
+        }
+        return json;
     }
 
     private static <T> Dataset<T> getTransformDataset(List<Dataset<?>> parentDs, TransformComponent txComponent) throws DatasetFactoryException {
