@@ -75,10 +75,13 @@ public class Factories {
     @Nullable
     private static <T> Dataset<T> getInlineDataframeSourceDataset(InlineComponent inlineComponent) throws DatasetFactoryException {
         List<String> json = parseJson(inlineComponent);
-
-        var schema = StructType.fromDDL(inlineComponent.getSchema());
-        var reader = SparkSession.active().read().schema(schema);
         var jsonDs = SparkSession.active().createDataset(json, Encoders.STRING());
+
+        var reader = SparkSession.active().read();
+        if (inlineComponent.getSchema() != null && !inlineComponent.getSchema().isBlank()) {
+            var schema = StructType.fromDDL(inlineComponent.getSchema());
+            reader = reader.schema(schema);
+        }
 
         return (Dataset<T>) reader.json(jsonDs);
 

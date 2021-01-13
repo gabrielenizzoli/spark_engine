@@ -7,6 +7,7 @@ import dataengine.spark.sql.udf.SqlFunction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,8 +36,8 @@ public class UdfUtils {
         SqlFunction sqlFunction = null;
         try {
             Class<SqlFunction> c = (Class<SqlFunction>) Class.forName(sqlFunctionClass);
-            sqlFunction = c.newInstance();
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            sqlFunction = c.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
             throw new DatasetFactoryException("udf/udaf class " + sqlFunctionClass + " has problems creating instance", e);
         }
         return sqlFunction;

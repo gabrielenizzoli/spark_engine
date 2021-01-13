@@ -17,7 +17,7 @@ public class InlineComponent implements SourceComponent {
 
     @Nullable
     List<Map<String, Object>> data;
-    @Nonnull
+    @Nullable
     String schema;
 
 }
