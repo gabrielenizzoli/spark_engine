@@ -1,11 +1,11 @@
 components:
   source1:
-    type: batchSource
+    type: batch
     format: json
     options: { a: b, path: 'there/file.json' }
     encodedAs: { type: STRING }
   source2:
-    type: streamSource
+    type: stream
     format: kafka
     options: { a: b, path: 'there/file.json' }
     encodedAs: { schema: bean, ofClass: "a.b.C" }

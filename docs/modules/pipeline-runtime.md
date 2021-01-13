@@ -2,7 +2,7 @@
 sort: 2
 ---
 
-# The spark-runtime module
+# The pipeline-runtime module
 
 The main 3 abstractions provided are the `DatasetConsumer`, the `DatasetFactory` and the `Pipeline`.
 The _factory_ is responsible for creating a new dataset given a dataset name. The dataset is implementation dependent.
