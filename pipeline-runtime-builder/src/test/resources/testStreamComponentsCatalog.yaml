@@ -1,5 +1,5 @@
 source:
-  type: streamSource
+  type: stream
   format: rate
   options: { rowsPerSecond: 1 }
 
