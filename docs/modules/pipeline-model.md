@@ -4,17 +4,21 @@ sort: 3
 
 # The pipeline-model module
 
-In order to describe a dataset, and a dataset consumer we will use a model abstraction. 
-This model role is to properly break up how we define how a dataset is ultimately created and composed.
+This module exposes a model abstraction to describe a dataset. 
+The model abstraction can be usually expressed in a common format, usually yaml (or json), that the code is able to translate in a set of Java beans.
+
+Additionally, a model abstraction is also provided to describe dataset consumers. A consumer describes an action on a dataset (ie: save to disk, show to terminal, etc etc).
 
 ## Utilities
 
-### Dataset Encoder
+Some components in the model share some common abstractions. These abstractions are discussed here.
+
+### Encoder
 
 Datasets in spark can be encoded (something similar to a strong typing). 
-An encoder can me described in the model as a property to many components. 
-The encoder will be applied to the output. 
-Available encoders in the model are `value`, `tuple`, `bean` and `seralization`.
+Different part sof the model usually define an encoder. If present, the encoder will describe what format should be applied to the dataset. 
+
+Available encoders are `value`, `tuple`, `bean` and `seralization`:
 
 | Encoder Type | Possible Value |
 | ------------ | -------------- |
@@ -23,54 +27,58 @@ Available encoders in the model are `value`, `tuple`, `bean` and `seralization`.
 | `bean` | The fully qualified name of a a Java class to represent the schema and type of all fields |
 | `serialization` | One of: `JAVA`, `KRYO`; plus a class name. |
 
-Some example of an encoder in yaml representation is:
+Some example of an encoder in yaml representation:
 ```yaml
 # value
-encodedAs: { schema: value, value: STRING }
+{ schema: value, value: STRING }
 
 # tuple
-encodedAs: { schema: tuple, of: [ { schema: value, value: STRING }, { schema: value, value: INT } ] }
+{ schema: tuple, of: [ { schema: value, value: STRING }, { schema: value, value: INT } ] }
 
 # bean
-encodedAs: { schema: bean, ofClass: some.java.class.Bean }
+{ schema: bean, ofClass: some.java.class.Bean }
 
 # serialization
-encodedAs: { schema: serialization, variant: KRYO , ofClass: some.java.class.Bean }
+{ schema: serialization, variant: KRYO , ofClass: some.java.class.Bean }
 ```
 
 Note that the default serialization is `value`, so it can be omitted:
 ```yaml
 # same
-encodedAs.value: STRING
-encodedAs: { schema: value, value: STRING }
+{ value: STRING }
+{ schema: value, value: STRING }
 
 # same
-encodedAs: { schema: tuple, of: [ { value: STRING }, { value: INT } ] }
-encodedAs: { schema: tuple, of: [ { schema: value, value: STRING }, { schema: value, value: INT } ] }
+{ schema: tuple, of: [ { value: STRING }, { value: INT } ] }
+{ schema: tuple, of: [ { schema: value, value: STRING }, { schema: value, value: INT } ] }
 ```
-
-### UDF/UDAF Functions
-
-The sql component can use externally defined user defined function (UDF) or user defined aggregation functions (UDAF).
-These function should extend the `dataengine.spark.sql.udf.SqlFunction` interface. 
-Utility classes are also available to help create udfs, they are `dataengine.spark.sql.udf.Udf` and `dataengine.spark.sql.udf.Udaf`.
-
-A sql component needs a function library definition to use the user provided functions. A yaml example:
-```yaml
-# fragment that defines a list of udfs/udafs
-sqlComponent:
-  ...
-  udfs:
-    ofClasses:
-      - dataengine.pipeline.runtime.builder.dataset.TestStrUdf
-      - dataengine.pipeline.runtime.builder.dataset.TestIntUdf
-```
-
 
 ## Dataset Components
 
-In Java terms, the root of the hierarchy is the `Component` interface. Every component extends form it.
-**TODO: EXPLAIN COMPOSITION**
+In Java terms, the root of the component hierarchy is the `Component` interface. Every component extends form it.
+The common characteristic of a component is to carry all the data needed to produce or transform a dataset described by another component.
+By properly chaining many components it is thus possible to compose a complex dataset.
+
+In an execution plan many components work together to provide information about how to build mon eor more datasets.
+Some components provide information on how to generate datasets from external sources (like the _batch_ component), while others make use of an existing dataset and transforms it (like the _encode_ component).
+Each component is associated to a unique name in an execution plan. This way it will be easy to reference different components. 
+
+In the following yaml execution plan a `operation` components uses as an input the dataset provided by two other components:
+```yaml
+source1:
+  ...
+
+source2:
+  ...
+
+operation:
+  using: [ source1, source2 ]
+  ...
+```
+
+An execution plan is _consistent_ if all the component referenced are available and if there are no circular references (ie: the graph of components must be an acyclic graph).
+By referencing a component name in a consistent execution plan, all the information to generate a dataset is available.
+In the example above, if the plan is consistent, the `operation` components should carry all the information required to generate a dataset, once the datasets from the component `source1` and `source2` are generated.
 
 ### Empty Component
 
@@ -169,7 +177,7 @@ The list of fields supported is:
 | `type` | yes | `sql` |
 | `using` | no | An optional list of other components. These component swill be used as table names in the sql statement  |
 | `sql` | yes | The sql statement |
-| `udfs` | no | An optional list of user provided functions |
+| `udfs` | no | An optional list of user provided functions (see below) |
 | `encodedAs` | no | An optional encoded specification |
 
 Yaml example:
@@ -200,7 +208,60 @@ It is also possible to have a sql generating data, without shaving to use any in
 ```yaml
 sqlComponentThatGeneratesData:
   type: sql
-  sql: select explode(array(named_struct("num", 0, "str", "a"), named_struct("num", 1, "str", "b"))) as abc
+  sql: >
+    select explode(array(
+      named_struct("num", 0, "str", "a"), 
+      named_struct("num", 1, "str", "b")
+    )) as abc
+```
+
+#### UDF/UDAF Functions
+
+The sql component can be extended by providing externally defined user defined function (UDF) or user defined aggregation functions (UDAF).
+These function should extend the `dataengine.spark.sql.udf.SqlFunction` interface.
+Utility classes are also available to help create udfs, they are `dataengine.spark.sql.udf.Udf` and `dataengine.spark.sql.udf.Udaf`.
+
+A sql component needs a function library definition to use the user provided functions:
+```yaml
+# fragment that defines a list of udfs/udafs
+sqlComponent:
+  ...
+  udfs:
+    ofClasses:
+      - dataengine.pipeline.runtime.builder.dataset.TestStrUdf
+      - dataengine.pipeline.runtime.builder.dataset.TestIntUdf
+```
+
+A udf in Java may look like this:
+```java
+package dataengine.pipeline.runtime.builder.dataset;
+
+import dataengine.spark.sql.udf.Udf;
+import org.apache.spark.sql.api.java.UDF2;
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.DataTypes;
+
+import javax.annotation.Nonnull;
+
+public class TestIntUdf implements Udf {
+
+    @Nonnull
+    @Override
+    public String getName() {
+        return "testIntUdf";
+    }
+
+    @Nonnull
+    @Override
+    public DataType getReturnType() {
+        return DataTypes.IntegerType;
+    }
+
+    @Override
+    public UDF2<Integer, Integer, Integer> getUdf2() {
+        return Integer::sum;
+    }
+}
 ```
 
 ### Encode Component
