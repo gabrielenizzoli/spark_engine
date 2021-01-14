@@ -123,7 +123,6 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
         var rows = ds.collectAsList();
 
         // then
-        // then
         Map<String, Double> avgs = rows.stream()
                 .collect(Collectors.toMap(r -> r.getString(r.fieldIndex("key")), r -> r.getDouble(r.fieldIndex("avg"))));
 
@@ -139,6 +138,22 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
         avgsExpected.put("d", 2.0);
 
         Assertions.assertEquals(avgsExpected, avgs);
+    }
+
+    @Test
+    void buildDatasetWithTransformationInYamlCatalog() throws DatasetFactoryException {
+
+        // given
+        var catalog = TestCatalog.getComponentCatalog("testTransformationComponentsCatalog");
+        var factory = ComponentDatasetFactory.builder().componentCatalog(catalog).build();
+
+        // when
+        var ds = factory.<Row>buildDataset("tx");
+        var rows = ds.collectAsList();
+
+        // then
+
+        Assertions.assertEquals(10, rows.size());
     }
 
     @Test

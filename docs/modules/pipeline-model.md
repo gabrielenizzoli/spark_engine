@@ -5,9 +5,12 @@ sort: 3
 # The pipeline-model module
 
 This module exposes a model abstraction to describe a dataset. 
-The model abstraction can be usually expressed in a common format, usually yaml (or json), that the code is able to translate in a set of Java beans.
+The final goal of the model is to be able to describe how a spark dataset can be built.
+Moreover, the model can be expressed in a shareable format, usually yaml (or json), that the code is able to translate in a set of Java beans.
 
-Additionally, a model abstraction is also provided to describe dataset consumers. A consumer describes an action on a dataset (ie: save to disk, show to terminal, etc etc).
+Once a dataset is ready, it needs to be consumed to do something.
+A consumer describes an action on a dataset (ie: save to disk, show to terminal, etc etc).
+For this reason, a model abstraction is also provided to describe dataset consumers.
 
 ## Utilities
 
@@ -55,30 +58,44 @@ Note that the default serialization is `value`, so it can be omitted:
 
 ## Dataset Components
 
-In Java terms, the root of the component hierarchy is the `Component` interface. Every component extends form it.
+A component is an abstraction that describes how a dataset is built. 
+In Java terms, the root of the component hierarchy is the `dataengine.pipeline.model.component.Component` interface. Every component extends form it.
 The common characteristic of a component is to carry all the data needed to produce or transform a dataset described by another component.
+Some components provide information on how to generate datasets from external sources (like the _batch_ component), while others make use of an existing dataset and transforms it (like the _encode_ component).
 By properly chaining many components it is thus possible to compose a complex dataset.
 
-In an execution plan many components work together to provide information about how to build mon eor more datasets.
-Some components provide information on how to generate datasets from external sources (like the _batch_ component), while others make use of an existing dataset and transforms it (like the _encode_ component).
-Each component is associated to a unique name in an execution plan. This way it will be easy to reference different components. 
+In an execution plan many components work together to provide information about how to build datasets.
+In an execution plan each component is associated to a unique name. 
 
-In the following yaml execution plan a `operation` components uses as an input the dataset provided by two other components:
+In the following sample yaml execution plan a `operation` component uses as an input the dataset provided by two other components:
 ```yaml
 source1:
-  ...
+  type: inline
+  data:
+    - { column1: "value1", column2: 10 }
+    - { column1: "value2", column2: 20 }
 
 source2:
-  ...
+  type: inline
+  data:
+    - { column1: "value3", column2: 10 }
+    - { column1: "value4", column2: 30 }
 
 operation:
+  type: sql
   using: [ source1, source2 ]
-  ...
+  sql: select * from source1 join source2 on source1.column2 = source2.column2
 ```
 
 An execution plan is _consistent_ if all the component referenced are available and if there are no circular references (ie: the graph of components must be an acyclic graph).
 By referencing a component name in a consistent execution plan, all the information to generate a dataset is available.
 In the example above, if the plan is consistent, the `operation` components should carry all the information required to generate a dataset, once the datasets from the component `source1` and `source2` are generated.
+
+The practical advantages of splitting a complex system into smaller sets are:
+* _easier to develop_ - develop a ful plan, but only focus on a step at a time
+* _clear inputs and outputs_ - each component is fully described by the model, and it is not possible to reference datasets not explicitly defined in the model
+* _easier to test in isolation_ - test each component independently, by providing mock input data and then verifying the output
+* _easier to refactor_ - changes can be planned and implemented in stages
 
 ### Empty Component
 
@@ -291,6 +308,8 @@ encodeComponet:
 
 The most generic component of them all, the transform components allow for a specification of an external Java class to provide a user provided transformation.
 
+The list of fields supported is:
+
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
 | `type` | yes | `transform` |
@@ -298,8 +317,82 @@ The most generic component of them all, the transform components allow for a spe
 | `transformWith` | yes | A Java fully qualified name of a class that specifies an implementation of the `dataengine.spark.transformation.DataTransformationN` interface |
 | `encodedAs` | no | An optional encoded specification |
 
-**TODO: yaml example**
+Yaml example:
+```yaml
+source1:
+  type: inline
+  data:
+    - { key: "a", value: 1 }
+    - { key: "a", value: 1 }
+    - { key: "a", value: 1 }
+    - { key: "b", value: 100 }
+    - { key: "b", value: 200 }
+    - { key: "c", value: 1 }
 
-## Dataset Consumers
+source2:
+  type: inline
+  data:
+    - { key: "d", value: 1 }
+    - { key: "d", value: 2 }
+    - { key: "d", value: 3 }
+    - { key: "a", value: 3 }
 
-**TODO: consumer docs here**
+tx:
+  type: transform
+  using: [ source1, source2 ]
+  transformWith: dataengine.pipeline.runtime.builder.dataset.TestTransformation
+```
+
+Java code for transformation:
+```java
+package dataengine.pipeline.runtime.builder.dataset;
+
+import dataengine.spark.transformation.DataTransformationN;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
+import java.util.List;
+
+public class TestTransformation implements DataTransformationN<Row, Row> {
+
+    @Override
+    public Dataset<Row> apply(List<Dataset<Row>> datasets) {
+        return datasets.stream().reduce(Dataset::union).orElseThrow(IllegalStateException::new);
+    }
+
+}
+```
+
+## Dataset Sinks
+
+Once a dataset is ready to be used it can be consumed by a dataset consumer.
+Just like a dataset component, a consumer can be described using a model, usually represented as yaml.
+A dataset consumer is represented in Java as an extension of the `dataengine.pipeline.model.sink.Sink` interface.
+
+**TODO**
+
+### Show Sink
+
+For debugging purposes, a show sink can be used to print on the output terminal the head of the dataset.
+
+**TODO**
+
+### Collect Sink
+
+For debugging purposes, a collect sink can be used to collect in the driver all the rows of the dataset.
+
+**TODO**
+
+### Batch Sink
+
+**TODO**
+
+### Stream Sink
+
+**TODO**
+
+## Execution Plan (aka, Pipeline)
+
+**TODO**
+
+
