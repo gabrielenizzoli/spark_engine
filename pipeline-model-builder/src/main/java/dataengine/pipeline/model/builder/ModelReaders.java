@@ -6,7 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import dataengine.pipeline.model.component.Component;
 import dataengine.pipeline.model.component.catalog.ComponentCatalog;
 import dataengine.pipeline.model.component.catalog.ComponentCatalogFromMap;
-import dataengine.pipeline.model.pipeline.Pipelines;
+import dataengine.pipeline.model.pipeline.Plan;
 import dataengine.pipeline.model.sink.Sink;
 import dataengine.pipeline.model.sink.catalog.SinkCatalog;
 import dataengine.pipeline.model.sink.catalog.SinkCatalogFromMap;
@@ -37,9 +37,9 @@ public class ModelReaders {
         }
     }
 
-    public static Pipelines readPipelinesFromYaml(@Nonnull Supplier<InputStream> inputStreamFactory) throws IOException {
+    public static Plan readPipelinesFromYaml(@Nonnull Supplier<InputStream> inputStreamFactory) throws IOException {
         try (InputStream inputStream = inputStreamFactory.get()) {
-            return YAML_OBJECT_MAPPER.readValue(inputStream, new TypeReference<Pipelines>() {
+            return YAML_OBJECT_MAPPER.readValue(inputStream, new TypeReference<Plan>() {
             });
         }
     }

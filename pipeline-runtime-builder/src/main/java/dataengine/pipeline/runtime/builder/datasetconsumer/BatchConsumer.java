@@ -13,40 +13,19 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-@Value
-@Builder
+@Value(staticConstructor = "of")
 public class BatchConsumer<T> implements DatasetConsumer<T> {
 
     @Nonnull
-    DatasetWriterFormat format;
-    @Nullable
-    SaveMode saveMode;
+    WriterFormatter.Batch<T> formatter;
 
     @Override
     public DatasetConsumer<T> readFrom(Dataset<T> dataset) throws DatasetConsumerException {
         if (dataset.isStreaming())
             throw new DatasetConsumerException("input dataset is a streaming dataset");
 
-        var writer = format.configureBatch(dataset.write());
-        Optional.ofNullable(saveMode).ifPresent(m -> writer.mode(saveMode));
-        writer.save();
+        formatter.apply(dataset.write()).save();
         return this;
-    }
-
-    public static SaveMode getBatchSaveMode(BatchSink batchSink) throws DatasetConsumerFactoryException {
-        if (batchSink.getMode() == null)
-            return null;
-        switch (batchSink.getMode()) {
-            case APPEND:
-                return SaveMode.Append;
-            case IGNORE:
-                return SaveMode.Ignore;
-            case OVERWRITE:
-                return SaveMode.Overwrite;
-            case ERROR_IF_EXISTS:
-                return SaveMode.ErrorIfExists;
-        }
-        throw new DatasetConsumerFactoryException.UnmanagedParameter("unmanaged batch save mode: " + batchSink.getMode());
     }
 
 }

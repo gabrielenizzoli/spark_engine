@@ -21,6 +21,11 @@ components:
     type: sql
     using: [ tx, source2 ]
     sql: "select * from tx as t join fileIn2 as f on t.id = f.id"
+  tx3:
+    type: transform
+    using: [ source1 ]
+    transformWith: class.name.Here
+    encodedAs: { type: INT }
 
 sinks:
   out1:
@@ -33,12 +38,12 @@ sinks:
     name: queryNameHere
     format: kafka
     options: { path: 'abc' }
-    trigger: { time: 60 }
+    trigger: { milliseconds: 60 }
     mode: APPEND
   out3:
     type: foreachBatch
     name: out3
-    trigger: { time: 60 }
+    trigger: { milliseconds: 60 }
     mode: APPEND
     batches:
       - source: src

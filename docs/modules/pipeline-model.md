@@ -4,17 +4,24 @@ sort: 3
 
 # The pipeline-model module
 
-In order to describe a dataset, and a dataset consumer we will use a model abstraction. 
-This model role is to properly break up how we define how a dataset is ultimately created and composed.
+This module exposes a model abstraction to describe a dataset. 
+The final goal of the model is to be able to describe how a spark dataset can be built.
+Moreover, the model can be expressed in a shareable format, usually yaml (or json), that the code is able to translate in a set of Java beans.
+
+Once a dataset is ready, it needs to be consumed to do something.
+A consumer describes an action on a dataset (ie: save to disk, show to terminal, etc etc).
+For this reason, a model abstraction is also provided to describe dataset consumers.
 
 ## Utilities
 
-### Dataset Encoder
+Some components in the model share some common abstractions. These abstractions are discussed here.
+
+### Encoder
 
 Datasets in spark can be encoded (something similar to a strong typing). 
-An encoder can me described in the model as a property to many components. 
-The encoder will be applied to the output. 
-Available encoders in the model are `value`, `tuple`, `bean` and `seralization`.
+Different part sof the model usually define an encoder. If present, the encoder will describe what format should be applied to the dataset. 
+
+Available encoders are `value`, `tuple`, `bean` and `seralization`:
 
 | Encoder Type | Possible Value |
 | ------------ | -------------- |
@@ -23,54 +30,72 @@ Available encoders in the model are `value`, `tuple`, `bean` and `seralization`.
 | `bean` | The fully qualified name of a a Java class to represent the schema and type of all fields |
 | `serialization` | One of: `JAVA`, `KRYO`; plus a class name. |
 
-Some example of an encoder in yaml representation is:
+Some example of an encoder in yaml representation:
 ```yaml
 # value
-encodedAs: { schema: value, value: STRING }
+{ schema: value, value: STRING }
 
 # tuple
-encodedAs: { schema: tuple, of: [ { schema: value, value: STRING }, { schema: value, value: INT } ] }
+{ schema: tuple, of: [ { schema: value, value: STRING }, { schema: value, value: INT } ] }
 
 # bean
-encodedAs: { schema: bean, ofClass: some.java.class.Bean }
+{ schema: bean, ofClass: some.java.class.Bean }
 
 # serialization
-encodedAs: { schema: serialization, variant: KRYO , ofClass: some.java.class.Bean }
+{ schema: serialization, variant: KRYO , ofClass: some.java.class.Bean }
 ```
 
 Note that the default serialization is `value`, so it can be omitted:
 ```yaml
 # same
-encodedAs.value: STRING
-encodedAs: { schema: value, value: STRING }
+{ value: STRING }
+{ schema: value, value: STRING }
 
 # same
-encodedAs: { schema: tuple, of: [ { value: STRING }, { value: INT } ] }
-encodedAs: { schema: tuple, of: [ { schema: value, value: STRING }, { schema: value, value: INT } ] }
+{ schema: tuple, of: [ { value: STRING }, { value: INT } ] }
+{ schema: tuple, of: [ { schema: value, value: STRING }, { schema: value, value: INT } ] }
 ```
-
-### UDF/UDAF Functions
-
-The sql component can use externally defined user defined function (UDF) or user defined aggregation functions (UDAF).
-These function should extend the `dataengine.spark.sql.udf.SqlFunction` interface. 
-Utility classes are also available to help create udfs, they are `dataengine.spark.sql.udf.Udf` and `dataengine.spark.sql.udf.Udaf`.
-
-A sql component needs a function library definition to use the user provided functions. A yaml example:
-```yaml
-# fragment that defines a list of udfs/udafs
-sqlComponent:
-  ...
-  udfs:
-    ofClasses:
-      - dataengine.pipeline.runtime.builder.dataset.TestStrUdf
-      - dataengine.pipeline.runtime.builder.dataset.TestIntUdf
-```
-
 
 ## Dataset Components
 
-In Java terms, the root of the hierarchy is the `Component` interface. Every component extends form it.
-**TODO: EXPLAIN COMPOSITION**
+A component is an abstraction that describes how a dataset is built. 
+In Java terms, the root of the component hierarchy is the `dataengine.pipeline.model.component.Component` interface. Every component extends form it.
+The common characteristic of a component is to carry all the data needed to produce or transform a dataset described by another component.
+Some components provide information on how to generate datasets from external sources (like the _batch_ component), while others make use of an existing dataset and transforms it (like the _encode_ component).
+By properly chaining many components it is thus possible to compose a complex dataset.
+
+In an execution plan many components work together to provide information about how to build datasets.
+In an execution plan each component is associated to a unique name. 
+
+In the following sample yaml execution plan a `operation` component uses as an input the dataset provided by two other components:
+```yaml
+source1:
+  type: inline
+  data:
+    - { column1: "value1", column2: 10 }
+    - { column1: "value2", column2: 20 }
+
+source2:
+  type: inline
+  data:
+    - { column1: "value3", column2: 10 }
+    - { column1: "value4", column2: 30 }
+
+operation:
+  type: sql
+  using: [ source1, source2 ]
+  sql: select * from source1 join source2 on source1.column2 = source2.column2
+```
+
+An execution plan is _consistent_ if all the component referenced are available and if there are no circular references (ie: the graph of components must be an acyclic graph).
+By referencing a component name in a consistent execution plan, all the information to generate a dataset is available.
+In the example above, if the plan is consistent, the `operation` components should carry all the information required to generate a dataset, once the datasets from the component `source1` and `source2` are generated.
+
+The practical advantages of splitting a complex system into smaller sets are:
+* _easier to develop_ - develop a ful plan, but only focus on a step at a time
+* _clear inputs and outputs_ - each component is fully described by the model, and it is not possible to reference datasets not explicitly defined in the model
+* _easier to test in isolation_ - test each component independently, by providing mock input data and then verifying the output
+* _easier to refactor_ - changes can be planned and implemented in stages
 
 ### Empty Component
 
@@ -169,7 +194,7 @@ The list of fields supported is:
 | `type` | yes | `sql` |
 | `using` | no | An optional list of other components. These component swill be used as table names in the sql statement  |
 | `sql` | yes | The sql statement |
-| `udfs` | no | An optional list of user provided functions |
+| `udfs` | no | An optional list of user provided functions (see below) |
 | `encodedAs` | no | An optional encoded specification |
 
 Yaml example:
@@ -200,7 +225,60 @@ It is also possible to have a sql generating data, without shaving to use any in
 ```yaml
 sqlComponentThatGeneratesData:
   type: sql
-  sql: select explode(array(named_struct("num", 0, "str", "a"), named_struct("num", 1, "str", "b"))) as abc
+  sql: >
+    select explode(array(
+      named_struct("num", 0, "str", "a"), 
+      named_struct("num", 1, "str", "b")
+    )) as abc
+```
+
+#### UDF/UDAF Functions
+
+The sql component can be extended by providing externally defined user defined function (UDF) or user defined aggregation functions (UDAF).
+These function should extend the `dataengine.spark.sql.udf.SqlFunction` interface.
+Utility classes are also available to help create udfs, they are `dataengine.spark.sql.udf.Udf` and `dataengine.spark.sql.udf.Udaf`.
+
+A sql component needs a function library definition to use the user provided functions:
+```yaml
+# fragment that defines a list of udfs/udafs
+sqlComponent:
+  ...
+  udfs:
+    ofClasses:
+      - dataengine.pipeline.runtime.builder.dataset.TestStrUdf
+      - dataengine.pipeline.runtime.builder.dataset.TestIntUdf
+```
+
+A udf in Java may look like this:
+```java
+package dataengine.pipeline.runtime.builder.dataset;
+
+import dataengine.spark.sql.udf.Udf;
+import org.apache.spark.sql.api.java.UDF2;
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.DataTypes;
+
+import javax.annotation.Nonnull;
+
+public class TestIntUdf implements Udf {
+
+    @Nonnull
+    @Override
+    public String getName() {
+        return "testIntUdf";
+    }
+
+    @Nonnull
+    @Override
+    public DataType getReturnType() {
+        return DataTypes.IntegerType;
+    }
+
+    @Override
+    public UDF2<Integer, Integer, Integer> getUdf2() {
+        return Integer::sum;
+    }
+}
 ```
 
 ### Encode Component
@@ -230,6 +308,8 @@ encodeComponet:
 
 The most generic component of them all, the transform components allow for a specification of an external Java class to provide a user provided transformation.
 
+The list of fields supported is:
+
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
 | `type` | yes | `transform` |
@@ -237,8 +317,207 @@ The most generic component of them all, the transform components allow for a spe
 | `transformWith` | yes | A Java fully qualified name of a class that specifies an implementation of the `dataengine.spark.transformation.DataTransformationN` interface |
 | `encodedAs` | no | An optional encoded specification |
 
-**TODO: yaml example**
+Yaml example:
+```yaml
+source1:
+  type: inline
+  data:
+    - { key: "a", value: 1 }
+    - { key: "a", value: 1 }
+    - { key: "a", value: 1 }
+    - { key: "b", value: 100 }
+    - { key: "b", value: 200 }
+    - { key: "c", value: 1 }
 
-## Dataset Consumers
+source2:
+  type: inline
+  data:
+    - { key: "d", value: 1 }
+    - { key: "d", value: 2 }
+    - { key: "d", value: 3 }
+    - { key: "a", value: 3 }
 
-**TODO: consumer docs here**
+tx:
+  type: transform
+  using: [ source1, source2 ]
+  transformWith: dataengine.pipeline.runtime.builder.dataset.TestTransformation
+```
+
+Java code for transformation:
+```java
+package dataengine.pipeline.runtime.builder.dataset;
+
+import dataengine.spark.transformation.DataTransformationN;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
+import java.util.List;
+
+public class TestTransformation implements DataTransformationN<Row, Row> {
+
+    @Override
+    public Dataset<Row> apply(List<Dataset<Row>> datasets) {
+        return datasets.stream().reduce(Dataset::union).orElseThrow(IllegalStateException::new);
+    }
+
+}
+```
+
+## Dataset Sinks
+
+Once a dataset is ready to be used it can be consumed by a dataset consumer.
+Just like a dataset component, a consumer can be described using a model, usually represented as yaml.
+A dataset consumer is represented in Java as an extension of the `dataengine.pipeline.model.sink.Sink` interface.
+
+**TODO**
+
+### Show Sink
+
+For debugging purposes, a show sink can be used to print on the output terminal the head of the dataset.
+
+List of fields:
+
+| Field | Required | Possible Value |
+| ----- | -------- | -------------- |
+| `type` | yes | `show` |
+| `numRows` | no | Number of rows to show, defaults to 20.  |
+| `truncate` | no | Number of chars for each column, defaults to 30.  |
+
+Yaml Example:
+```yaml
+showSink:
+  type: show
+```
+
+### Collect Sink
+
+For debugging purposes, a collect sink can be used to collect in the driver all the rows of the dataset.
+
+List of fields:
+
+| Field | Required | Possible Value |
+| ----- | -------- | -------------- |
+| `type` | yes | `collect` |
+| `collect` | no | Number of rows to collect, defaults to 100. |
+
+Yaml Example:
+```yaml
+collectSink:
+  type: collect
+```
+
+### Batch Sink
+
+This sink describes a write operation of a dataset to the standard spark writer interface.
+Refer to spark documentation for details.
+
+List of fields:
+
+| Field | Required | Possible Value |
+| ----- | -------- | -------------- |
+| `type` | yes | `batch` |
+| `format` | yes | Spark writer format (eg: `parquet`, `json`). |
+| `mode` | no | Write mode. One of: `APPEND`, `OVERWRITE`, `ERROR_IF_EXISTS`, `IGNORE`. |
+| `options` | no | A key-value map of options. Meaning is format-dependent |
+| `partitionColumns` | no | A list of columns to be used to partition during save of data. |
+
+Yaml Example:
+```yaml
+collectSink:
+  type: batch
+  format: parquet
+  options: { path: 'abc' }
+  mode: OVERWRITE
+```
+
+### Stream Sink
+
+This sink describes a write operation of a streaming dataset to the standard spark writer interface.
+Refer to spark documentation for details.
+
+List of fields:
+
+| Field | Required | Possible Value |
+| ----- | -------- | -------------- |
+| `type` | yes | `batch` |
+| `format` | yes | Spark writer format (eg: `kafka`). |
+| `name` | yes | Name of the streaming query. |
+| `mode` | no | Write mode. One of: `APPEND`, `COMPLETE`, `UPDATE`. |
+| `checkpointLocation` | no | Checkpoint location for the stream (usually somewhere in hdfs or local filesystem). |
+| `trigger` | no | Defines trigger for stream (see below). |
+| `options` | no | A key-value map of options. Meaning is format-dependent |
+
+Yaml Example:
+```yaml
+collectSink:
+  type: stream
+  name: queryNameHere
+  format: kafka
+  options: { path: 'abc' }
+  trigger: { milliseconds: 60 }
+  mode: APPEND
+```
+
+#### Triggers
+
+A trigger defines the operation frequency of the stream. Without a trigger a micro-batch will be started as soon as previous bmicro batch is done.
+In continuous mode spark operates using a single batch.
+Refer to spark documentation for details.
+
+List of fields:
+
+| Field | Required | Possible Value |
+| ----- | -------- | -------------- |
+| `type` | yes | One of: `interval`, `once`, `continuous`. Defaults to `intervalMs`. |
+| `milliseconds` | yes | This is only used for types `intervalMs`, `continuous`. |
+
+Yaml Examples:
+```yaml
+# same
+{ milliseconds: 60 }
+{ type: interval, milliseconds: 1000 }
+
+# once
+{ type: once }
+
+# continuous
+{ type: continuous, milliseconds: 1000 }
+```
+
+## Execution Plan
+
+As we stated before, an _execution plan_ is a set of datasets that can be routed to a set of consumers.
+A single pair dataset/dataset consumer is called a _pipeline_, while the full set of all components/consumers/pipelines is an _execution plan_.
+The model class that represents an execution plan is `dataengine.pipeline.model.pipeline.Plan`.
+
+In yaml term, an execution plan can be represented by a document divided in 3 parts: 
+* a list of _components_ - this will describe datasets
+* a list of _sinks_ - this will define dataset consumers
+* a list of _pipelines_ - to pair a component with a sink
+
+A high level example in yam;:
+```yaml
+components:
+  source1:
+    ...
+  source2:
+    ...
+  component1:
+    using: [ source1, source2 ]
+    ...    
+  component2:
+    using: [ component1 ]
+    ...
+
+sinks:
+  consumer1:
+    ...
+  consumer2:
+    ...
+
+pipelines:
+  pipe1: { source: component1, sink: consumer1 }
+  pipe2: { source: component2, sink: consumer2 }
+```
+
+
