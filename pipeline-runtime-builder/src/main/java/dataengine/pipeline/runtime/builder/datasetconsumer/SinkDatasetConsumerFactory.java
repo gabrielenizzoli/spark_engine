@@ -12,7 +12,6 @@ import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerFactory;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerFactoryException;
 import lombok.Builder;
 import lombok.Value;
-import org.apache.spark.sql.Row;
 
 import javax.annotation.Nonnull;
 
@@ -50,8 +49,9 @@ public class SinkDatasetConsumerFactory implements DatasetConsumerFactory {
     private <T> DatasetConsumer<T> getConsumer(Sink sink) throws DatasetConsumerFactoryException {
         if (sink instanceof ShowSink) {
             var show = (ShowSink) sink;
-            return (DatasetConsumer<T>)ShowConsumer.builder()
-                    .count(show.getNumRows()).truncate(show.getTruncate())
+            return (DatasetConsumer<T>) ShowConsumer.builder()
+                    .count(show.getNumRows())
+                    .truncate(show.getTruncate())
                     .build();
         }
 
@@ -61,22 +61,12 @@ public class SinkDatasetConsumerFactory implements DatasetConsumerFactory {
         }
 
         if (sink instanceof BatchSink) {
-            var batch = (BatchSink) sink;
-            return (DatasetConsumer<T>) BatchConsumer.builder()
-                    .format(DatasetWriterFormat.getSinkFormat(batch))
-                    .saveMode(BatchConsumer.getBatchSaveMode(batch))
-                    .build();
+            return BatchConsumer.<T>of(WriterFormatter.getBatchFormatter((BatchSink) sink));
         }
 
         if (sink instanceof StreamSink) {
             var stream = (StreamSink) sink;
-            return (StreamConsumer<T>) StreamConsumer.<Row>builder()
-                    .queryName(stream.getName())
-                    .checkpoint(stream.getCheckpointLocation())
-                    .format(DatasetWriterFormat.getSinkFormat(stream))
-                    .outputMode(StreamConsumer.getStreamOutputMode(stream))
-                    .trigger(StreamConsumer.getStreamTrigger(stream))
-                    .build();
+            return StreamConsumer.<T>of(WriterFormatter.getStreamFormatter(stream));
         }
 
         throw new DatasetConsumerFactoryException.ConsumerInstantiationException("sink type [" + sink.getClass().getName() + "] does not have any factory associated");
