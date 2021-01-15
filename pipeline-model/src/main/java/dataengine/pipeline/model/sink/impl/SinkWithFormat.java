@@ -15,4 +15,7 @@ public interface SinkWithFormat extends Sink {
     @Nullable
     Map<String, String> getOptions();
 
+    @Nullable
+    List<String> getPartitionColumns();
+
 }
