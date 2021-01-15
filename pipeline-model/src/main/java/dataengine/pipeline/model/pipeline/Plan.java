@@ -10,8 +10,8 @@ import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = Pipelines.Builder.class)
-public class Pipelines {
+@JsonDeserialize(builder = Plan.Builder.class)
+public class Plan {
 
     Map<String, Component> components;
     Map<String, Sink> sinks;

@@ -2,14 +2,14 @@ package dataengine.pipeline.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import dataengine.pipeline.model.pipeline.Pipelines;
+import dataengine.pipeline.model.pipeline.Plan;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
-class PipelinesTest {
+class PlanTest {
 
     @Test
     public void testSampleSerialization() throws IOException {
@@ -18,14 +18,14 @@ class PipelinesTest {
         File yamlSource = new File("src/test/resources/sample.yaml");
 
         // when
-        Pipelines pipelines = mapper.readValue(yamlSource, Pipelines.class);
+        Plan plan = mapper.readValue(yamlSource, Plan.class);
 
         // then
-        Assertions.assertNotNull(pipelines);
-        Assertions.assertNotNull(pipelines.getSinks());
-        Assertions.assertTrue(pipelines.getSinks().size() > 0);
-        Assertions.assertNotNull(pipelines.getComponents());
-        Assertions.assertTrue(pipelines.getComponents().size() > 0);
+        Assertions.assertNotNull(plan);
+        Assertions.assertNotNull(plan.getSinks());
+        Assertions.assertTrue(plan.getSinks().size() > 0);
+        Assertions.assertNotNull(plan.getComponents());
+        Assertions.assertTrue(plan.getComponents().size() > 0);
 
     }
 

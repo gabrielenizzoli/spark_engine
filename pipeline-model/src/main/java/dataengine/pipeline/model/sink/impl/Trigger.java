@@ -6,9 +6,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Value;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = Trigger.TriggerTimeMs.class)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = Trigger.TriggerIntervalMs.class)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = Trigger.TriggerTimeMs.class, name = "milliseconds"),
+        @JsonSubTypes.Type(value = Trigger.TriggerIntervalMs.class, name = "interval"),
         @JsonSubTypes.Type(value = Trigger.TriggerOnce.class, name = "once"),
         @JsonSubTypes.Type(value = Trigger.TriggerContinuousMs.class, name = "continuous")
 })
@@ -16,9 +16,9 @@ public interface Trigger {
 
     @Value
     @Builder(setterPrefix = "with")
-    @JsonDeserialize(builder = TriggerTimeMs.Builder.class)
-    class TriggerTimeMs implements Trigger {
-        long time;
+    @JsonDeserialize(builder = TriggerIntervalMs.Builder.class)
+    class TriggerIntervalMs implements Trigger {
+        long milliseconds;
     }
 
     @Value

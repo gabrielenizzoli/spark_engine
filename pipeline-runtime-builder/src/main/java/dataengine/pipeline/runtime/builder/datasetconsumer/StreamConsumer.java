@@ -55,8 +55,8 @@ public class StreamConsumer<T> implements DatasetConsumer<T> {
             return null;
         if (streamSink.getTrigger() instanceof dataengine.pipeline.model.sink.impl.Trigger.TriggerContinuousMs)
             return Trigger.Continuous(((dataengine.pipeline.model.sink.impl.Trigger.TriggerContinuousMs) streamSink.getTrigger()).getMilliseconds());
-        if (streamSink.getTrigger() instanceof dataengine.pipeline.model.sink.impl.Trigger.TriggerTimeMs)
-            return Trigger.ProcessingTime(((dataengine.pipeline.model.sink.impl.Trigger.TriggerTimeMs) streamSink.getTrigger()).getTime());
+        if (streamSink.getTrigger() instanceof dataengine.pipeline.model.sink.impl.Trigger.TriggerIntervalMs)
+            return Trigger.ProcessingTime(((dataengine.pipeline.model.sink.impl.Trigger.TriggerIntervalMs) streamSink.getTrigger()).getMilliseconds());
         if (streamSink.getTrigger() instanceof dataengine.pipeline.model.sink.impl.Trigger.TriggerOnce)
             return Trigger.Once();
         throw new DatasetConsumerFactoryException.UnmanagedParameter("unmanaged stream trigger: " + streamSink.getTrigger());

@@ -24,8 +24,6 @@ public class StreamSink implements Sink, SinkWithFormat {
     @Nullable
     Map<String, String> options;
     @Nullable
-    List<String> partitionColumns;
-    @Nullable
     Trigger trigger;
     @Nullable
     OutputMode mode;

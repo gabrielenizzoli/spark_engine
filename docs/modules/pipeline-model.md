@@ -375,24 +375,149 @@ A dataset consumer is represented in Java as an extension of the `dataengine.pip
 
 For debugging purposes, a show sink can be used to print on the output terminal the head of the dataset.
 
-**TODO**
+List of fields:
+
+| Field | Required | Possible Value |
+| ----- | -------- | -------------- |
+| `type` | yes | `show` |
+| `numRows` | no | Number of rows to show, defaults to 20.  |
+| `truncate` | no | Number of chars for each column, defaults to 30.  |
+
+Yaml Example:
+```yaml
+showSink:
+  type: show
+```
 
 ### Collect Sink
 
 For debugging purposes, a collect sink can be used to collect in the driver all the rows of the dataset.
 
-**TODO**
+List of fields:
+
+| Field | Required | Possible Value |
+| ----- | -------- | -------------- |
+| `type` | yes | `collect` |
+| `collect` | no | Number of rows to collect, defaults to 100. |
+
+Yaml Example:
+```yaml
+collectSink:
+  type: collect
+```
 
 ### Batch Sink
 
-**TODO**
+This sink describes a write operation of a dataset to the standard spark writer interface.
+Refer to spark documentation for details.
+
+List of fields:
+
+| Field | Required | Possible Value |
+| ----- | -------- | -------------- |
+| `type` | yes | `batch` |
+| `format` | yes | Spark writer format (eg: `parquet`, `json`). |
+| `mode` | no | Write mode. One of: `APPEND`, `OVERWRITE`, `ERROR_IF_EXISTS`, `IGNORE`. |
+| `options` | no | A key-value map of options. Meaning is format-dependent |
+| `partitionColumns` | no | A list of columns to be used to partition during save of data. |
+
+Yaml Example:
+```yaml
+collectSink:
+  type: batch
+  format: parquet
+  options: { path: 'abc' }
+  mode: OVERWRITE
+```
 
 ### Stream Sink
 
-**TODO**
+This sink describes a write operation of a streaming dataset to the standard spark writer interface.
+Refer to spark documentation for details.
 
-## Execution Plan (aka, Pipeline)
+List of fields:
 
-**TODO**
+| Field | Required | Possible Value |
+| ----- | -------- | -------------- |
+| `type` | yes | `batch` |
+| `format` | yes | Spark writer format (eg: `kafka`). |
+| `name` | yes | Name of the streaming query. |
+| `mode` | no | Write mode. One of: `APPEND`, `COMPLETE`, `UPDATE`. |
+| `checkpointLocation` | no | Checkpoint location for the stream (usually somewhere in hdfs or local filesystem). |
+| `trigger` | no | Defines trigger for stream (see below). |
+| `options` | no | A key-value map of options. Meaning is format-dependent |
+
+Yaml Example:
+```yaml
+collectSink:
+  type: stream
+  name: queryNameHere
+  format: kafka
+  options: { path: 'abc' }
+  trigger: { milliseconds: 60 }
+  mode: APPEND
+```
+
+#### Triggers
+
+A trigger defines the operation frequency of the stream. Without a trigger a micro-batch will be started as soon as previous bmicro batch is done.
+In continuous mode spark operates using a single batch.
+Refer to spark documentation for details.
+
+List of fields:
+
+| Field | Required | Possible Value |
+| ----- | -------- | -------------- |
+| `type` | yes | One of: `interval`, `once`, `continuous`. Defaults to `intervalMs`. |
+| `milliseconds` | yes | This is only used for types `intervalMs`, `continuous`. |
+
+Yaml Examples:
+```yaml
+# same
+{ milliseconds: 60 }
+{ type: interval, milliseconds: 1000 }
+
+# once
+{ type: once }
+
+# continuous
+{ type: continuous, milliseconds: 1000 }
+```
+
+## Execution Plan
+
+As we stated before, an _execution plan_ is a set of datasets that can be routed to a set of consumers.
+A single pair dataset/dataset consumer is called a _pipeline_, while the full set of all components/consumers/pipelines is an _execution plan_.
+The model class that represents an execution plan is `dataengine.pipeline.model.pipeline.Plan`.
+
+In yaml term, an execution plan can be represented by a document divided in 3 parts: 
+* a list of _components_ - this will describe datasets
+* a list of _sinks_ - this will define dataset consumers
+* a list of _pipelines_ - to pair a component with a sink
+
+A high level example in yam;:
+```yaml
+components:
+  source1:
+    ...
+  source2:
+    ...
+  component1:
+    using: [ source1, source2 ]
+    ...    
+  component2:
+    using: [ component1 ]
+    ...
+
+sinks:
+  consumer1:
+    ...
+  consumer2:
+    ...
+
+pipelines:
+  pipe1: { source: component1, sink: consumer1 }
+  pipe2: { source: component2, sink: consumer2 }
+```
 
 
