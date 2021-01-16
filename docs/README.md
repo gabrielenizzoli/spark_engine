@@ -1,6 +1,6 @@
 # Welcome to spark_engine project
 
-*Compose complex spark logical plans with some help from a simple-to-use library*.
+*Build a complex spark execution plan by composing many different spark operations*.
 
 ## Table of contents
 
