@@ -17,9 +17,8 @@ public class Pipeline<T> {
     @Nonnull
     DatasetConsumer<T> datasetConsumer;
 
-    public DatasetConsumer<T> run() throws DatasetConsumerException {
+    public void run() throws DatasetConsumerException {
         datasetConsumer.readFrom(dataset);
-        return datasetConsumer;
     }
 
 }

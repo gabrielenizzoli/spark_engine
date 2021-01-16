@@ -1,6 +1,6 @@
 package dataengine.pipeline.runtime.builder.dataset;
 
-import dataengine.pipeline.runtime.builder.pipeline.TestCatalog;
+import dataengine.pipeline.runtime.builder.TestCatalog;
 import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
 import dataengine.pipeline.model.component.catalog.ComponentCatalogFromMap;
 import dataengine.pipeline.model.component.impl.InlineComponent;
@@ -8,7 +8,6 @@ import dataengine.pipeline.model.component.impl.SqlComponent;
 import dataengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.streaming.Trigger;
 import org.apache.spark.sql.types.DataTypes;

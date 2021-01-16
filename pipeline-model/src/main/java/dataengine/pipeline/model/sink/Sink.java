@@ -8,9 +8,10 @@ import dataengine.pipeline.model.sink.impl.*;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = BatchSink.class, name = "batch"),
         @JsonSubTypes.Type(value = StreamSink.class, name = "stream"),
-        @JsonSubTypes.Type(value = ForeachBatchSink.class, name = "foreachBatch"),
+        @JsonSubTypes.Type(value = ForeachSink.class, name = "foreach"),
         @JsonSubTypes.Type(value = ShowSink.class, name = "show"),
-        @JsonSubTypes.Type(value = CollectSink.class, name = "collect")
+        @JsonSubTypes.Type(value = ViewSink.class, name = "view"),
+        @JsonSubTypes.Type(value = CounterSink.class, name = "counter")
 })
 public interface Sink {
 

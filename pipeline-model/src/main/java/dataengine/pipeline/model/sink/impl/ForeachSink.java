@@ -1,25 +1,33 @@
 package dataengine.pipeline.model.sink.impl;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import dataengine.pipeline.model.component.Component;
+import dataengine.pipeline.model.pipeline.Plan;
 import dataengine.pipeline.model.sink.Sink;
 import lombok.Builder;
 import lombok.Value;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = ForeachBatchSink.Builder.class)
-public class ForeachBatchSink implements Sink {
+@JsonDeserialize(builder = ForeachSink.Builder.class)
+public class ForeachSink implements Sink {
 
     @Nonnull
     String name;
+    @Nullable
+    Map<String, String> options;
     @Nonnull
     Trigger trigger;
     @Nonnull
     StreamSink.OutputMode mode;
     @Nonnull
-    List<ForeachPipeline> batches;
+    String batchComponentName;
+    @Nonnull
+    Plan plan;
 
 }

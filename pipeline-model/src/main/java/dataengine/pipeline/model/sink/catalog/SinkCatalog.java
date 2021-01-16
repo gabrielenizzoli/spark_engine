@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public interface SinkCatalog {
 
+    SinkCatalog EMPTY = (name) -> Optional.empty();
+
     @Nonnull
     Optional<Sink> lookup(String sinkName) throws SinkCatalogException;
 

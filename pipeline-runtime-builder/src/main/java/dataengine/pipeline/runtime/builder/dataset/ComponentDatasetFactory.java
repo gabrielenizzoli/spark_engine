@@ -1,18 +1,19 @@
 package dataengine.pipeline.runtime.builder.dataset;
 
+import dataengine.pipeline.model.component.Component;
+import dataengine.pipeline.model.component.ComponentWithMultipleInputs;
+import dataengine.pipeline.model.component.ComponentWithNoInput;
+import dataengine.pipeline.model.component.ComponentWithSingleInput;
+import dataengine.pipeline.model.component.catalog.ComponentCatalog;
+import dataengine.pipeline.model.component.catalog.ComponentCatalogException;
 import dataengine.pipeline.runtime.builder.dataset.supplier.DatasetSupplier;
 import dataengine.pipeline.runtime.builder.dataset.supplier.DatasetSupplierForComponentWithMultipleInput;
 import dataengine.pipeline.runtime.builder.dataset.supplier.DatasetSupplierForComponentWithNoInput;
 import dataengine.pipeline.runtime.builder.dataset.supplier.DatasetSupplierForComponentWithSingleInput;
 import dataengine.pipeline.runtime.datasetfactory.DatasetFactory;
 import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
-import dataengine.pipeline.model.component.Component;
-import dataengine.pipeline.model.component.ComponentWithNoInput;
-import dataengine.pipeline.model.component.ComponentWithMultipleInputs;
-import dataengine.pipeline.model.component.ComponentWithSingleInput;
-import dataengine.pipeline.model.component.catalog.ComponentCatalog;
-import dataengine.pipeline.model.component.catalog.ComponentCatalogException;
 import lombok.Builder;
+import lombok.Singular;
 import lombok.Value;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.SparkSession;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class ComponentDatasetFactory implements DatasetFactory {
 
     @Nonnull
@@ -35,7 +36,7 @@ public class ComponentDatasetFactory implements DatasetFactory {
     @Nonnull
     ComponentCatalog componentCatalog;
     @lombok.Builder.Default
-    Map<String, Dataset<?>> datasetCache = new HashMap<>();
+    Map<String, Dataset<Object>> datasetCache = new HashMap<>();
 
     public static ComponentDatasetFactory of(SparkSession sparkSession, ComponentCatalog catalog) {
         return ComponentDatasetFactory.builder().sparkSession(sparkSession).componentCatalog(catalog).build();
@@ -64,7 +65,7 @@ public class ComponentDatasetFactory implements DatasetFactory {
         var component = getComponent(name);
         Dataset<T> ds = getDataset(name, component, childrenPath);
 
-        datasetCache.put(name, ds);
+        datasetCache.put(name, (Dataset<Object>)ds);
         return ds;
     }
 

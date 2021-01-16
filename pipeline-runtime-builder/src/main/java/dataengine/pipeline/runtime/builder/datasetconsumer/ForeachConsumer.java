@@ -1,16 +1,20 @@
 package dataengine.pipeline.runtime.builder.datasetconsumer;
 
+import dataengine.pipeline.model.component.catalog.ComponentCatalogFromMap;
+import dataengine.pipeline.model.pipeline.Plan;
+import dataengine.pipeline.model.sink.catalog.SinkCatalogFromMap;
+import dataengine.pipeline.runtime.PipelineFactory;
+import dataengine.pipeline.runtime.SimplePipelineFactory;
+import dataengine.pipeline.runtime.builder.dataset.ComponentDatasetFactory;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumer;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerException;
 import lombok.Builder;
 import lombok.Value;
 import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.streaming.OutputMode;
-import org.apache.spark.sql.streaming.Trigger;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 @Value
@@ -18,29 +22,32 @@ import java.util.concurrent.TimeoutException;
 public class ForeachConsumer<T> implements DatasetConsumer<T> {
 
     @Nonnull
-    String queryName;
+    WriterFormatter.Stream<T> formatter;
     @Nonnull
-    Trigger trigger;
-    @Nullable
-    OutputMode outputMode;
+    String batchComponentName;
     @Nonnull
-    DatasetConsumer<T> sink;
+    Plan plan;
 
     @Override
-    public DatasetConsumer<T> readFrom(Dataset<T> dataset) throws DatasetConsumerException {
+    public void readFrom(Dataset<T> dataset) throws DatasetConsumerException {
         if (!dataset.isStreaming())
             throw new DatasetConsumerException("input dataset is not a streaming dataset");
 
-        var writer = dataset.writeStream().queryName(queryName).trigger(trigger);
-        Optional.ofNullable(outputMode).ifPresent(o -> writer.outputMode(outputMode));
+
+        var writer = formatter.apply(dataset.writeStream());
 
         writer.foreachBatch((ds, time) -> {
 
-            var cachedDataset = ds.persist();
+            var batchDataset = plan.getPipelines().size() > 1 ? ds.persist() : ds;
+
             try {
-                sink.readFrom(cachedDataset);
+                var pipelineFactory = getPipelineFactory(batchDataset);
+                for (var pipeline : plan.getPipelines()) {
+                    pipelineFactory.buildPipeline(pipeline.getSource(), pipeline.getSink()).run();
+                }
             } finally {
-                cachedDataset.unpersist();
+                if (plan.getPipelines().size() > 1)
+                    batchDataset.unpersist();
             }
 
         });
@@ -50,8 +57,24 @@ public class ForeachConsumer<T> implements DatasetConsumer<T> {
         } catch (TimeoutException e) {
             throw new DatasetConsumerException("error starting stream", e);
         }
-
-        return this;
     }
+
+    private PipelineFactory getPipelineFactory(Dataset<T> batchDataset) {
+        var cache = new HashMap<String, Dataset<Object>>();
+        cache.put(batchComponentName, (Dataset<Object>) batchDataset);
+
+        var datasetFactory = ComponentDatasetFactory
+                .builder()
+                .sparkSession(batchDataset.sparkSession())
+                .componentCatalog(ComponentCatalogFromMap.of(plan.getComponents()))
+                .datasetCache(cache)
+                .build();
+        var datasetConsumerFactory = SinkDatasetConsumerFactory.of(SinkCatalogFromMap.of(plan.getSinks()));
+        return SimplePipelineFactory.builder()
+                .datasetFactory(datasetFactory)
+                .datasetConsumerFactory(datasetConsumerFactory)
+                .build();
+    }
+
 
 }
