@@ -1,4 +1,4 @@
-package dataengine.pipeline.runtime.builder.dataset;
+package dataengine.pipeline.runtime.builder.dataset.utils;
 
 import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
 import dataengine.pipeline.model.encoder.DataEncoder;

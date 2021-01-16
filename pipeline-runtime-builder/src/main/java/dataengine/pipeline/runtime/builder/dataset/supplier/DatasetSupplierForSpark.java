@@ -1,5 +1,6 @@
-package dataengine.pipeline.runtime.builder.dataset;
+package dataengine.pipeline.runtime.builder.dataset.supplier;
 
+import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
@@ -13,13 +14,15 @@ import java.util.Objects;
 
 @Value
 @Builder
-public class SparkSourceFactory<T> {
+public class DatasetSupplierForSpark<T> implements DatasetSupplier<T> {
 
     public enum SourceType {
         BATCH,
         STREAM
     }
 
+    @Nonnull
+    SparkSession sparkSession;
     @Nonnull
     String format;
     @Nonnull
@@ -64,26 +67,23 @@ public class SparkSourceFactory<T> {
 
     }
 
-    public static Builder<Row> rowBuilder() {
-        return builder().row();
-    }
-
-    public Dataset<T> buildDataset() {
+    @Override
+    public Dataset<T> provides() throws DatasetFactoryException {
         return Objects.nonNull(encoder) ? getEncodedDataset() : (Dataset<T>) getRowDataset();
     }
 
-    public Dataset<T> getEncodedDataset() {
+    private Dataset<T> getEncodedDataset() throws DatasetFactoryException {
         return getRowDataset().as(Objects.requireNonNull(encoder, "encoder must be specified"));
     }
 
-    public Dataset<Row> getRowDataset() {
+    public Dataset<Row> getRowDataset() throws DatasetFactoryException {
         switch (type) {
             case BATCH:
-                return SparkSession.active().read().format(format).options(options).schema(schema).load();
+                return sparkSession.read().format(format).options(options).schema(schema).load();
             case STREAM:
-                return SparkSession.active().readStream().format(format).options(options).schema(schema).load();
+                return sparkSession.readStream().format(format).options(options).schema(schema).load();
             default:
-                throw new IllegalArgumentException("unmanaged dataset type: " + type);
+                throw new DatasetFactoryException("unmanaged dataset type: " + type);
         }
     }
 

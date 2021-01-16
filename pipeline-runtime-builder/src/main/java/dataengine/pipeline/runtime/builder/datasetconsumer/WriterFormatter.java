@@ -35,7 +35,7 @@ public class WriterFormatter {
             if (sink.getOptions() != null && !sink.getOptions().isEmpty())
                 writer = writer.options(sink.getOptions());
             if (sink.getPartitionColumns() != null && !sink.getPartitionColumns().isEmpty())
-                writer = writer.partitionBy(sink.getPartitionColumns().stream().toArray(String[]::new));
+                writer = writer.partitionBy(sink.getPartitionColumns().toArray(String[]::new));
             if (sink.getMode() != null)
                 writer = writer.mode(getBatchSaveMode(sink));
 

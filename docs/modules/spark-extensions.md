@@ -20,17 +20,17 @@ In spark sql, to be able to reference a table or a udf, a developer must first r
 Example with spark sql:
 
 ```java
-var ds=...;
-        ds.createOrReplaceTempView("table");
-        var dsNew=spark.sql("select column from table");
+var ds= ...;
+ds.createOrReplaceTempView("table");
+var dsNew = spark.sql(sparkSession, "select column from table");
 ```
 
 Contrary to that, the programmatic interface does not need this but simply requires a reference to the dataset. Example
-with programmatic interface:
+with a programmatic interface:
 
 ```java
 var ds=...;
-        var newDs=ds.select("column");
+var newDs=ds.select("column");
 ```
 
 While the programmatic interface is useful, many times **a full execution plan is better expressed as a set of separated
@@ -44,11 +44,12 @@ import dataengine.spark.sql.logicalplan.tableresolver.Table;
 
 var ds=...;
 
-        var sqlCompiler=SqlCompiler.builder()
+var sqlCompiler=SqlCompiler.builder()
+        .sparkSession(sparkSession)
         .tableResolver(Table.ofDataset("table",ds))
         .build();
 
-        var newDs=sqlCompiler.compileSqlToDataset(sparkSession,"select column from table")
+var newDs=sqlCompiler.compileSqlToDataset(sparkSession,"select column from table")
 ```
 
 The same is possible with UDFs (and UDAFs). Example:
@@ -77,14 +78,15 @@ public class UdfPlusOne implements Udf {
     }
 }
 
-    var ds = ...;
+var ds = ...;
 
-        var sqlCompiler=SqlCompiler.builder()
+var sqlCompiler=SqlCompiler.builder()
+        .sparkSession(sparkSession)
         .tableResolver(Table.ofDataset("table",ds))
         .functionResolver(new UdfPlusOne())
         .build();
 
-        var newDs=sqlCompiler.sql("select plusOne(column) from table")
+var newDs = sqlCompiler.sql("select plusOne(column) from table")
 ```
 
 Note that a given `SqlCompiler` is only able to resolve the tables and UDFs that are defined at the creation of the
@@ -113,7 +115,7 @@ import java.util.function.Function;
 import dataengine.scala.compat.JavaToScalaFunction1;
 
 Function<Integer, Integer> javaFunction=i->i+1;
-        JavaToScalaFunction1<Integer, Integer> scalaFunction=new JavaToScalaFunction1<>(javaFunction);
+JavaToScalaFunction1<Integer, Integer> scalaFunction=new JavaToScalaFunction1<>(javaFunction);
 ```
 
 ### Udf Wrappers
@@ -135,7 +137,7 @@ Example:
 import org.apache.spark.sql.api.java.UDF1;
 
 UDF1<Integer, Integer> javaUdf=i->i+1;
-        JavaUdf1ToScalaFunction1<Integer, Integer> scalaUdf=new JavaUdf1ToScalaFunction1<>(javaUdf);
+JavaUdf1ToScalaFunction1<Integer, Integer> scalaUdf=new JavaUdf1ToScalaFunction1<>(javaUdf);
 ```
 
 ### Dataset Transformations 
@@ -145,9 +147,9 @@ import dataengine.spark.transformation.DataTransformation2;
 
 DataTransformation2<Integer, Integer, Integer> tx=(d1,d2)->d1.as("d1").join(d2.as("d2"),col("d1.value").equalTo(col("d2.value")));
 
-        var ds1=...;
-        var ds2=...;
-        var dsResult=tx.apply(ds1,ds2);
+var ds1=...;
+var ds2=...;
+var dsResult=tx.apply(ds1,ds2);
 ```
 
 Each transformation interface has a method called `apply()` that takes a variable number of datasets and provides, as an
@@ -198,8 +200,8 @@ import dataengine.spark.transformation.Transformations;
 
 // 1 dataset
 var ds1=...;
-        var sql="select column from table";
-        var newDs=Transformations.sql("table",sql).apply(ds1);
+var sql="select column from table";
+var newDs=Transformations.sql("table",sql).apply(ds1);
 
 // 2 datasets
 var sql2 = "select table1.column from table1 join table2 on table1.column = table2.column";

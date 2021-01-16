@@ -23,6 +23,8 @@ import java.util.List;
 @Builder
 public class SqlCompiler {
 
+    @Nonnull
+    SparkSession sparkSession;
     @Singular
     @Nonnull
     List<LogicalPlanMapper> planMappers;
@@ -59,40 +61,36 @@ public class SqlCompiler {
      * @param sql          sql statement
      * @return dataset
      */
-    public static Dataset<Row> sql(@Nullable Collection<Table> tables,
+    public static Dataset<Row> sql(@Nonnull SparkSession sparkSession,
+                                   @Nullable Collection<Table> tables,
                                    @Nullable Collection<SqlFunction> sqlFunctions,
                                    @Nonnull String sql) throws PlanMapperException {
         var sqlCompiler = SqlCompiler.builder()
+                .sparkSession(sparkSession)
                 .tableResolver(tables)
                 .functionResolver(sqlFunctions)
                 .build();
 
-        return sqlCompiler.sql(SparkSession.active(), sql);
+        return sqlCompiler.sql(sql);
     }
 
-    public static Dataset<Row> sql(@Nullable Collection<SqlFunction> sqlFunctions,
+    public static Dataset<Row> sql(@Nonnull SparkSession sparkSession,
+                                   @Nullable Collection<SqlFunction> sqlFunctions,
                                    @Nonnull String sql) throws PlanMapperException {
-        return sql(Collections.emptyList(), sqlFunctions, sql);
+        return sql(sparkSession, Collections.emptyList(), sqlFunctions, sql);
     }
 
     public Dataset<Row> sql(@Nonnull String sql) throws PlanMapperException {
-        return sql(SparkSession.active(), sql);
+        return Dataset.ofRows(sparkSession, sqlToLogicalPlan(sql));
     }
 
-    public Dataset<Row> sql(@Nonnull SparkSession sparkSession,
-                            @Nonnull String sql) throws PlanMapperException {
-        return Dataset.ofRows(sparkSession, sqlToLogicalPlan(sparkSession, sql));
-    }
-
-    private LogicalPlan sqlToLogicalPlan(@Nonnull SparkSession sparkSession,
-                                         @Nonnull String sql) throws PlanMapperException {
-        var logicalPlan = generateLogicalPlan(sparkSession, sql);
+    private LogicalPlan sqlToLogicalPlan(@Nonnull String sql) throws PlanMapperException {
+        var logicalPlan = generateLogicalPlan(sql);
         var remappedLogicalPlan = remapLogicalPlan(logicalPlan);
         return remappedLogicalPlan;
     }
 
-    private static LogicalPlan generateLogicalPlan(@Nonnull SparkSession sparkSession,
-                                                   @Nonnull String sql) throws PlanMapperException {
+    private LogicalPlan generateLogicalPlan(@Nonnull String sql) throws PlanMapperException {
         try {
             return sparkSession.sessionState().sqlParser().parsePlan(sql);
         } catch (ParseException e) {

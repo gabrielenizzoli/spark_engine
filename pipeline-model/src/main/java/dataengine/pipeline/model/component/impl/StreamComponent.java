@@ -3,7 +3,7 @@ package dataengine.pipeline.model.component.impl;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import dataengine.pipeline.model.encoder.DataEncoder;
 import dataengine.pipeline.model.component.EncodedComponent;
-import dataengine.pipeline.model.component.SourceComponent;
+import dataengine.pipeline.model.component.ComponentWithNoInput;
 import lombok.Builder;
 import lombok.Value;
 
@@ -14,7 +14,7 @@ import java.util.Map;
 @Value
 @Builder(setterPrefix = "with")
 @JsonDeserialize(builder = StreamComponent.Builder.class)
-public class StreamComponent implements SourceComponent, EncodedComponent {
+public class StreamComponent implements ComponentWithNoInput, EncodedComponent {
 
     @Nonnull
     String format;

@@ -2,7 +2,7 @@ package dataengine.pipeline.model.component;
 
 import java.util.List;
 
-public interface TransformationComponentWithMultipleInputs extends TransformationComponent {
+public interface ComponentWithMultipleInputs extends TransformationComponent {
 
     List<String> getUsing();
 
