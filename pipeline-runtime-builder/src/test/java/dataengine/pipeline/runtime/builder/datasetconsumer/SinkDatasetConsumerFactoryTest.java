@@ -55,7 +55,7 @@ class SinkDatasetConsumerFactoryTest extends SparkSessionBase {
         // when
         GlobalCounterConsumer.COUNTER.clear();
         pipe.<String>buildPipeline("rate", "foreachSink").run();
-        sparkSession.streams().awaitAnyTermination(5000);
+        sparkSession.streams().awaitAnyTermination(3000);
 
         // then
         assertTrue(GlobalCounterConsumer.COUNTER.get("testForeachStreamWithCatalog").get() > 0);
