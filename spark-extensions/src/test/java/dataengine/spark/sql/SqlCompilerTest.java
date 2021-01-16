@@ -25,11 +25,12 @@ public class SqlCompilerTest extends SparkSessionBase {
 
         // given
         var sqlCompiler = SqlCompiler.builder()
+                .sparkSession(sparkSession)
                 .functionResolver(new UdfPlusOne())
                 .build();
 
         // when
-        var datasetResolved = sqlCompiler.sql(sparkSession, "select * from (select plusOne(plusOne(-2)) as value, (select plusOne(9)) as ten)");
+        var datasetResolved = sqlCompiler.sql("select * from (select plusOne(plusOne(-2)) as value, (select plusOne(9)) as ten)");
 
         // then
         Assertions.assertEquals(Collections.singletonList(0), datasetResolved.select("value").as(Encoders.INT()).collectAsList());
@@ -41,12 +42,13 @@ public class SqlCompilerTest extends SparkSessionBase {
     public void testTableResolver() throws ParseException, PlanMapperException {
         // given
         var sqlCompiler = SqlCompiler.builder()
+                .sparkSession(sparkSession)
                 .tableResolver(Table.ofDataset("table", sparkSession.sql("select 100 as value")))
                 .build();
 
         // when
         var datasetResolved = sqlCompiler
-                .sql(sparkSession, "select * from (select value+1 as valueWithOperation, (select value from table) as valueSubquery from table)");
+                .sql("select * from (select value+1 as valueWithOperation, (select value from table) as valueSubquery from table)");
 
         // then
         Assertions.assertEquals(Collections.singletonList(101), datasetResolved.select("valueWithOperation").as(Encoders.INT()).collectAsList());
@@ -57,12 +59,13 @@ public class SqlCompilerTest extends SparkSessionBase {
     public void testTableResolverWithMultipleTables() throws ParseException, PlanMapperException {
         // given
         var sqlCompiler = SqlCompiler.builder()
+                .sparkSession(sparkSession)
                 .tableResolver(Table.ofDataset("table", sparkSession.sql("select 100 as value")), Table.ofDataset("table2", sparkSession.sql("select 200 as value")))
                 .build();
 
         // when
         Dataset<Row> datasetResolved = sqlCompiler
-                .sql(sparkSession, "select * from (select value+1 as valueWithOperation, (select value-1 from table2) as valueSubqueryFromTable2 from table)");
+                .sql("select * from (select value+1 as valueWithOperation, (select value-1 from table2) as valueSubqueryFromTable2 from table)");
 
         // then
         Assertions.assertEquals(Collections.singletonList(101), datasetResolved.select("valueWithOperation").as(Encoders.INT()).collectAsList());
@@ -73,13 +76,14 @@ public class SqlCompilerTest extends SparkSessionBase {
     public void testAllResolversWithUdf() throws PlanMapperException {
         // given
         var sqlCompiler = SqlCompiler.builder()
+                .sparkSession(sparkSession)
                 .tableResolver(Table.ofDataset("table", sparkSession.sql("select 100 as value")))
                 .functionResolver(new UdfPlusOne())
                 .build();
 
         // when
         var datasetResolved = sqlCompiler
-                .sql(sparkSession, "select * from (select value+1 as valueWithOperation, (select plusOne(value) from table) as valueSubquery from table)");
+                .sql("select * from (select value+1 as valueWithOperation, (select plusOne(value) from table) as valueSubquery from table)");
 
         // then
         Assertions.assertEquals(Collections.singletonList(101), datasetResolved.select("valueWithOperation").as(Encoders.INT()).collectAsList());
@@ -91,12 +95,13 @@ public class SqlCompilerTest extends SparkSessionBase {
 
         // given
         var sqlCompiler = SqlCompiler.builder()
+                .sparkSession(sparkSession)
                 .tableResolver(Table.ofDataset("table", sparkSession.createDataset(List.of(1, 2, 3, 4), Encoders.INT())))
                 .functionResolver(new UdafIntegerSummer())
                 .build();
 
         // when
-        var datasetResolved = sqlCompiler.sql(sparkSession, "select summer(value) as value from table");
+        var datasetResolved = sqlCompiler.sql("select summer(value) as value from table");
 
         // then
         Assertions.assertEquals(Collections.singletonList(10), datasetResolved.select("value").as(Encoders.INT()).collectAsList());
@@ -108,6 +113,7 @@ public class SqlCompilerTest extends SparkSessionBase {
 
         // given
         var sqlCompiler = SqlCompiler.builder()
+                .sparkSession(sparkSession)
                 .tableResolver(
                         Table.ofDataset("source1", sparkSession.createDataset(Arrays.asList(1, 2, 3), Encoders.INT())),
                         Table.ofDataset("source2", sparkSession.createDataset(Arrays.asList(2, 3, 4), Encoders.INT())))
@@ -115,7 +121,7 @@ public class SqlCompilerTest extends SparkSessionBase {
                 .build();
 
         // when
-        var datasetResolved = sqlCompiler.sql(sparkSession, "select source1.value as value from source1 join source2 on source1.value = source2.value");
+        var datasetResolved = sqlCompiler.sql("select source1.value as value from source1 join source2 on source1.value = source2.value");
 
         // then
         Assertions.assertEquals(List.of(2, 3), datasetResolved.select("value").as(Encoders.INT()).collectAsList());

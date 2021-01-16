@@ -1,16 +1,21 @@
 package dataengine.pipeline.runtime.builder.dataset;
 
+import dataengine.pipeline.runtime.builder.dataset.supplier.DatasetSupplier;
+import dataengine.pipeline.runtime.builder.dataset.supplier.DatasetSupplierForComponentWithMultipleInput;
+import dataengine.pipeline.runtime.builder.dataset.supplier.DatasetSupplierForComponentWithNoInput;
+import dataengine.pipeline.runtime.builder.dataset.supplier.DatasetSupplierForComponentWithSingleInput;
 import dataengine.pipeline.runtime.datasetfactory.DatasetFactory;
 import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
 import dataengine.pipeline.model.component.Component;
-import dataengine.pipeline.model.component.SourceComponent;
-import dataengine.pipeline.model.component.TransformationComponentWithMultipleInputs;
-import dataengine.pipeline.model.component.TransformationComponentWithSingleInput;
+import dataengine.pipeline.model.component.ComponentWithNoInput;
+import dataengine.pipeline.model.component.ComponentWithMultipleInputs;
+import dataengine.pipeline.model.component.ComponentWithSingleInput;
 import dataengine.pipeline.model.component.catalog.ComponentCatalog;
 import dataengine.pipeline.model.component.catalog.ComponentCatalogException;
 import lombok.Builder;
 import lombok.Value;
 import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.SparkSession;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,12 +31,14 @@ import java.util.stream.Stream;
 public class ComponentDatasetFactory implements DatasetFactory {
 
     @Nonnull
+    SparkSession sparkSession;
+    @Nonnull
     ComponentCatalog componentCatalog;
     @lombok.Builder.Default
     Map<String, Dataset<?>> datasetCache = new HashMap<>();
 
-    public static ComponentDatasetFactory of(ComponentCatalog catalog) {
-        return ComponentDatasetFactory.builder().componentCatalog(catalog).build();
+    public static ComponentDatasetFactory of(SparkSession sparkSession, ComponentCatalog catalog) {
+        return ComponentDatasetFactory.builder().sparkSession(sparkSession).componentCatalog(catalog).build();
     }
 
     @Nonnull
@@ -72,21 +79,36 @@ public class ComponentDatasetFactory implements DatasetFactory {
 
     @Nonnull
     private <T> Dataset<T> getDataset(String name, Component component, List<String> childrenPath) throws DatasetFactoryException {
-        Dataset<T> ds = null;
-        if (component instanceof SourceComponent) {
-            ds = Factories.getSourceComponentDataset((SourceComponent) component);
-        } else if (component instanceof TransformationComponentWithSingleInput) {
-            var singleInputComponent = (TransformationComponentWithSingleInput) component;
-            Dataset<Object> parentDs = getParentDataset(singleInputComponent.getUsing(), appendToPath(name, childrenPath));
-            ds = Factories.getSingleInputComponent(singleInputComponent, parentDs);
-        } else if (component instanceof TransformationComponentWithMultipleInputs) {
-            var multiInputComponent = (TransformationComponentWithMultipleInputs) component;
-            List<Dataset<?>> parentDs = getParentDatasets(multiInputComponent.getUsing(), appendToPath(name, childrenPath));
-            ds = Factories.getMultiInputComponentDataset(multiInputComponent, parentDs);
+
+        DatasetSupplier<T> datasetSupplier = null;
+        if (component instanceof ComponentWithNoInput) {
+            datasetSupplier = DatasetSupplierForComponentWithNoInput.<T>builder()
+                    .sparkSession(sparkSession)
+                    .componentWithNoInput((ComponentWithNoInput) component)
+                    .build();
+        } else if (component instanceof ComponentWithSingleInput) {
+            var componentWithSingleInput = (ComponentWithSingleInput) component;
+            var parentDs = getParentDataset(componentWithSingleInput.getUsing(), appendToPath(name, childrenPath));
+            datasetSupplier = DatasetSupplierForComponentWithSingleInput.<T>builder()
+                    .sparkSession(sparkSession)
+                    .componentWithSingleInput(componentWithSingleInput)
+                    .inputDataset(parentDs)
+                    .build();
+        } else if (component instanceof ComponentWithMultipleInputs) {
+            var multiInputComponent = (ComponentWithMultipleInputs) component;
+            var parentDs = getParentDatasets(multiInputComponent.getUsing(), appendToPath(name, childrenPath));
+            datasetSupplier = DatasetSupplierForComponentWithMultipleInput.<T>builder()
+                    .sparkSession(sparkSession)
+                    .componentWithMultipleInputs(multiInputComponent)
+                    .inputDatasets(parentDs)
+                    .build();
         }
 
+        if (datasetSupplier == null)
+            throw new DatasetFactoryException.DatasetInstantiationIssue("component type [" + component.getClass().getName() + "] does not have any supplier associated");
+        Dataset<T> ds = datasetSupplier.provides();
         if (ds == null)
-            throw new DatasetFactoryException.DatasetInstantiationIssue("component type [" + component.getClass().getName() + "] does not have any factory associated");
+            throw new DatasetFactoryException.DatasetInstantiationIssue("component type [" + component.getClass().getName() + "] supplier unable to create dataset");
 
         return ds;
     }
@@ -96,11 +118,11 @@ public class ComponentDatasetFactory implements DatasetFactory {
     }
 
     @Nonnull
-    private List<Dataset<?>> getParentDatasets(@Nullable List<String> parentNames, List<String> childrenPath) throws DatasetFactoryException {
+    private List<Dataset<Object>> getParentDatasets(@Nullable List<String> parentNames, List<String> childrenPath) throws DatasetFactoryException {
         if (parentNames == null) {
             parentNames = List.of();
         }
-        var parentDs = new ArrayList<Dataset<?>>(parentNames.size());
+        var parentDs = new ArrayList<Dataset<Object>>(parentNames.size());
         for (String parentName : parentNames) {
             parentDs.add(getParentDataset(parentName, childrenPath));
         }

@@ -8,6 +8,7 @@ import dataengine.pipeline.model.component.impl.SqlComponent;
 import dataengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.streaming.Trigger;
 import org.apache.spark.sql.types.DataTypes;
@@ -38,7 +39,7 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
                 "sql", SqlComponent.builder().withUsing(List.of("inlineSrc")).withSql("select col1 from inlineSrc where col2 like 'value22'").build()
         );
         var catalog = ComponentCatalogFromMap.of(componentMap);
-        var factory = ComponentDatasetFactory.builder().componentCatalog(catalog).build();
+        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
 
         // when
         var data = factory.buildDataset("sql").as(Encoders.STRING()).collectAsList();
@@ -61,7 +62,7 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
                 "sql", SqlComponent.builder().withUsing(List.of("inlineSrc", "sqlSrc")).withSql("select col1 from inlineSrc join sqlSrc on inlineSrc.col2 = sqlSrc.col2").build()
         );
         var catalog = ComponentCatalogFromMap.of(componentMap);
-        var factory = ComponentDatasetFactory.builder().componentCatalog(catalog).build();
+        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
 
         // when
         var data = factory.buildDataset("sql").as(Encoders.STRING()).collectAsList();
@@ -83,7 +84,7 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
                 "sql", SqlComponent.builder().withUsing(List.of("wrongSrcName")).withSql("select col1 from inlineSrc where col2 like 'value22'").build()
         );
         var catalog = ComponentCatalogFromMap.of(componentMap);
-        var factory = ComponentDatasetFactory.builder().componentCatalog(catalog).build();
+        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
 
         // then
         assertThrows(DatasetFactoryException.class, () -> factory.buildDataset("sql").as(Encoders.STRING()).collectAsList());
@@ -95,7 +96,7 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
 
         // given
         var catalog = TestCatalog.getComponentCatalog("testComponentsCatalog");
-        var factory = ComponentDatasetFactory.builder().componentCatalog(catalog).build();
+        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
 
         // when
         var ds = factory.<Row>buildDataset("tx");
@@ -116,7 +117,7 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
 
         // given
         var catalog = TestCatalog.getComponentCatalog("testAggregationComponentsCatalog");
-        var factory = ComponentDatasetFactory.builder().componentCatalog(catalog).build();
+        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
 
         // when
         var ds = factory.<Row>buildDataset("tx");
@@ -145,7 +146,7 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
 
         // given
         var catalog = TestCatalog.getComponentCatalog("testTransformationComponentsCatalog");
-        var factory = ComponentDatasetFactory.builder().componentCatalog(catalog).build();
+        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
 
         // when
         var ds = factory.<Row>buildDataset("tx");
@@ -161,7 +162,7 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
 
         // given
         var catalog = TestCatalog.getComponentCatalog("testBadComponentsCatalog");
-        var factory = ComponentDatasetFactory.builder().componentCatalog(catalog).build();
+        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
 
         // then
         assertThrows(DatasetFactoryException.DatasetCircularReference.class, () -> factory.buildDataset("source2"));
@@ -173,7 +174,7 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
 
         // given
         var catalog = TestCatalog.getComponentCatalog("testStreamComponentsCatalog");
-        var factory = ComponentDatasetFactory.builder().componentCatalog(catalog).build();
+        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
 
         // when
         var ds = factory.<Row>buildDataset("tx");

@@ -15,6 +15,7 @@ import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerException;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerFactoryException;
 import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
 import dataengine.spark.test.SparkSessionBase;
+import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -30,9 +31,11 @@ class SimplePipelineFactoryTest extends SparkSessionBase {
 
         // given
         var datasetFactory = ComponentDatasetFactory.builder()
+                .sparkSession(sparkSession)
                 .componentCatalog(ComponentCatalogFromMap.of(
                         Map.<String, Component>of(
-                                "sql", SqlComponent.builder()
+                                "sql",
+                                SqlComponent.builder()
                                         .withSql("select 'value01' as col1")
                                         .withEncodedAs(ValueEncoder.builder().withType(DataType.STRING).build())
                                         .build()
@@ -62,7 +65,7 @@ class SimplePipelineFactoryTest extends SparkSessionBase {
 
         var pipe = SimplePipelineFactory.builder()
                 .datasetConsumerFactory(SinkDatasetConsumerFactory.of(TestCatalog.getSinkCatalog("testSinks")))
-                .datasetFactory(ComponentDatasetFactory.of(TestCatalog.getComponentCatalog("testPipeline")))
+                .datasetFactory(ComponentDatasetFactory.of(sparkSession, TestCatalog.getComponentCatalog("testPipeline")))
                 .build();
 
         // when

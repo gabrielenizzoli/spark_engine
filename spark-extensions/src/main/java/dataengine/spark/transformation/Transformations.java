@@ -63,9 +63,10 @@ public class Transformations {
                                                      @Nonnull String sql,
                                                      @Nullable Collection<SqlFunction> sqlFunctions) {
         return (dataset) -> {
+            var sparkSession = dataset.sparkSession();
             var tables = List.of(Table.ofDataset(sourceName, dataset));
             try {
-                return SqlCompiler.sql(tables, sqlFunctions, sql);
+                return SqlCompiler.sql(sparkSession, tables, sqlFunctions, sql);
             } catch (PlanMapperException e) {
                 throw new TransformationException("issues compiling sql: " + sql, e);
             }
@@ -79,9 +80,10 @@ public class Transformations {
      * @param sql         sql statement
      * @return outcome of the transformation operation
      */
-    public static DataTransformationN<Row, Row> sql(@Nullable List<String> sourceNames,
+    public static DataTransformationN<Row, Row> sql(@Nonnull SparkSession sparkSession,
+                                                    @Nullable List<String> sourceNames,
                                                     @Nonnull String sql) {
-        return sql(sourceNames, sql, Collections.emptyList());
+        return sql(sparkSession, sourceNames, sql, Collections.emptyList());
     }
 
     /**
@@ -92,7 +94,8 @@ public class Transformations {
      * @param sqlFunctions        a list of sql functions to be resolved in the sql statement
      * @return outcome of the transformation operation
      */
-    public static DataTransformationN<Row, Row> sql(@Nullable List<String> nullableSourceNames,
+    public static DataTransformationN<Row, Row> sql(@Nonnull SparkSession sparkSession,
+                                                    @Nullable List<String> nullableSourceNames,
                                                     @Nonnull String sql,
                                                     @Nullable Collection<SqlFunction> sqlFunctions) {
 
@@ -102,7 +105,6 @@ public class Transformations {
                 nullableSourceNames.stream().map(String::strip).filter(source -> !source.isBlank()).collect(Collectors.toList());
 
         return (datasets) -> {
-
 
             if (datasets.size() != sourceNames.size()) {
                 throw new TransformationException("datasets provided count (" + datasets.size() + ") different than source names count provided (" + sourceNames + ")");
@@ -116,7 +118,7 @@ public class Transformations {
                             .collect(Collectors.toList());
 
             try {
-                return SqlCompiler.sql(tables, sqlFunctions, sql);
+                return SqlCompiler.sql(sparkSession, tables, sqlFunctions, sql);
             } catch (PlanMapperException e) {
                 throw new TransformationException("issues compiling sql: " + sql, e);
             }
@@ -137,11 +139,12 @@ public class Transformations {
                                                                 @Nonnull String sourceName2,
                                                                 @Nonnull String sql) {
         return (s1, s2) -> {
+            var sparkSession = s1.sparkSession();
             var tables = List.of(
                     Table.ofDataset(sourceName1, s1),
                     Table.ofDataset(sourceName2, s2));
             try {
-                return SqlCompiler.sql(tables, Collections.emptyList(), sql);
+                return SqlCompiler.sql(sparkSession, tables, Collections.emptyList(), sql);
             } catch (PlanMapperException e) {
                 throw new TransformationException("issues compiling sql: " + sql, e);
             }
@@ -165,12 +168,13 @@ public class Transformations {
                                                                         @Nonnull String sourceName3,
                                                                         @Nonnull String sql) {
         return (s1, s2, s3) -> {
+            var sparkSession = s1.sparkSession();
             var tables = List.of(
                     Table.ofDataset(sourceName1, s1),
                     Table.ofDataset(sourceName2, s2),
                     Table.ofDataset(sourceName3, s3));
             try {
-                return SqlCompiler.sql(tables, Collections.emptyList(), sql);
+                return SqlCompiler.sql(sparkSession, tables, Collections.emptyList(), sql);
             } catch (PlanMapperException e) {
                 throw new TransformationException("issues compiling sql: " + sql, e);
             }
@@ -197,13 +201,14 @@ public class Transformations {
                                                                                 @Nonnull String sourceName4,
                                                                                 @Nonnull String sql) {
         return (s1, s2, s3, s4) -> {
+            var sparkSession = s1.sparkSession();
             var tables = List.of(
                     Table.ofDataset(sourceName1, s1),
                     Table.ofDataset(sourceName2, s2),
                     Table.ofDataset(sourceName3, s3),
                     Table.ofDataset(sourceName4, s4));
             try {
-                return SqlCompiler.sql(tables, Collections.emptyList(), sql);
+                return SqlCompiler.sql(sparkSession, tables, Collections.emptyList(), sql);
             } catch (PlanMapperException e) {
                 throw new TransformationException("issues compiling sql: " + sql, e);
             }
@@ -233,6 +238,7 @@ public class Transformations {
                                                                                         @Nonnull String sourceName5,
                                                                                         @Nonnull String sql) {
         return (s1, s2, s3, s4, s5) -> {
+            var sparkSession = s1.sparkSession();
             var tables = List.of(
                     Table.ofDataset(sourceName1, s1),
                     Table.ofDataset(sourceName2, s2),
@@ -240,7 +246,7 @@ public class Transformations {
                     Table.ofDataset(sourceName4, s4),
                     Table.ofDataset(sourceName5, s5));
             try {
-                return SqlCompiler.sql(tables, Collections.emptyList(), sql);
+                return SqlCompiler.sql(sparkSession, tables, Collections.emptyList(), sql);
             } catch (PlanMapperException e) {
                 throw new TransformationException("issues compiling sql: " + sql, e);
             }
