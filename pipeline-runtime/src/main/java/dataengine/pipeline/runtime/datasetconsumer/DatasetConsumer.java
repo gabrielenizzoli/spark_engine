@@ -4,6 +4,6 @@ import org.apache.spark.sql.Dataset;
 
 public interface DatasetConsumer<T> {
 
-    DatasetConsumer<T> readFrom(Dataset<T> dataset) throws DatasetConsumerException;
+    void readFrom(Dataset<T> dataset) throws DatasetConsumerException;
 
 }

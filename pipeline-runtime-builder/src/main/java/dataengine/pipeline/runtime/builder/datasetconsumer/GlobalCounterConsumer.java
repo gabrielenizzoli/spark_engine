@@ -2,23 +2,27 @@ package dataengine.pipeline.runtime.builder.datasetconsumer;
 
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumer;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerException;
+import lombok.Builder;
 import lombok.Value;
 import org.apache.spark.sql.Dataset;
 
 import javax.annotation.Nonnull;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
-@Value(staticConstructor = "of")
-public class BatchConsumer<T> implements DatasetConsumer<T> {
+@Value
+@Builder
+public class GlobalCounterConsumer<T> implements DatasetConsumer<T> {
 
     @Nonnull
-    WriterFormatter.Batch<T> formatter;
+    String key;
+
+    public static final Map<String, AtomicLong> COUNTER = new ConcurrentHashMap<>();
 
     @Override
     public void readFrom(Dataset<T> dataset) throws DatasetConsumerException {
-        if (dataset.isStreaming())
-            throw new DatasetConsumerException("input dataset is a streaming dataset");
-
-        formatter.apply(dataset.write()).save();
+        COUNTER.computeIfAbsent(key, k -> new AtomicLong(0)).addAndGet(dataset.count());
     }
 
 }

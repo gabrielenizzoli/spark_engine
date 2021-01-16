@@ -6,7 +6,10 @@ import dataengine.pipeline.model.component.Component;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Value
 @Builder(setterPrefix = "with")
@@ -15,6 +18,6 @@ public class Plan {
 
     Map<String, Component> components;
     Map<String, Sink> sinks;
-    Map<String, Pipeline> pipelines;
+    List<Pipeline> pipelines;
 
 }

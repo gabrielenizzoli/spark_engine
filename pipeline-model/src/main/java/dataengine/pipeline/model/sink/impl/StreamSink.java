@@ -27,8 +27,6 @@ public class StreamSink implements Sink, SinkWithFormat {
     Trigger trigger;
     @Nullable
     OutputMode mode;
-    @Nullable
-    List<String> partitionColumns;
 
     public enum OutputMode {
         APPEND,

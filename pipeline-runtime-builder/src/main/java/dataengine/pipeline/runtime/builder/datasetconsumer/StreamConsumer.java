@@ -24,7 +24,7 @@ public class StreamConsumer<T> implements DatasetConsumer<T> {
     WriterFormatter.Stream<T> formatter;
 
     @Override
-    public DatasetConsumer<T> readFrom(Dataset<T> dataset) throws DatasetConsumerException {
+    public void readFrom(Dataset<T> dataset) throws DatasetConsumerException {
         if (!dataset.isStreaming())
             throw new DatasetConsumerException("input dataset is not a streaming dataset");
 
@@ -33,8 +33,6 @@ public class StreamConsumer<T> implements DatasetConsumer<T> {
         } catch (TimeoutException e) {
             throw new DatasetConsumerException("error starting stream", e);
         }
-
-        return this;
     }
 
 }

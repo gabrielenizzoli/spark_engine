@@ -5,12 +5,14 @@ import dataengine.pipeline.model.sink.Sink;
 import lombok.Builder;
 import lombok.Value;
 
+import javax.annotation.Nonnull;
+
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = CollectSink.Builder.class)
-public class CollectSink implements Sink {
+@JsonDeserialize(builder = ViewSink.Builder.class)
+public class ViewSink implements Sink {
 
-    @lombok.Builder.Default
-    int limit = 100;
+    @Nonnull
+    String name;
 
 }

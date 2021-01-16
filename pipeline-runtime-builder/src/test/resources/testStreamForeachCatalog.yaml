@@ -1,0 +1,14 @@
+foreachSink:
+  type: foreach
+  name: queryName
+  trigger: { milliseconds: 1000 }
+  mode: APPEND
+  batchComponentName: src
+  plan:
+    components:
+      tx1: { type: sql, using: [src], sql: "select value from src" }
+      tx2: { type: encode, using: tx1, encodedAs: { type: FLOAT } }
+    sinks:
+      saveInView: { type: counter, key: testForeachStreamWithCatalog }
+    pipelines:
+      - { source: tx2, sink: saveInView }

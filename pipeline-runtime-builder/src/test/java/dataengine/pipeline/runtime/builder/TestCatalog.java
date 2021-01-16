@@ -1,14 +1,16 @@
-package dataengine.pipeline.runtime.builder.pipeline;
+package dataengine.pipeline.runtime.builder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import dataengine.pipeline.model.sink.Sink;
-import dataengine.pipeline.model.sink.catalog.SinkCatalog;
-import dataengine.pipeline.model.sink.catalog.SinkCatalogException;
 import dataengine.pipeline.model.component.Component;
 import dataengine.pipeline.model.component.catalog.ComponentCatalog;
 import dataengine.pipeline.model.component.catalog.ComponentCatalogException;
+import dataengine.pipeline.model.component.catalog.ComponentCatalogFromMap;
+import dataengine.pipeline.model.sink.Sink;
+import dataengine.pipeline.model.sink.catalog.SinkCatalog;
+import dataengine.pipeline.model.sink.catalog.SinkCatalogException;
+import org.apache.spark.sql.Dataset;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class TestCatalog {
+
 
     @Nonnull
     public static ComponentCatalog getComponentCatalog(@Nullable String resourceName) {

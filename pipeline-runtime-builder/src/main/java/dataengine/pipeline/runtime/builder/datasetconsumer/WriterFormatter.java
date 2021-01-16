@@ -1,6 +1,7 @@
 package dataengine.pipeline.runtime.builder.datasetconsumer;
 
 import dataengine.pipeline.model.sink.impl.BatchSink;
+import dataengine.pipeline.model.sink.impl.ForeachSink;
 import dataengine.pipeline.model.sink.impl.StreamSink;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerException;
 import org.apache.spark.sql.DataFrameWriter;
@@ -16,8 +17,6 @@ public class WriterFormatter {
             writer = writer.format(sink.getFormat()).queryName(sink.getName());
             if (sink.getOptions() != null && !sink.getOptions().isEmpty())
                 writer = writer.options(sink.getOptions());
-            if (sink.getPartitionColumns() != null && !sink.getPartitionColumns().isEmpty())
-                writer = writer.partitionBy(sink.getPartitionColumns().stream().toArray(String[]::new));
             if (sink.getCheckpointLocation() != null)
                 writer = writer.option("checkpointLocation", sink.getCheckpointLocation());
             if (sink.getTrigger() != null)
@@ -25,6 +24,18 @@ public class WriterFormatter {
             if (sink.getMode() != null)
                 writer = writer.outputMode(getStreamOutputMode(sink.getMode()));
 
+            return writer;
+        };
+    }
+
+    public static <T> Stream<T> getForeachFormatter(ForeachSink sink) {
+        return writer -> {
+            writer = writer
+                    .queryName(sink.getName())
+                    .trigger(getStreamTrigger(sink.getTrigger()))
+                    .outputMode(getStreamOutputMode(sink.getMode()));
+            if (sink.getOptions() != null && !sink.getOptions().isEmpty())
+                writer = writer.options(sink.getOptions());
             return writer;
         };
     }
