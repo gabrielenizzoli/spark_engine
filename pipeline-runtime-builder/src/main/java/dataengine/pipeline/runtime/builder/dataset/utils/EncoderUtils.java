@@ -1,9 +1,9 @@
 package dataengine.pipeline.runtime.builder.dataset.utils;
 
-import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
 import dataengine.pipeline.model.encoder.DataEncoder;
 import dataengine.pipeline.model.encoder.TupleEncoder;
 import dataengine.pipeline.model.encoder.ValueEncoder;
+import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
 import org.apache.spark.sql.Encoder;
 import org.apache.spark.sql.Encoders;
 

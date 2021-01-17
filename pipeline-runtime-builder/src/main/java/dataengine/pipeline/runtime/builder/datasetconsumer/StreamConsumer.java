@@ -1,20 +1,11 @@
 package dataengine.pipeline.runtime.builder.datasetconsumer;
 
-import dataengine.pipeline.model.sink.impl.StreamSink;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumer;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerException;
-import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerFactoryException;
-import lombok.Builder;
 import lombok.Value;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.streaming.DataStreamWriter;
-import org.apache.spark.sql.streaming.OutputMode;
-import org.apache.spark.sql.streaming.Trigger;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
 @Value(staticConstructor = "of")
