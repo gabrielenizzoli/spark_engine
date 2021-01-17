@@ -8,8 +8,6 @@ import lombok.Builder;
 import lombok.Value;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Value
@@ -24,17 +22,19 @@ public class SimplePlanFactory implements PlanFactory {
     DatasetConsumerFactory datasetConsumerFactory;
 
     @Override
-    public PipelineRunner buildPipelineRunner(PipelineName pipelineName) throws DatasetFactoryException, DatasetConsumerFactoryException {
-        var dataset = datasetFactory.buildDataset(pipelineName.getSource());
-        var consumer = datasetConsumerFactory.buildConsumer(pipelineName.getDestination());
-        return SimplePipelineRunner.builder().dataset(dataset).datasetConsumer(consumer).build();
+    public PipelineRunner buildPipelineRunner(PipelineName pipelineName) throws PlanFactoryException {
+
+        if (!pipelineNames.contains(pipelineName))
+            throw new PlanFactoryException.PipelineNotFound(pipelineName.toString());
+
+        try {
+            var dataset = datasetFactory.buildDataset(pipelineName.getSource());
+            var consumer = datasetConsumerFactory.buildConsumer(pipelineName.getDestination());
+            return SimplePipelineRunner.builder().dataset(dataset).datasetConsumer(consumer).build();
+        } catch (DatasetConsumerFactoryException | DatasetFactoryException e) {
+            throw new PlanFactoryException("can't create pipeline runner for " +pipelineName, e);
+        }
+
     }
 
-    @Override
-    public List<PipelineRunner> getAllRunners() throws DatasetFactoryException, DatasetConsumerFactoryException {
-        List<PipelineRunner> runners = new ArrayList<>(pipelineNames.size());
-        for (var pipelineName :pipelineNames)
-            runners.add(buildPipelineRunner(pipelineName));
-        return Collections.unmodifiableList(runners);
-    }
 }

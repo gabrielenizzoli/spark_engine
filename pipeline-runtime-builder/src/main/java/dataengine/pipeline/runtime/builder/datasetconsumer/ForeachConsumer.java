@@ -37,8 +37,8 @@ public class ForeachConsumer<T> implements DatasetConsumer<T> {
 
             try {
                 var planFactory = ModelPlanFactory.ofPlan(batchDataset.sparkSession(), plan, Map.of(batchComponentName, (Dataset<Object>)ds));
-                for (var pipeline : planFactory.getAllRunners()) {
-                    pipeline.run();
+                for (var pipelineName : planFactory.getPipelineNames()) {
+                    planFactory.buildPipelineRunner(pipelineName).run();
                 }
             } finally {
                 if (plan.getPipelines().size() > 1)
