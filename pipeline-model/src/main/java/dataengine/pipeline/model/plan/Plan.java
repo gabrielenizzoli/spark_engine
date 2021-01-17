@@ -1,15 +1,13 @@
-package dataengine.pipeline.model.pipeline;
+package dataengine.pipeline.model.plan;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import dataengine.pipeline.model.sink.Sink;
 import dataengine.pipeline.model.component.Component;
+import dataengine.pipeline.model.sink.Sink;
 import lombok.Builder;
 import lombok.Value;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Value
 @Builder(setterPrefix = "with")

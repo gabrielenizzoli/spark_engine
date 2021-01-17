@@ -1,4 +1,4 @@
-package dataengine.pipeline.runtime;
+package dataengine.pipeline.runtime.plan;
 
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumer;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerException;
@@ -10,13 +10,14 @@ import javax.annotation.Nonnull;
 
 @Value
 @Builder
-public class Pipeline<T> {
+public class SimplePipelineRunner<T> implements PipelineRunner {
 
     @Nonnull
     Dataset<T> dataset;
     @Nonnull
     DatasetConsumer<T> datasetConsumer;
 
+    @Override
     public void run() throws DatasetConsumerException {
         datasetConsumer.readFrom(dataset);
     }

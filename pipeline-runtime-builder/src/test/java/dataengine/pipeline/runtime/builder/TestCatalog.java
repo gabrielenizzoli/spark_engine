@@ -6,20 +6,26 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import dataengine.pipeline.model.component.Component;
 import dataengine.pipeline.model.component.catalog.ComponentCatalog;
 import dataengine.pipeline.model.component.catalog.ComponentCatalogException;
-import dataengine.pipeline.model.component.catalog.ComponentCatalogFromMap;
+import dataengine.pipeline.model.plan.Plan;
 import dataengine.pipeline.model.sink.Sink;
 import dataengine.pipeline.model.sink.catalog.SinkCatalog;
 import dataengine.pipeline.model.sink.catalog.SinkCatalogException;
-import org.apache.spark.sql.Dataset;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
 public class TestCatalog {
 
+    @Nonnull
+    public static Plan getPlan(@Nullable String resourceName) throws IOException {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        File yamlSource = new File("src/test/resources/" + resourceName + ".yaml");
+        return mapper.readValue(yamlSource, Plan.class);
+    }
 
     @Nonnull
     public static ComponentCatalog getComponentCatalog(@Nullable String resourceName) {

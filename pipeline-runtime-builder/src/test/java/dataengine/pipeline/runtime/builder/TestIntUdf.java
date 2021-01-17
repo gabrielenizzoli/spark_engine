@@ -1,4 +1,4 @@
-package dataengine.pipeline.runtime.builder.dataset;
+package dataengine.pipeline.runtime.builder;
 
 import dataengine.spark.sql.udf.Udf;
 import org.apache.spark.sql.api.java.UDF2;
@@ -7,22 +7,22 @@ import org.apache.spark.sql.types.DataTypes;
 
 import javax.annotation.Nonnull;
 
-public class TestLongUdf implements Udf {
+public class TestIntUdf implements Udf {
 
     @Nonnull
     @Override
     public String getName() {
-        return "testLongUdf";
+        return "testIntUdf";
     }
 
     @Nonnull
     @Override
     public DataType getReturnType() {
-        return DataTypes.LongType;
+        return DataTypes.IntegerType;
     }
 
     @Override
-    public UDF2<Long, Integer, Long> getUdf2() {
-        return (l, i) -> l + i;
+    public UDF2<Integer, Integer, Integer> getUdf2() {
+        return Integer::sum;
     }
 }

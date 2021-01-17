@@ -19,4 +19,4 @@ source2:
 tx:
   type: transform
   using: [ source1, source2 ]
-  transformWith: dataengine.pipeline.runtime.builder.dataset.TestTransformation
+  transformWith: dataengine.pipeline.runtime.builder.TestTransformation

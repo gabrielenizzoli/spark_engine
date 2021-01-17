@@ -5,11 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import dataengine.pipeline.model.component.Component;
 import dataengine.pipeline.model.component.catalog.ComponentCatalog;
-import dataengine.pipeline.model.component.catalog.ComponentCatalogFromMap;
-import dataengine.pipeline.model.pipeline.Plan;
+import dataengine.pipeline.model.plan.Plan;
 import dataengine.pipeline.model.sink.Sink;
 import dataengine.pipeline.model.sink.catalog.SinkCatalog;
-import dataengine.pipeline.model.sink.catalog.SinkCatalogFromMap;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -25,7 +23,7 @@ public class ModelReaders {
         try (InputStream inputStream = inputStreamFactory.get()) {
             var map = YAML_OBJECT_MAPPER.readValue(inputStream, new TypeReference<Map<String, Component>>() {
             });
-            return ComponentCatalogFromMap.of(map);
+            return ComponentCatalog.ofMap(map);
         }
     }
 
@@ -33,7 +31,7 @@ public class ModelReaders {
         try (InputStream inputStream = inputStreamFactory.get()) {
             var map = YAML_OBJECT_MAPPER.readValue(inputStream, new TypeReference<Map<String, Sink>>() {
             });
-            return SinkCatalogFromMap.of(map);
+            return SinkCatalog.ofMap(map);
         }
     }
 

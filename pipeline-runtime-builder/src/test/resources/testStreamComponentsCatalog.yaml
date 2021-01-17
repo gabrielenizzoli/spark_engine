@@ -8,7 +8,7 @@ tx:
   using: [ source ]
   udfs:
     ofClasses:
-      - dataengine.pipeline.runtime.builder.dataset.TestLongUdf
+      - dataengine.pipeline.runtime.builder.TestLongUdf
   sql: >
     select
       *,

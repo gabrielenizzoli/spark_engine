@@ -1,9 +1,9 @@
 package dataengine.pipeline.model.component.impl;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import dataengine.pipeline.model.encoder.DataEncoder;
 import dataengine.pipeline.model.component.Component;
 import dataengine.pipeline.model.component.ComponentWithMultipleInputs;
+import dataengine.pipeline.model.encoder.DataEncoder;
 import dataengine.pipeline.model.udf.UdfLibrary;
 import lombok.Builder;
 import lombok.Value;

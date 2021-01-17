@@ -1,10 +1,10 @@
 package dataengine.pipeline.model.component.impl;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import dataengine.pipeline.model.encoder.DataEncoder;
 import dataengine.pipeline.model.component.Component;
-import dataengine.pipeline.model.component.EncodedComponent;
 import dataengine.pipeline.model.component.ComponentWithSingleInput;
+import dataengine.pipeline.model.component.EncodedComponent;
+import dataengine.pipeline.model.encoder.DataEncoder;
 import lombok.Builder;
 import lombok.Value;
 
