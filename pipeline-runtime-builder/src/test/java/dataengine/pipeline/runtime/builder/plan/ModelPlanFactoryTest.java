@@ -5,6 +5,7 @@ import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerException;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerFactoryException;
 import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
 import dataengine.pipeline.runtime.plan.PipelineName;
+import dataengine.pipeline.runtime.plan.PlanFactoryException;
 import dataengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.Encoders;
 import org.junit.jupiter.api.Assertions;
@@ -16,7 +17,7 @@ import java.util.List;
 class ModelPlanFactoryTest extends SparkSessionBase {
 
     @Test
-    void runWithYamlCatalogs() throws IOException, DatasetFactoryException, DatasetConsumerFactoryException, DatasetConsumerException {
+    void runWithYamlCatalogs() throws IOException, DatasetConsumerException, PlanFactoryException {
 
         // given
         var planFactory = ModelPlanFactory.ofPlan(sparkSession, TestCatalog.getPlan("testPlan"));
@@ -26,7 +27,7 @@ class ModelPlanFactoryTest extends SparkSessionBase {
         Assertions.assertEquals(PipelineName.of("sql", "view"), planFactory.getPipelineNames().get(0));
 
         // when
-        planFactory.getAllRunners().get(0).run();
+        planFactory.buildPipelineRunner(planFactory.getPipelineNames().get(0)).run();
 
         // then
         var list = sparkSession.sql("select * from tmpView").as(Encoders.STRING()).collectAsList();

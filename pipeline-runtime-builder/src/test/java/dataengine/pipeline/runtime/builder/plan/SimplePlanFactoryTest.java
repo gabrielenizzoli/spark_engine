@@ -13,6 +13,7 @@ import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerException;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerFactoryException;
 import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
 import dataengine.pipeline.runtime.plan.PipelineName;
+import dataengine.pipeline.runtime.plan.PlanFactoryException;
 import dataengine.pipeline.runtime.plan.SimplePlanFactory;
 import dataengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.Encoders;
@@ -25,7 +26,7 @@ import java.util.Map;
 class SimplePlanFactoryTest extends SparkSessionBase {
 
     @Test
-    void testPipelineFactory() throws DatasetConsumerException, DatasetConsumerFactoryException, DatasetFactoryException {
+    void testPipelineFactory() throws DatasetConsumerException, PlanFactoryException {
 
         // given
         var datasetFactory = ComponentDatasetFactory.builder()
