@@ -3,6 +3,7 @@ package dataengine.spark.test;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +30,14 @@ public class SparkSessionBase {
     @AfterAll
     static void close() {
         sparkSession.close();
+    }
+
+    @BeforeEach
+    public void initEach() {
+        sparkSession.catalog().clearCache();
+        sparkSession.catalog().listTables().collectAsList().stream().
+                filter(table -> table.tableType().equalsIgnoreCase("view"))
+                .forEach(table -> sparkSession.catalog().dropTempView(table.tableType()));
     }
 
 }

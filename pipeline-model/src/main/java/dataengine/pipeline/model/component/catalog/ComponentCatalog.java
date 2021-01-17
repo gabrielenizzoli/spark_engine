@@ -10,6 +10,10 @@ public interface ComponentCatalog {
 
     ComponentCatalog EMPTY = (name) -> Optional.empty();
 
+    static ComponentCatalog ofMap(Map<String, Component> components) {
+        return ComponentCatalogFromMap.of(components);
+    }
+
     @Nonnull
     Optional<Component> lookup(String componentName) throws ComponentCatalogException;
 

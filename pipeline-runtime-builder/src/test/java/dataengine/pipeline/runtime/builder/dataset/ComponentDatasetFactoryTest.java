@@ -1,15 +1,13 @@
 package dataengine.pipeline.runtime.builder.dataset;
 
-import dataengine.pipeline.runtime.builder.TestCatalog;
-import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
-import dataengine.pipeline.model.component.catalog.ComponentCatalogFromMap;
+import dataengine.pipeline.model.component.catalog.ComponentCatalog;
 import dataengine.pipeline.model.component.impl.InlineComponent;
 import dataengine.pipeline.model.component.impl.SqlComponent;
+import dataengine.pipeline.runtime.builder.TestCatalog;
+import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
 import dataengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.streaming.StreamingQueryException;
-import org.apache.spark.sql.streaming.Trigger;
 import org.apache.spark.sql.types.DataTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,7 +16,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ComponentDatasetFactoryTest extends SparkSessionBase {
 
     @Test
-    void buildDataset() throws DatasetFactoryException {
+    void testFactory() throws DatasetFactoryException {
 
         // given
         var componentMap = Map.of(
@@ -37,8 +34,7 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
                         .build(),
                 "sql", SqlComponent.builder().withUsing(List.of("inlineSrc")).withSql("select col1 from inlineSrc where col2 like 'value22'").build()
         );
-        var catalog = ComponentCatalogFromMap.of(componentMap);
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+        var factory = ComponentDatasetFactory.of(sparkSession, ComponentCatalog.ofMap(componentMap));
 
         // when
         var data = factory.buildDataset("sql").as(Encoders.STRING()).collectAsList();
@@ -49,7 +45,7 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
     }
 
     @Test
-    void buildDatasetTwoSources() throws DatasetFactoryException {
+    void testFactoryWithTwoSources() throws DatasetFactoryException {
 
         // given
         var componentMap = Map.of(
@@ -60,7 +56,7 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
                         .build(),
                 "sql", SqlComponent.builder().withUsing(List.of("inlineSrc", "sqlSrc")).withSql("select col1 from inlineSrc join sqlSrc on inlineSrc.col2 = sqlSrc.col2").build()
         );
-        var catalog = ComponentCatalogFromMap.of(componentMap);
+        var catalog = ComponentCatalog.ofMap(componentMap);
         var factory = ComponentDatasetFactory.of(sparkSession, catalog);
 
         // when
@@ -72,7 +68,7 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
     }
 
     @Test
-    void buildDatasetWrongName() throws DatasetFactoryException {
+    void testFactoryWithWrongName() throws DatasetFactoryException {
 
         // given
         var componentMap = Map.of(
@@ -82,8 +78,7 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
                         .build(),
                 "sql", SqlComponent.builder().withUsing(List.of("wrongSrcName")).withSql("select col1 from inlineSrc where col2 like 'value22'").build()
         );
-        var catalog = ComponentCatalogFromMap.of(componentMap);
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+        var factory = ComponentDatasetFactory.of(sparkSession, ComponentCatalog.ofMap(componentMap));
 
         // then
         assertThrows(DatasetFactoryException.class, () -> factory.buildDataset("sql").as(Encoders.STRING()).collectAsList());
@@ -165,28 +160,6 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
 
         // then
         assertThrows(DatasetFactoryException.DatasetCircularReference.class, () -> factory.buildDataset("source2"));
-
-    }
-
-    @Test
-    void buildDatasetWithStreamCatalog() throws DatasetFactoryException, StreamingQueryException, TimeoutException {
-
-        // given
-        var catalog = TestCatalog.getComponentCatalog("testStreamComponentsCatalog");
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
-
-        // when
-        var ds = factory.<Row>buildDataset("tx");
-        ds.writeStream().format("memory").outputMode("append").trigger(Trigger.ProcessingTime(1000)).queryName("memoryTable").start();
-        sparkSession.streams().awaitAnyTermination(5000);
-
-        // then - at least one event is recorded
-        long count = sparkSession.sql("select count(*) as count from memoryTable").as(Encoders.LONG()).collectAsList().get(0);
-        Assertions.assertTrue(count > 0);
-
-        // then - udf works ok
-        int casesWhereUdfIsWrong = sparkSession.sql("select value, valuePlusOne from memoryTable where value != valuePlusOne -1").collectAsList().size();
-        Assertions.assertEquals(0, casesWhereUdfIsWrong);
 
     }
 

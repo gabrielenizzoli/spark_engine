@@ -1,0 +1,8 @@
+components:
+  sql: { type: sql, sql: select 'value' as column, encodedAs: { schema: value, type: STRING } }
+
+sinks:
+  view: { type: view, name: tmpView }
+
+pipelines:
+  - { source: sql, sink: view }

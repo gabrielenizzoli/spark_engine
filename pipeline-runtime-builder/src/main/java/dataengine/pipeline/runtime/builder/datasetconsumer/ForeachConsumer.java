@@ -1,11 +1,7 @@
 package dataengine.pipeline.runtime.builder.datasetconsumer;
 
-import dataengine.pipeline.model.component.catalog.ComponentCatalogFromMap;
-import dataengine.pipeline.model.pipeline.Plan;
-import dataengine.pipeline.model.sink.catalog.SinkCatalogFromMap;
-import dataengine.pipeline.runtime.PipelineFactory;
-import dataengine.pipeline.runtime.SimplePipelineFactory;
-import dataengine.pipeline.runtime.builder.dataset.ComponentDatasetFactory;
+import dataengine.pipeline.model.plan.Plan;
+import dataengine.pipeline.runtime.builder.plan.ModelPlanFactory;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumer;
 import dataengine.pipeline.runtime.datasetconsumer.DatasetConsumerException;
 import lombok.Builder;
@@ -13,7 +9,6 @@ import lombok.Value;
 import org.apache.spark.sql.Dataset;
 
 import javax.annotation.Nonnull;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
@@ -41,9 +36,9 @@ public class ForeachConsumer<T> implements DatasetConsumer<T> {
             var batchDataset = plan.getPipelines().size() > 1 ? ds.persist() : ds;
 
             try {
-                var pipelineFactory = getPipelineFactory(batchDataset);
-                for (var pipeline : plan.getPipelines()) {
-                    pipelineFactory.buildPipeline(pipeline.getSource(), pipeline.getSink()).run();
+                var planFactory = ModelPlanFactory.ofPlan(batchDataset.sparkSession(), plan, Map.of(batchComponentName, (Dataset<Object>)ds));
+                for (var pipeline : planFactory.getAllRunners()) {
+                    pipeline.run();
                 }
             } finally {
                 if (plan.getPipelines().size() > 1)
@@ -58,23 +53,5 @@ public class ForeachConsumer<T> implements DatasetConsumer<T> {
             throw new DatasetConsumerException("error starting stream", e);
         }
     }
-
-    private PipelineFactory getPipelineFactory(Dataset<T> batchDataset) {
-        var cache = new HashMap<String, Dataset<Object>>();
-        cache.put(batchComponentName, (Dataset<Object>) batchDataset);
-
-        var datasetFactory = ComponentDatasetFactory
-                .builder()
-                .sparkSession(batchDataset.sparkSession())
-                .componentCatalog(ComponentCatalogFromMap.of(plan.getComponents()))
-                .datasetCache(cache)
-                .build();
-        var datasetConsumerFactory = SinkDatasetConsumerFactory.of(SinkCatalogFromMap.of(plan.getSinks()));
-        return SimplePipelineFactory.builder()
-                .datasetFactory(datasetFactory)
-                .datasetConsumerFactory(datasetConsumerFactory)
-                .build();
-    }
-
 
 }

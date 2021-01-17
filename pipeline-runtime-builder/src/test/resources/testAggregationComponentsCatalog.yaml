@@ -23,8 +23,8 @@ tx:
   using: [ source1, source2 ]
   udfs:
     ofClasses:
-      - dataengine.pipeline.runtime.builder.dataset.TestUdafAvg
-      - dataengine.pipeline.runtime.builder.dataset.TestIntUdf
+      - dataengine.pipeline.runtime.builder.TestUdafAvg
+      - dataengine.pipeline.runtime.builder.TestIntUdf
   sql: >
     select
       key,

@@ -13,7 +13,6 @@ import dataengine.pipeline.runtime.builder.dataset.supplier.DatasetSupplierForCo
 import dataengine.pipeline.runtime.datasetfactory.DatasetFactory;
 import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
 import lombok.Builder;
-import lombok.Singular;
 import lombok.Value;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.SparkSession;
@@ -42,6 +41,7 @@ public class ComponentDatasetFactory implements DatasetFactory {
         return ComponentDatasetFactory.builder().sparkSession(sparkSession).componentCatalog(catalog).build();
     }
 
+
     @Nonnull
     @Override
     public <T> Dataset<T> buildDataset(String name) throws DatasetFactoryException {
@@ -65,7 +65,7 @@ public class ComponentDatasetFactory implements DatasetFactory {
         var component = getComponent(name);
         Dataset<T> ds = getDataset(name, component, childrenPath);
 
-        datasetCache.put(name, (Dataset<Object>)ds);
+        datasetCache.put(name, (Dataset<Object>) ds);
         return ds;
     }
 

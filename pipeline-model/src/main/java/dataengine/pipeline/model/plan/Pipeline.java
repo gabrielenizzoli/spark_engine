@@ -1,4 +1,4 @@
-package dataengine.pipeline.model.pipeline;
+package dataengine.pipeline.model.plan;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
