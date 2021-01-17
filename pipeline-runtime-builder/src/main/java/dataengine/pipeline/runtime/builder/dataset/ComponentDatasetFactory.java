@@ -14,6 +14,7 @@ import dataengine.pipeline.runtime.datasetfactory.DatasetFactory;
 import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
 import lombok.Builder;
 import lombok.Value;
+import lombok.With;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.SparkSession;
 
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Value
-@Builder(toBuilder = true)
+@Builder
 public class ComponentDatasetFactory implements DatasetFactory {
 
     @Nonnull
@@ -35,7 +36,8 @@ public class ComponentDatasetFactory implements DatasetFactory {
     @Nonnull
     ComponentCatalog componentCatalog;
     @lombok.Builder.Default
-    Map<String, Dataset<Object>> datasetCache = new HashMap<>();
+    @With
+    Map<String, Dataset> datasetCache = new HashMap<>();
 
     public static ComponentDatasetFactory of(SparkSession sparkSession, ComponentCatalog catalog) {
         return ComponentDatasetFactory.builder().sparkSession(sparkSession).componentCatalog(catalog).build();
