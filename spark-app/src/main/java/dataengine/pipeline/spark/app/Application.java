@@ -51,7 +51,10 @@ public class Application {
         return appArgs;
     }
 
-    private static SparkSession initializeSpark() {
+    private static SparkSession initializeSpark() throws IOException {
+        if (SparkSession.getActiveSession().isDefined()) {
+            throw new IOException("spark session already defined");
+        }
         var sparkSession = SparkSession.builder().getOrCreate();
         return sparkSession;
     }
@@ -119,6 +122,8 @@ public class Application {
                 throw new IOException(e);
             }
         }
+
+        sparkSession.close();
     }
 
 }
