@@ -27,7 +27,7 @@ public class DatasetSupplierForSpark<T> implements DatasetSupplier<T> {
     SourceType type;
     @Nonnull
     String format;
-    @Nullable
+    @Nonnull
     @Singular
     Map<String, String> options;
     @Nullable
@@ -80,7 +80,7 @@ public class DatasetSupplierForSpark<T> implements DatasetSupplier<T> {
         switch (type) {
             case BATCH: {
                 var reader = sparkSession.read().format(format);
-                if (options != null && !options.isEmpty())
+                if (!options.isEmpty())
                     reader = reader.options(options);
                 if (schema != null)
                     reader = reader.schema(schema);
@@ -88,7 +88,7 @@ public class DatasetSupplierForSpark<T> implements DatasetSupplier<T> {
             }
             case STREAM: {
                 var reader = sparkSession.readStream().format(format);
-                if (options != null && !options.isEmpty())
+                if (!options.isEmpty())
                     reader = reader.options(options);
                 if (schema != null)
                     reader = reader.schema(schema);

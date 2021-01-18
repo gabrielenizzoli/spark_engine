@@ -10,6 +10,7 @@ import dataengine.pipeline.runtime.builder.dataset.utils.EncoderUtils;
 import dataengine.pipeline.runtime.datasetfactory.DatasetFactoryException;
 import lombok.Builder;
 import lombok.Value;
+import org.apache.commons.cli.Options;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.SparkSession;
@@ -18,6 +19,7 @@ import org.apache.spark.sql.types.StructType;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -52,7 +54,7 @@ public class DatasetSupplierForComponentWithNoInput<T> implements DatasetSupplie
         return DatasetSupplierForSpark.<T>builder()
                 .sparkSession(sparkSession)
                 .format(batchComponent.getFormat())
-                .options(batchComponent.getOptions())
+                .options(Optional.ofNullable(batchComponent.getOptions()).orElse(Map.of()))
                 .encoder(EncoderUtils.buildEncoder(batchComponent.getEncodedAs()))
                 .type(DatasetSupplierForSpark.SourceType.BATCH)
                 .build();
@@ -62,7 +64,7 @@ public class DatasetSupplierForComponentWithNoInput<T> implements DatasetSupplie
         return DatasetSupplierForSpark.<T>builder()
                 .sparkSession(sparkSession)
                 .format(streamComponent.getFormat())
-                .options(streamComponent.getOptions())
+                .options(Optional.ofNullable(streamComponent.getOptions()).orElse(Map.of()))
                 .encoder(EncoderUtils.buildEncoder(streamComponent.getEncodedAs()))
                 .type(DatasetSupplierForSpark.SourceType.STREAM)
                 .build();
