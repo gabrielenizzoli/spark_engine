@@ -30,3 +30,5 @@ hs_err_pid*
 
 *.iml
 hadoop/*
+/*/.flattened-pom.xml
+.flattened-pom.xml

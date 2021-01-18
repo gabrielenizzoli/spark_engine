@@ -24,12 +24,12 @@ public class DatasetSupplierForSpark<T> implements DatasetSupplier<T> {
     @Nonnull
     SparkSession sparkSession;
     @Nonnull
+    SourceType type;
+    @Nonnull
     String format;
     @Nonnull
     @Singular
     Map<String, String> options;
-    @Nonnull
-    SourceType type;
     @Nullable
     Encoder<T> encoder;
     @Nullable
@@ -78,10 +78,22 @@ public class DatasetSupplierForSpark<T> implements DatasetSupplier<T> {
 
     public Dataset<Row> getRowDataset() throws DatasetFactoryException {
         switch (type) {
-            case BATCH:
-                return sparkSession.read().format(format).options(options).schema(schema).load();
-            case STREAM:
-                return sparkSession.readStream().format(format).options(options).schema(schema).load();
+            case BATCH: {
+                var reader = sparkSession.read().format(format);
+                if (!options.isEmpty())
+                    reader = reader.options(options);
+                if (schema != null)
+                    reader = reader.schema(schema);
+                return reader.load();
+            }
+            case STREAM: {
+                var reader = sparkSession.readStream().format(format);
+                if (!options.isEmpty())
+                    reader = reader.options(options);
+                if (schema != null)
+                    reader = reader.schema(schema);
+                return reader.load();
+            }
             default:
                 throw new DatasetFactoryException("unmanaged dataset type: " + type);
         }

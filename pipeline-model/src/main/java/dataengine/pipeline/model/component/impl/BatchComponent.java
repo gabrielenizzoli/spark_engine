@@ -18,7 +18,7 @@ public class BatchComponent implements ComponentWithNoInput, EncodedComponent {
 
     @Nonnull
     String format;
-    @Nonnull
+    @Nullable
     Map<String, String> options;
     @Nullable
     DataEncoder encodedAs;

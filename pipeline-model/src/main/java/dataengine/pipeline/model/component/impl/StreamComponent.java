@@ -9,6 +9,7 @@ import lombok.Value;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.Map;
 
 @Value
@@ -18,7 +19,7 @@ public class StreamComponent implements ComponentWithNoInput, EncodedComponent {
 
     @Nonnull
     String format;
-    @Nonnull
+    @Nullable
     Map<String, String> options;
     @Nullable
     DataEncoder encodedAs;
