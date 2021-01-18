@@ -10,6 +10,6 @@ public interface PlanFactory {
 
     List<PipelineName> getPipelineNames();
 
-    PipelineRunner buildPipelineRunner(PipelineName key) throws PlanFactoryException;
+    PipelineRunner buildPipelineRunner(PipelineName pipelineName) throws PlanFactoryException;
 
 }

@@ -19,24 +19,24 @@ public class ModelReaders {
 
     public static final ObjectMapper YAML_OBJECT_MAPPER = new ObjectMapper(new YAMLFactory());
 
-    public static ComponentCatalog readComponentMapFromYaml(@Nonnull Supplier<InputStream> inputStreamFactory) throws IOException {
-        try (InputStream inputStream = inputStreamFactory.get()) {
+    public static ComponentCatalog readComponentMapFromYaml(@Nonnull InputStreamSupplier inputStreamFactory) throws IOException {
+        try (InputStream inputStream = inputStreamFactory.getInputStream()) {
             var map = YAML_OBJECT_MAPPER.readValue(inputStream, new TypeReference<Map<String, Component>>() {
             });
             return ComponentCatalog.ofMap(map);
         }
     }
 
-    public static SinkCatalog readSinkMapFromYaml(@Nonnull Supplier<InputStream> inputStreamFactory) throws IOException {
-        try (InputStream inputStream = inputStreamFactory.get()) {
+    public static SinkCatalog readSinkMapFromYaml(@Nonnull InputStreamSupplier inputStreamFactory) throws IOException {
+        try (InputStream inputStream = inputStreamFactory.getInputStream()) {
             var map = YAML_OBJECT_MAPPER.readValue(inputStream, new TypeReference<Map<String, Sink>>() {
             });
             return SinkCatalog.ofMap(map);
         }
     }
 
-    public static Plan readPipelinesFromYaml(@Nonnull Supplier<InputStream> inputStreamFactory) throws IOException {
-        try (InputStream inputStream = inputStreamFactory.get()) {
+    public static Plan readPlanFromYaml(@Nonnull InputStreamSupplier inputStreamFactory) throws IOException {
+        try (InputStream inputStream = inputStreamFactory.getInputStream()) {
             return YAML_OBJECT_MAPPER.readValue(inputStream, new TypeReference<Plan>() {
             });
         }
