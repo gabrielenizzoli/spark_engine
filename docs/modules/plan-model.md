@@ -59,7 +59,7 @@ Note that the default serialization is `value`, so it can be omitted:
 ## Dataset Components
 
 A component is an abstraction that describes how a dataset is built. 
-In Java terms, the root of the component hierarchy is the `dataengine.pipeline.model.component.Component` interface. Every component extends form it.
+In Java terms, the root of the component hierarchy is the `sparkengine.plan.model.component.Component` interface. Every component extends form it.
 The common characteristic of a component is to carry all the data needed to produce or transform a dataset described by another component.
 Some components provide information on how to generate datasets from external sources (like the _batch_ component), while others make use of an existing dataset and transforms it (like the _encode_ component).
 By properly chaining many components it is thus possible to compose a complex dataset.
@@ -209,7 +209,7 @@ sqlComponent:
   using: [ source1, source2 ]
   udfs:
     ofClasses:
-      - dataengine.pipeline.runtime.builder.dataset.TestUdf
+      - sparkengine.plan.runtime.builder.dataset.TestUdf
   sql: >
     select 
       testUdf(t.value) as column 
@@ -245,13 +245,13 @@ sqlComponent:
   ...
   udfs:
     ofClasses:
-      - dataengine.pipeline.runtime.builder.dataset.TestStrUdf
-      - dataengine.pipeline.runtime.builder.dataset.TestIntUdf
+      - sparkengine.plan.runtime.builder.dataset.TestStrUdf
+      - sparkengine.plan.runtime.builder.dataset.TestIntUdf
 ```
 
 A udf in Java may look like this:
 ```java
-package dataengine.pipeline.runtime.builder.dataset;
+package sparkengine.plan.runtime.builder.dataset;
 
 import dataengine.spark.sql.udf.Udf;
 import org.apache.spark.sql.api.java.UDF2;
@@ -340,12 +340,12 @@ source2:
 tx:
   type: transform
   using: [ source1, source2 ]
-  transformWith: dataengine.pipeline.runtime.builder.dataset.TestTransformation
+  transformWith: sparkengine.plan.runtime.builder.dataset.TestTransformation
 ```
 
 Java code for transformation:
 ```java
-package dataengine.pipeline.runtime.builder.dataset;
+package sparkengine.plan.runtime.builder.dataset;
 
 import dataengine.spark.transformation.DataTransformationN;
 import org.apache.spark.sql.Dataset;
@@ -367,7 +367,7 @@ public class TestTransformation implements DataTransformationN<Row, Row> {
 
 Once a dataset is ready to be used it can be consumed by a dataset consumer.
 Just like a dataset component, a consumer can be described using a model, usually represented as yaml.
-A dataset consumer is represented in Java as an extension of the `dataengine.pipeline.model.sink.Sink` interface.
+A dataset consumer is represented in Java as an extension of the `sparkengine.plan.model.sink.Sink` interface.
 
 **TODO**
 
@@ -526,7 +526,7 @@ foreachSink:
 
 As we stated before, an _execution plan_ is a set of datasets that can be routed to a set of consumers.
 A single pair dataset/dataset consumer is called a _pipeline_, while the full set of all components/consumers/pipelines is an _execution plan_.
-The model class that represents an execution plan is `dataengine.pipeline.model.pipeline.Plan`.
+The model class that represents an execution plan is `sparkengine.plan.model.pipeline.Plan`.
 
 In yaml term, an execution plan can be represented by a document divided in 3 parts: 
 * a list of _components_ - this will describe datasets
