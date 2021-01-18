@@ -1,0 +1,22 @@
+source1:
+  type: inline
+  data:
+    - { key: "a", value: 1 }
+    - { key: "a", value: 1 }
+    - { key: "a", value: 1 }
+    - { key: "b", value: 100 }
+    - { key: "b", value: 200 }
+    - { key: "c", value: 1 }
+
+source2:
+  type: inline
+  data:
+    - { key: "d", value: 1 }
+    - { key: "d", value: 2 }
+    - { key: "d", value: 3 }
+    - { key: "a", value: 3 }
+
+tx:
+  type: transform
+  using: [ source1, source2 ]
+  transformWith: sparkengine.plan.runtime.builder.TestTransformation
