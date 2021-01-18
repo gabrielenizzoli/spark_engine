@@ -2,7 +2,6 @@ package dataengine.pipeline.spark.app;
 
 import dataengine.pipeline.runtime.builder.datasetconsumer.GlobalCounterConsumer;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -21,17 +20,6 @@ class ApplicationTest {
 
         // then
         Assertions.assertEquals(1, GlobalCounterConsumer.COUNTER.get("app").get());
-    }
-
-    @Test
-    @Disabled
-    void testMainHelp() throws IOException {
-
-        // given
-        var args = new String[]{"-h"};
-
-        // when
-        Application.main(args);
     }
 
 }
