@@ -1,0 +1,60 @@
+components:
+  source1:
+    type: batch
+    format: json
+    options: { a: b, path: 'there/file.json' }
+    encodedAs: { type: STRING }
+  source2:
+    type: stream
+    format: kafka
+    options: { a: b, path: 'there/file.json' }
+    encodedAs: { schema: bean, ofClass: "a.b.C" }
+  txTest:
+    type: encode
+    using: source1
+    encodedAs: { schema: tuple, of: [ { type: STRING }, { type: BINARY } ] }
+  tx:
+    type: encode
+    using: source1
+    encodedAs: { type: INT }
+  tx2:
+    type: sql
+    using: [ tx, source2 ]
+    sql: "select * from tx as t join fileIn2 as f on t.id = f.id"
+  tx3:
+    type: transform
+    using: [ source1 ]
+    transformWith: class.name.Here
+    encodedAs: { type: INT }
+
+sinks:
+  out1:
+    type: batch
+    format: parquet
+    options: { path: 'abc' }
+    mode: OVERWRITE
+  out2:
+    type: stream
+    name: queryNameHere
+    format: kafka
+    options: { path: 'abc' }
+    trigger: { milliseconds: 60 }
+    mode: APPEND
+  out3:
+    type: foreach
+    name: out3
+    trigger: { milliseconds: 60 }
+    mode: APPEND
+    batchComponentName: src
+    plan:
+        components:
+          tx: { type: encode, using: src, encodedAs: { type: INT } }
+        sinks:
+          out: { type: batch, format: parquet, options: { path: 'abc' }, mode: OVERWRITE }
+        pipelines:
+          - { component: tx, sink: out }
+
+pipelines:
+  - { component: tx, sink: out1 }
+  - { component: tx, sink: out2 }
+  - { component: tx, sink: out3 }

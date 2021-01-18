@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>dataengine</groupId>
+    <groupId>sparkengine</groupId>
     <artifactId>parent</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
 
     <properties>
-        <revision>0.4.3</revision>
+        <revision>0.5</revision>
 
         <!-- params -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -31,11 +31,11 @@
     <modules>
         <module>spark-test</module>
         <module>spark-extensions</module>
-        <module>pipeline-runtime</module>
-        <module>pipeline-model</module>
-        <module>pipeline-model-builder</module>
-        <module>pipeline-runtime-builder</module>
-        <module>spark-app</module>
+        <module>plan-model</module>
+        <module>plan-model-builder</module>
+        <module>plan-runtime</module>
+        <module>plan-runtime-builder</module>
+        <module>plan-app</module>
     </modules>
 
     <distributionManagement>
@@ -51,33 +51,33 @@
 
             <!-- modules -->
             <dependency>
-                <groupId>dataengine</groupId>
+                <groupId>sparkengine</groupId>
                 <artifactId>spark-extensions</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>dataengine</groupId>
-                <artifactId>pipeline-runtime</artifactId>
+                <groupId>sparkengine</groupId>
+                <artifactId>plan-model</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>dataengine</groupId>
-                <artifactId>pipeline-model</artifactId>
+                <groupId>sparkengine</groupId>
+                <artifactId>plan-model-builder</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>dataengine</groupId>
-                <artifactId>pipeline-model-builder</artifactId>
+                <groupId>sparkengine</groupId>
+                <artifactId>plan-runtime</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>dataengine</groupId>
-                <artifactId>pipeline-runtime-builder</artifactId>
+                <groupId>sparkengine</groupId>
+                <artifactId>plan-runtime-builder</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>dataengine</groupId>
-                <artifactId>spark-app</artifactId>
+                <groupId>sparkengine</groupId>
+                <artifactId>plan-app</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -124,7 +124,7 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>dataengine</groupId>
+                <groupId>sparkengine</groupId>
                 <artifactId>spark-test</artifactId>
                 <version>${project.version}</version>
                 <scope>test</scope>

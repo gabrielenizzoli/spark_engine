@@ -7,7 +7,7 @@
     <artifactId>spark-extensions</artifactId>
 
     <parent>
-        <groupId>dataengine</groupId>
+        <groupId>sparkengine</groupId>
         <artifactId>parent</artifactId>
         <version>${revision}</version>
     </parent>
@@ -26,7 +26,7 @@
 
         <!-- test -->
         <dependency>
-            <groupId>dataengine</groupId>
+            <groupId>sparkengine</groupId>
             <artifactId>spark-test</artifactId>
         </dependency>
 

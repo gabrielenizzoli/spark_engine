@@ -1,0 +1,16 @@
+source:
+  type: stream
+  format: rate
+  options: { rowsPerSecond: 1 }
+
+tx:
+  type: sql
+  using: [ source ]
+  udfs:
+    ofClasses:
+      - sparkengine.plan.runtime.builder.TestLongUdf
+  sql: >
+    select
+      *,
+      testLongUdf(value, 1) as valuePlusOne
+    from source
