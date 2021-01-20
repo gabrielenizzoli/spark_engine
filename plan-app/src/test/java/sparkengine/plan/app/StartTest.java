@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-class ApplicationTest {
+class StartTest {
 
     @Test
     void testMain() throws IOException {
@@ -16,7 +16,7 @@ class ApplicationTest {
         var args = new String[]{"-p", "./src/test/resources/testPlan.yaml", "-l", "INFO"};
 
         // when
-        Application.main(args);
+        Start.main(args);
 
         // then
         Assertions.assertEquals(1, GlobalCounterConsumer.COUNTER.get("app").get());

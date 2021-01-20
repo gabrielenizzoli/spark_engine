@@ -10,9 +10,9 @@ It provides some basic extension and manipulation facilities for handling UDFs, 
 
 | Package | Language | Description |
 | ----------- | ----------- | ----------- |
-| `dataengine.spark.sql.logicalplan` | `java` | Java utility (`SqlCompiler`) that injects in the logical plan uresolved references to tables and udfs. |
+| `sparkengine.spark.sql.logicalplan` | `java` | Java utility (`SqlCompiler`) that injects in the logical plan uresolved references to tables and udfs. |
 | `dataengine.scala.compat` | `scala` | Scala functions wrappers for Java functions. Useful to provide java functions in scala-only apis. |
-| `dataengine.spark.transformation` | `java` | Utility classes that encapsulates dataset transformation logic. |
+| `sparkengine.spark.transformation` | `java` | Utility classes that encapsulates dataset transformation logic. |
 
 ## SqlCompiler
 
@@ -39,8 +39,8 @@ to resort to a table catalog. These statements then can be tested in isolation, 
 A class called `SqlCompiler` allows to strictly define the input datasets in a sql statements. Example:
 
 ```java
-import dataengine.spark.sql.logicalplan.SqlCompiler;
-import dataengine.spark.sql.logicalplan.tableresolver.Table;
+import sparkengine.spark.sql.logicalplan.SqlCompiler;
+import sparkengine.spark.sql.logicalplan.tableresolver.Table;
 
 var ds=...;
 
@@ -55,9 +55,9 @@ var newDs=sqlCompiler.compileSqlToDataset(sparkSession,"select column from table
 The same is possible with UDFs (and UDAFs). Example:
 
 ```java
-import dataengine.spark.sql.logicalplan.SqlCompiler;
-import dataengine.spark.sql.logicalplan.tableresolver.Table;
-import dataengine.spark.sql.udf.Udf;
+import sparkengine.spark.sql.logicalplan.SqlCompiler;
+import sparkengine.spark.sql.logicalplan.tableresolver.Table;
+import sparkengine.spark.sql.udf.Udf;
 import org.apache.spark.sql.api.java.UDF1;
 import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
@@ -143,7 +143,7 @@ JavaUdf1ToScalaFunction1<Integer, Integer> scalaUdf=new JavaUdf1ToScalaFunction1
 ### Dataset Transformations 
 
 ```java
-import dataengine.spark.transformation.DataTransformation2;
+import sparkengine.spark.transformation.DataTransformation2;
 
 DataTransformation2<Integer, Integer, Integer> tx=(d1,d2)->d1.as("d1").join(d2.as("d2"),col("d1.value").equalTo(col("d2.value")));
 
@@ -158,8 +158,8 @@ and `andThenEncode`. They allow for easy chaining additional changes to a new tr
 easier sequential reading of the code, and requires the developer to call `apply()` only once. Example:
 
 ```java
-import dataengine.spark.transformation.DataTransformation;
-import dataengine.spark.transformation.DataTransformation2;
+import sparkengine.spark.transformation.DataTransformation;
+import sparkengine.spark.transformation.DataTransformation2;
 
 Dataset<Integer> ds1 = ...;
 Dataset<Long> ds2 = ...;
@@ -196,7 +196,7 @@ The `Transformations` class has some `sql` method to quickly wrap a sql statemen
 
 Example on how to create **transformations based on sql statements**:
 ```java
-import dataengine.spark.transformation.Transformations;
+import sparkengine.spark.transformation.Transformations;
 
 // 1 dataset
 var ds1=...;
@@ -211,7 +211,7 @@ var newDs2 = Transformations.sql("table1", "table2", sql2).apply(ds1, ds2);
 var newDs3 = Transformations.sql(List.of("table1", "table2"), sql2).apply(List.of(ds1, ds2));
 ```
 
-Sql transformation methods in `dataengine.spark.transformation.Transformations` are:
+Sql transformation methods in `sparkengine.spark.transformation.Transformations` are:
 
 | Method | Parameters | Output | Note |
 | ----------- | ----------- | ----------- | ----------- |
@@ -245,7 +245,7 @@ var newDsWithFlatMap = Transformations.flatMap((Integer i) -> IntStream.range(i,
 
 Chain transformations to **cache and/or encode datasets**. Example:
 ```java
-import dataengine.spark.transformation.Transformations;
+import sparkengine.spark.transformation.Transformations;
 
 Dataset<Row> ds = ...;
 
