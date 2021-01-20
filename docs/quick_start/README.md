@@ -2,6 +2,6 @@
 sort: 2
 ---
 
-# Modules
+# Quick Start
 
 {% include list.liquid all=true %}
