@@ -1,16 +1,23 @@
 package sparkengine.plan.app;
 
 import com.beust.jcommander.Parameter;
-import lombok.Getter;
+import lombok.*;
 
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ApplicationArgs {
 
     @Getter
     @Parameter(names = {"-h", "--help"}, help = true, required = false, order = 1, description = "Help usage")
+    @lombok.Builder.Default
     private boolean help = false;
 
     @Getter
-    @Parameter(names = {"-l", "--log"}, order = 1, description = "Set main application log level (one of OFF,FATAL,ERROR,WARN,INFO,DEBUG,TRACE,ALL)")
+    @Parameter(names = {"-l", "--log"}, order = 2, description = "Set main application log level (one of OFF,FATAL,ERROR,WARN,INFO,DEBUG,TRACE,ALL)")
+    @lombok.Builder.Default
     private String logLevel = "INFO";
 
 }
