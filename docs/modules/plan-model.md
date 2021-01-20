@@ -1,8 +1,8 @@
 ---
-sort: 3
+sort: 2
 ---
 
-# The pipeline-model module
+# The plan-model module
 
 This module exposes a model abstraction to describe a dataset. 
 The final goal of the model is to be able to describe how a spark dataset can be built.
@@ -518,8 +518,8 @@ foreachSink:
       display: { type: show }
       fileOutput: { type: batch, format: parquet, options: { path: 'hdfs://...' }, mode: OVERWRITE }
     pipelines:
-      - { source: src, sink: display }
-      - { source: transformation2, sink: fileOutput }
+      - { component: src, sink: display }
+      - { component: transformation2, sink: fileOutput }
 ```
 
 ## Execution Plan
@@ -554,8 +554,8 @@ sinks:
     ...
 
 pipelines:
-  pipe1: { source: component1, sink: consumer1 }
-  pipe2: { source: component2, sink: consumer2 }
+  - { component: component1, sink: consumer1 }
+  - { component: component2, sink: consumer2 }
 ```
 
 
