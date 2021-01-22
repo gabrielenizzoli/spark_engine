@@ -17,20 +17,17 @@ class ModelFactoryTest {
     @Test
     void testYaml() throws IOException, ComponentCatalogException {
 
-        File yamlSource = new File("src/test/resources/components.yaml");
-        ComponentCatalog catalog = ModelFactory.readComponentCatalogFromYaml(() -> {
-            try {
-                return new FileInputStream(yamlSource);
-            } catch (FileNotFoundException e) {
-                throw new IllegalStateException();
-            }
-        });
 
+        // given
+        File yamlSource = new File("src/test/resources/components.yaml");
+        ComponentCatalog catalog = ModelFactory.readComponentCatalogFromYaml(() -> new FileInputStream(yamlSource));
+
+        // when
         Optional<Component> sourceComponent = catalog.lookup("tx");
 
+        // then
         Assertions.assertNotNull(sourceComponent);
         Assertions.assertTrue(sourceComponent.isPresent());
-
     }
 
 }
