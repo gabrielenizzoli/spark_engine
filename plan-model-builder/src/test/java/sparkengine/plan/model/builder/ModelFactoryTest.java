@@ -12,13 +12,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Optional;
 
-class ModelFactoriesTest {
+class ModelFactoryTest {
 
     @Test
     void testYaml() throws IOException, ComponentCatalogException {
 
         File yamlSource = new File("src/test/resources/components.yaml");
-        ComponentCatalog catalog = ModelFactories.readComponentCatalogFromYaml(() -> {
+        ComponentCatalog catalog = ModelFactory.readComponentCatalogFromYaml(() -> {
             try {
                 return new FileInputStream(yamlSource);
             } catch (FileNotFoundException e) {

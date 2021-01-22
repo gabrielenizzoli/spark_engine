@@ -7,10 +7,10 @@ import org.apache.log4j.Logger;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import sparkengine.plan.model.Plan;
-import sparkengine.plan.model.builder.DefaultPLanResolver;
+import sparkengine.plan.model.builder.DefaultPlanResolver;
+import sparkengine.plan.model.builder.ModelFactory;
 import sparkengine.plan.model.builder.PlanResolverException;
 import sparkengine.plan.model.builder.input.*;
-import sparkengine.plan.model.builder.ModelFactories;
 import sparkengine.plan.runtime.PipelineName;
 import sparkengine.plan.runtime.PipelineRunnersFactory;
 import sparkengine.plan.runtime.PipelineRunnersFactoryException;
@@ -33,22 +33,22 @@ public class PlanRunner {
     @lombok.Builder.Default
     Logger log = Logger.getLogger(PlanRunner.class);
 
-    public void run() throws IOException, PlanResolverException {
+    public void run() throws IOException, PlanResolverException, DatasetConsumerException, PipelineRunnersFactoryException {
         PipelineRunnersFactory pipelineRunnersFactory = getPipelineRunnersFactory();
         executePipelines(pipelineRunnersFactory);
         waitOnSpark();
     }
 
     private PipelineRunnersFactory getPipelineRunnersFactory() throws IOException, PlanResolverException {
-        var resourceLocator = new AppResourceLocator();
-        var planInputStream =  resourceLocator.getInputStreamSupplier(runtimeArgs.getPlanLocation());
+        var resourceLocator = new AbsoluteResourceLocator();
+        var planInputStream = resourceLocator.getInputStreamFactory(runtimeArgs.getPlanLocation());
         var sourcePlan = getPlan(planInputStream);
         Plan resolvedPlan = resolvePlan(sourcePlan);
         return ModelPipelineRunnersFactory.ofPlan(sparkSession, resolvedPlan);
     }
 
-    private Plan getPlan(InputStreamSupplier inputStreamSupplier) throws IOException {
-        var sourcePlan = ModelFactories.readPlanFromYaml(inputStreamSupplier);
+    private Plan getPlan(InputStreamFactory inputStreamFactory) throws IOException {
+        var sourcePlan = ModelFactory.readPlanFromYaml(inputStreamFactory);
         log.trace("source plan: " + sourcePlan);
 
         return sourcePlan;
@@ -59,12 +59,9 @@ public class PlanRunner {
                 .baseLocation(URIBuilder.ofString(runtimeArgs.getPlanLocation()).removePartFromPath().getUri())
                 .extension("yaml")
                 .build();
-        var absoluteResourceLocator = AbsoluteResourceLocator.builder()
-                .extension("yaml")
-                .build();
-        var resolver = DefaultPLanResolver.builder()
+        var resolver = DefaultPlanResolver.builder()
                 .relativeResourceLocator(relativeResourceLocator)
-                .absoluteResourceLocator(absoluteResourceLocator)
+                .absoluteResourceLocator(new AbsoluteResourceLocator())
                 .build();
         var resolvedPlan = resolver.resolve(sourcePlan);
         log.trace("resolved plan: " + resolvedPlan);
@@ -72,7 +69,8 @@ public class PlanRunner {
         return resolvedPlan;
     }
 
-    private void executePipelines(PipelineRunnersFactory pipelineRunnersFactory) throws IOException {
+    private void executePipelines(PipelineRunnersFactory pipelineRunnersFactory)
+            throws PipelineRunnersFactoryException, DatasetConsumerException {
         log.info("found pipelines " + pipelineRunnersFactory.getPipelineNames());
         Consumer<PipelineName> runPipeline = pipelineName -> runPipeline(pipelineRunnersFactory, pipelineName);
         if (runtimeArgs.isParallelPipelineExecution()) {
@@ -95,13 +93,13 @@ public class PlanRunner {
             if (runtimeArgs.isSkipFaultyPipelines())
                 log.warn(msg, e);
             else
-                throw new IOException(msg, e);
+                throw new PipelineRunnersFactoryException(msg, e);
         } catch (DatasetConsumerException e) {
             String msg = "can't execute pipeline " + pipelineName;
             if (runtimeArgs.isSkipFaultyPipelines())
                 log.warn(msg, e);
             else
-                throw new IOException(msg, e);
+                throw new DatasetConsumerException(msg, e);
         }
     }
 

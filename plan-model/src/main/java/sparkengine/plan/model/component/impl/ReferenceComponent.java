@@ -20,12 +20,20 @@ public class ReferenceComponent implements ComponentWithMultipleInputs, Componen
         ABSOLUTE
     }
 
+    public enum InlineMode {
+        INLINE,
+        WRAPPED
+    }
+
     @Nullable
     List<String> using;
     @Nonnull
     @lombok.Builder.Default
-    ReferenceType referenceType = ReferenceType.RELATIVE;
+    ReferenceType refType = ReferenceType.RELATIVE;
     @Nullable
     String ref;
+    @Nonnull
+    @lombok.Builder.Default
+    InlineMode inlineMode = InlineMode.INLINE;
 
 }

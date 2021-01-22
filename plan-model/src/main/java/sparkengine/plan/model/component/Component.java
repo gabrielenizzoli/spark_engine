@@ -20,7 +20,8 @@ import sparkengine.plan.model.component.impl.*;
         @JsonSubTypes.Type(value = UnionComponent.class, name = "union"),
         @JsonSubTypes.Type(value = FragmentComponent.class, name = "fragment"),
         @JsonSubTypes.Type(value = WrapperComponent.class, name = "wrapper"),
-        @JsonSubTypes.Type(value = SqlComponent.class, name = "sql")
+        @JsonSubTypes.Type(value = SqlComponent.class, name = "sql"),
+        @JsonSubTypes.Type(value = ReferenceComponent.class, name = "ref")
 })
 public interface Component {
 

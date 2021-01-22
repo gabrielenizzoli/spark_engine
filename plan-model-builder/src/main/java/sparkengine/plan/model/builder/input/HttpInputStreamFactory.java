@@ -1,6 +1,5 @@
 package sparkengine.plan.model.builder.input;
 
-import lombok.Builder;
 import lombok.Value;
 
 import javax.annotation.Nonnull;
@@ -13,12 +12,12 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 
 @Value(staticConstructor = "of")
-public class HttpInputStreamSupplier implements InputStreamSupplier {
+public class HttpInputStreamFactory implements InputStreamFactory {
 
     @Nonnull
     HttpRequest httpRequest;
 
-    public static HttpInputStreamSupplier ofURI(URI uri, Duration timeout) {
+    public static HttpInputStreamFactory ofURI(URI uri, Duration timeout) {
         return of(HttpRequest.newBuilder().GET().uri(uri).timeout(timeout).build());
     }
 

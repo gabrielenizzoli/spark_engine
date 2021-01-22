@@ -16,9 +16,9 @@ public class RelativeResourceLocator extends BaseResourceLocator {
     String extension;
 
     @Override
-    public InputStreamSupplier getInputStreamSupplier(String name) {
+    public InputStreamFactory getInputStreamFactory(String name) {
         var uri = URIBuilder.of(baseLocation).addPartToPath(name + "." + extension).getUri();
-        return getInputStreamSupplier(uri);
+        return getInputStreamFactory(uri);
     }
 
 }

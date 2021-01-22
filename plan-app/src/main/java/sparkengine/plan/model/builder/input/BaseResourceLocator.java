@@ -5,13 +5,13 @@ import java.time.Duration;
 
 public abstract class BaseResourceLocator implements InputStreamResourceLocator {
 
-    protected final InputStreamSupplier getInputStreamSupplier(URI uri) {
+    protected final InputStreamFactory getInputStreamFactory(URI uri) {
         switch (uri.getScheme().toLowerCase()) {
             case "http":
             case "https:":
-                return HttpInputStreamSupplier.ofURI(uri, Duration.ofSeconds(30));
+                return HttpInputStreamFactory.ofURI(uri, Duration.ofSeconds(30));
             default:
-                return HdfsInputStreamSupplier.of(uri);
+                return HdfsInputStreamFactory.of(uri);
         }
     }
 
