@@ -8,8 +8,8 @@ import sparkengine.plan.runtime.builder.datasetconsumer.SinkDatasetConsumerFacto
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactory;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactory;
 import sparkengine.plan.runtime.PipelineName;
-import sparkengine.plan.runtime.PlanFactory;
-import sparkengine.plan.runtime.impl.SimplePlanFactory;
+import sparkengine.plan.runtime.PipelineRunnersFactory;
+import sparkengine.plan.runtime.impl.SimplePipelineRunnersFactory;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.SparkSession;
 
@@ -21,16 +21,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ModelPlanFactory {
+public class ModelPipelineRunnersFactory {
 
-    public static PlanFactory ofPlan(SparkSession sparkSession, Plan plan) {
+    public static PipelineRunnersFactory ofPlan(SparkSession sparkSession, Plan plan) {
         return ofPlan(sparkSession, plan, null);
     }
 
-    public static PlanFactory ofPlan(@Nonnull SparkSession sparkSession,
-                                     @Nonnull Plan plan,
-                                     @Nullable Map<String, Dataset> predefinedDatasets) {
-        return SimplePlanFactory.builder()
+    public static PipelineRunnersFactory ofPlan(@Nonnull SparkSession sparkSession,
+                                                @Nonnull Plan plan,
+                                                @Nullable Map<String, Dataset> predefinedDatasets) {
+        return SimplePipelineRunnersFactory.builder()
                 .pipelineNames(getPipelineNames(plan))
                 .datasetFactory(getDatasetFactory(sparkSession, plan, predefinedDatasets))
                 .datasetConsumerFactory(getConsumerFactory(plan))

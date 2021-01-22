@@ -18,6 +18,8 @@ import sparkengine.plan.model.component.impl.*;
         // transformation with many inputs
         @JsonSubTypes.Type(value = TransformComponent.class, name = "transform"),
         @JsonSubTypes.Type(value = UnionComponent.class, name = "union"),
+        @JsonSubTypes.Type(value = FragmentComponent.class, name = "fragment"),
+        @JsonSubTypes.Type(value = WrapperComponent.class, name = "wrapper"),
         @JsonSubTypes.Type(value = SqlComponent.class, name = "sql")
 })
 public interface Component {

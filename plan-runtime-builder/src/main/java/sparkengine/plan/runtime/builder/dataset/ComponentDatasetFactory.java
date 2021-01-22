@@ -1,9 +1,11 @@
 package sparkengine.plan.runtime.builder.dataset;
 
-import sparkengine.plan.model.component.Component;
-import sparkengine.plan.model.component.ComponentWithMultipleInputs;
-import sparkengine.plan.model.component.ComponentWithNoInput;
-import sparkengine.plan.model.component.ComponentWithSingleInput;
+import lombok.Builder;
+import lombok.Value;
+import lombok.With;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.SparkSession;
+import sparkengine.plan.model.component.*;
 import sparkengine.plan.model.component.catalog.ComponentCatalog;
 import sparkengine.plan.model.component.catalog.ComponentCatalogException;
 import sparkengine.plan.runtime.builder.dataset.supplier.DatasetSupplier;
@@ -12,11 +14,6 @@ import sparkengine.plan.runtime.builder.dataset.supplier.DatasetSupplierForCompo
 import sparkengine.plan.runtime.builder.dataset.supplier.DatasetSupplierForComponentWithSingleInput;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactory;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
-import lombok.Builder;
-import lombok.Value;
-import lombok.With;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.SparkSession;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -67,7 +64,7 @@ public class ComponentDatasetFactory implements DatasetFactory {
         var component = getComponent(name);
         Dataset<T> ds = getDataset(name, component, childrenPath);
 
-        datasetCache.put(name, (Dataset<Object>) ds);
+        datasetCache.put(name, ds);
         return ds;
     }
 
@@ -83,6 +80,10 @@ public class ComponentDatasetFactory implements DatasetFactory {
     @Nonnull
     private <T> Dataset<T> getDataset(String name, Component component, List<String> childrenPath) throws DatasetFactoryException {
 
+        if (component instanceof ComponentWithNoRuntime) {
+            throw new DatasetFactoryException("component [" + component + "] has no runtime equivalent and must be resolved");
+        }
+
         DatasetSupplier<T> datasetSupplier = null;
         if (component instanceof ComponentWithNoInput) {
             datasetSupplier = DatasetSupplierForComponentWithNoInput.<T>builder()
@@ -91,41 +92,43 @@ public class ComponentDatasetFactory implements DatasetFactory {
                     .build();
         } else if (component instanceof ComponentWithSingleInput) {
             var componentWithSingleInput = (ComponentWithSingleInput) component;
-            var parentDs = getParentDataset(componentWithSingleInput.getUsing(), appendToPath(name, childrenPath));
+            var inputDataset = getParentDataset(componentWithSingleInput.getUsing(), appendToPath(name, childrenPath));
             datasetSupplier = DatasetSupplierForComponentWithSingleInput.<T>builder()
                     .sparkSession(sparkSession)
                     .componentWithSingleInput(componentWithSingleInput)
-                    .inputDataset(parentDs)
+                    .inputDataset(inputDataset)
                     .build();
         } else if (component instanceof ComponentWithMultipleInputs) {
             var multiInputComponent = (ComponentWithMultipleInputs) component;
-            var parentDs = getParentDatasets(multiInputComponent.getUsing(), appendToPath(name, childrenPath));
+            var inputDatasets = getParentDatasets(multiInputComponent.getUsing(), appendToPath(name, childrenPath));
             datasetSupplier = DatasetSupplierForComponentWithMultipleInput.<T>builder()
                     .sparkSession(sparkSession)
                     .componentWithMultipleInputs(multiInputComponent)
-                    .inputDatasets(parentDs)
+                    .inputDatasets(inputDatasets)
                     .build();
         }
 
         if (datasetSupplier == null)
             throw new DatasetFactoryException.DatasetInstantiationIssue("component type [" + component.getClass().getName() + "] does not have any supplier associated");
-        Dataset<T> ds = datasetSupplier.provides();
+        Dataset<T> ds = datasetSupplier.getDataset();
         if (ds == null)
             throw new DatasetFactoryException.DatasetInstantiationIssue("component type [" + component.getClass().getName() + "] supplier unable to create dataset");
 
         return ds;
     }
 
-    private <T> Dataset<T> getParentDataset(@Nonnull String parentName, @Nonnull List<String> childrenPath) throws DatasetFactoryException {
+    private Dataset getParentDataset(@Nonnull String parentName, @Nonnull List<String> childrenPath) throws DatasetFactoryException {
         return buildDataset(parentName, childrenPath);
     }
 
     @Nonnull
-    private List<Dataset<Object>> getParentDatasets(@Nullable List<String> parentNames, List<String> childrenPath) throws DatasetFactoryException {
+    private List<Dataset> getParentDatasets(@Nullable List<String> parentNames, List<String> childrenPath) throws DatasetFactoryException {
         if (parentNames == null) {
             parentNames = List.of();
         }
-        var parentDs = new ArrayList<Dataset<Object>>(parentNames.size());
+        // TODO: fail if name repeated twice
+        // TODO: validate names (non empty, not trimmable)
+        var parentDs = new ArrayList<Dataset>(parentNames.size());
         for (String parentName : parentNames) {
             parentDs.add(getParentDataset(parentName, childrenPath));
         }

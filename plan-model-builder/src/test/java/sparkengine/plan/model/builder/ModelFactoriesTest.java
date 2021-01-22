@@ -18,7 +18,7 @@ class ModelFactoriesTest {
     void testYaml() throws IOException, ComponentCatalogException {
 
         File yamlSource = new File("src/test/resources/components.yaml");
-        ComponentCatalog catalog = ModelFactories.readComponentMapFromYaml(() -> {
+        ComponentCatalog catalog = ModelFactories.readComponentCatalogFromYaml(() -> {
             try {
                 return new FileInputStream(yamlSource);
             } catch (FileNotFoundException e) {

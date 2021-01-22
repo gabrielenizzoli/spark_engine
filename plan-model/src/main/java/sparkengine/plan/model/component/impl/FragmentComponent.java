@@ -5,25 +5,22 @@ import lombok.Builder;
 import lombok.Value;
 import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.ComponentWithMultipleInputs;
-import sparkengine.plan.model.encoder.DataEncoder;
-import sparkengine.plan.model.udf.UdfLibrary;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = SqlComponent.Builder.class)
-public class SqlComponent implements ComponentWithMultipleInputs {
+@JsonDeserialize(builder = FragmentComponent.Builder.class)
+public class FragmentComponent implements ComponentWithMultipleInputs {
 
     @Nullable
     List<String> using;
     @Nonnull
-    String sql;
-    @Nullable
-    UdfLibrary udfs;
-    @Nullable
-    DataEncoder encodedAs;
+    String providing;
+    @Nonnull
+    Map<String, Component> components;
 
 }

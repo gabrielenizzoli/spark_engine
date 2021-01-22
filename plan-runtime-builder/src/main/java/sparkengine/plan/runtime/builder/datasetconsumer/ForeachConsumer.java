@@ -1,7 +1,7 @@
 package sparkengine.plan.runtime.builder.datasetconsumer;
 
 import sparkengine.plan.model.Plan;
-import sparkengine.plan.runtime.builder.ModelPlanFactory;
+import sparkengine.plan.runtime.builder.ModelPipelineRunnersFactory;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumer;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 import lombok.Builder;
@@ -36,7 +36,7 @@ public class ForeachConsumer<T> implements DatasetConsumer<T> {
             var batchDataset = plan.getPipelines().size() > 1 ? ds.persist() : ds;
 
             try {
-                var planFactory = ModelPlanFactory.ofPlan(batchDataset.sparkSession(), plan, Map.of(batchComponentName, (Dataset<Object>)ds));
+                var planFactory = ModelPipelineRunnersFactory.ofPlan(batchDataset.sparkSession(), plan, Map.of(batchComponentName, (Dataset<Object>)ds));
                 for (var pipelineName : planFactory.getPipelineNames()) {
                     planFactory.buildPipelineRunner(pipelineName).run();
                 }

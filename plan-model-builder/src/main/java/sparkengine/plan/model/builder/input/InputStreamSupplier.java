@@ -1,4 +1,4 @@
-package sparkengine.plan.model.builder;
+package sparkengine.plan.model.builder.input;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,23 +1,27 @@
 package sparkengine.plan.runtime.builder.dataset.supplier;
 
-import sparkengine.plan.model.component.ComponentWithMultipleInputs;
-import sparkengine.plan.model.component.impl.SqlComponent;
-import sparkengine.plan.model.component.impl.TransformComponent;
-import sparkengine.plan.model.component.impl.UnionComponent;
-import sparkengine.plan.runtime.builder.dataset.utils.EncoderUtils;
-import sparkengine.plan.runtime.builder.dataset.utils.UdfUtils;
-import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
-import sparkengine.spark.transformation.DataTransformationN;
-import sparkengine.spark.transformation.Transformations;
 import lombok.Builder;
 import lombok.Value;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoder;
 import org.apache.spark.sql.SparkSession;
+import sparkengine.plan.model.component.ComponentWithMultipleInputs;
+import sparkengine.plan.model.component.ComponentWithSingleInput;
+import sparkengine.plan.model.component.catalog.ComponentCatalog;
+import sparkengine.plan.model.component.impl.*;
+import sparkengine.plan.runtime.builder.dataset.ComponentDatasetFactory;
+import sparkengine.plan.runtime.builder.dataset.utils.EncoderUtils;
+import sparkengine.plan.runtime.builder.dataset.utils.UdfUtils;
+import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
+import sparkengine.spark.transformation.DataTransformationN;
+import sparkengine.spark.transformation.Transformations;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Value
 @Builder
@@ -28,24 +32,68 @@ public class DatasetSupplierForComponentWithMultipleInput<T> implements DatasetS
     @Nonnull
     ComponentWithMultipleInputs componentWithMultipleInputs;
     @Nonnull
-    List<Dataset<Object>> inputDatasets;
+    List<Dataset> inputDatasets;
 
     @Override
-    public Dataset<T> provides() throws DatasetFactoryException {
+    public Dataset<T> getDataset() throws DatasetFactoryException {
+        Dataset<T> dataset = null;
+
         if (componentWithMultipleInputs instanceof UnionComponent) {
-            return inputDatasets.stream()
-                    .map(ds -> (Dataset<T>) ds)
-                    .reduce(Dataset::union)
-                    .orElseThrow(() -> new DatasetFactoryException("union can't be performed on an empty list of datasets"));
-        }
-        if (componentWithMultipleInputs instanceof SqlComponent) {
-            return getSqlDataset((SqlComponent) componentWithMultipleInputs);
-        }
-        if (componentWithMultipleInputs instanceof TransformComponent) {
-            return getTransformDataset((TransformComponent) componentWithMultipleInputs);
+            dataset = getUnionDataset();
+        } else if (componentWithMultipleInputs instanceof FragmentComponent) {
+            dataset =  getFragmentDataset((FragmentComponent) componentWithMultipleInputs);
+        } else if (componentWithMultipleInputs instanceof WrapperComponent) {
+            dataset =  getWrappedDataset((WrapperComponent) componentWithMultipleInputs);
+        } else if (componentWithMultipleInputs instanceof SqlComponent) {
+            dataset =  getSqlDataset((SqlComponent) componentWithMultipleInputs);
+        } else if (componentWithMultipleInputs instanceof TransformComponent) {
+            dataset =  getTransformDataset((TransformComponent) componentWithMultipleInputs);
         }
 
-        return null;
+        return dataset;
+    }
+
+    private Dataset<T> getUnionDataset() throws DatasetFactoryException {
+        return inputDatasets.stream()
+                .map(ds -> (Dataset<T>) ds)
+                .reduce(Dataset::union)
+                .orElseThrow(() -> new DatasetFactoryException("union can't be performed on an empty list of datasets"));
+    }
+
+    @Nonnull
+    private Dataset<T> getFragmentDataset(FragmentComponent fragmentComponent) throws DatasetFactoryException {
+        var componentCatalog = ComponentCatalog.ofMap(fragmentComponent.getComponents());
+        var datasetCache = Optional.ofNullable(fragmentComponent.getUsing())
+                .map(names -> IntStream.range(0, names.size()).boxed().collect(Collectors.toMap(names::get, inputDatasets::get)))
+                .orElse(Map.of());
+        var factory = ComponentDatasetFactory.of(sparkSession, componentCatalog).withDatasetCache(datasetCache);
+        return factory.buildDataset(fragmentComponent.getProviding());
+    }
+
+    @Nonnull
+    private Dataset<T> getWrappedDataset(WrapperComponent wrapper) throws DatasetFactoryException {
+        var providedDatasetNames = Optional.ofNullable(wrapper.getUsing()).orElse(List.of());
+        var innerComponent = wrapper.getComponent();
+
+        var requestedComponents = List.<String>of();
+        if (innerComponent instanceof ComponentWithMultipleInputs) {
+            requestedComponents = Optional.ofNullable(((ComponentWithMultipleInputs) innerComponent).getUsing()).orElse(List.of());
+        } else if (innerComponent instanceof ComponentWithSingleInput) {
+            requestedComponents = Optional.ofNullable(((ComponentWithSingleInput) innerComponent).getUsing()).map(List::of).orElse(List.of());
+        }
+
+        if (providedDatasetNames.size() != requestedComponents.size()) {
+            throw new DatasetFactoryException("wrapper list of provided source names (" + providedDatasetNames + ") does not match size of required source names in inner component (" + requestedComponents + ")");
+        }
+
+        var datasetCache = Optional.ofNullable(requestedComponents)
+                .filter(names -> !names.isEmpty())
+                .map(names -> IntStream.range(0, names.size()).boxed().collect(Collectors.toMap(names::get, inputDatasets::get)))
+                .orElse(Map.of());
+
+        var componentCatalog = ComponentCatalog.ofMap(Map.of("wrappedComponent", innerComponent));
+        var factory = ComponentDatasetFactory.of(sparkSession, componentCatalog).withDatasetCache(datasetCache);
+        return factory.<T>buildDataset("wrappedComponent");
     }
 
     private Dataset<T> getSqlDataset(SqlComponent sqlComponent) throws DatasetFactoryException {

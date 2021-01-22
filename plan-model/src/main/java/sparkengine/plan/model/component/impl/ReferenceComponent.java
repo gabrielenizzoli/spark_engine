@@ -3,10 +3,8 @@ package sparkengine.plan.model.component.impl;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Value;
-import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.ComponentWithMultipleInputs;
-import sparkengine.plan.model.encoder.DataEncoder;
-import sparkengine.plan.model.udf.UdfLibrary;
+import sparkengine.plan.model.component.ComponentWithNoRuntime;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -14,16 +12,20 @@ import java.util.List;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = SqlComponent.Builder.class)
-public class SqlComponent implements ComponentWithMultipleInputs {
+@JsonDeserialize(builder = ReferenceComponent.Builder.class)
+public class ReferenceComponent implements ComponentWithMultipleInputs, ComponentWithNoRuntime {
+
+    public enum ReferenceType {
+        RELATIVE,
+        ABSOLUTE
+    }
 
     @Nullable
     List<String> using;
     @Nonnull
-    String sql;
+    @lombok.Builder.Default
+    ReferenceType referenceType = ReferenceType.RELATIVE;
     @Nullable
-    UdfLibrary udfs;
-    @Nullable
-    DataEncoder encodedAs;
+    String ref;
 
 }

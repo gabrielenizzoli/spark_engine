@@ -12,7 +12,7 @@ import java.util.List;
 @Value
 @Builder(setterPrefix = "with")
 @JsonDeserialize(builder = UnionComponent.Builder.class)
-public class UnionComponent implements Component, ComponentWithMultipleInputs {
+public class UnionComponent implements ComponentWithMultipleInputs {
 
     @Nullable
     List<String> using;

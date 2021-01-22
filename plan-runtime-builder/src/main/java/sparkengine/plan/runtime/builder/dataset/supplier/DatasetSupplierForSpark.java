@@ -68,7 +68,7 @@ public class DatasetSupplierForSpark<T> implements DatasetSupplier<T> {
     }
 
     @Override
-    public Dataset<T> provides() throws DatasetFactoryException {
+    public Dataset<T> getDataset() throws DatasetFactoryException {
         return Objects.nonNull(encoder) ? getEncodedDataset() : (Dataset<T>) getRowDataset();
     }
 
