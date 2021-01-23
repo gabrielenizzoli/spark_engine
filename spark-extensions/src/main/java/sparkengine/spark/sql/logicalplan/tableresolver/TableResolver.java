@@ -1,8 +1,5 @@
 package sparkengine.spark.sql.logicalplan.tableresolver;
 
-import sparkengine.spark.sql.logicalplan.ExpressionMapper;
-import sparkengine.spark.sql.logicalplan.LogicalPlanMapper;
-import sparkengine.spark.sql.logicalplan.PlanMapperException;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
@@ -12,6 +9,9 @@ import org.apache.spark.sql.catalyst.expressions.Expression;
 import org.apache.spark.sql.catalyst.expressions.PlanExpression;
 import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 import org.apache.spark.sql.catalyst.plans.logical.SubqueryAlias;
+import sparkengine.spark.sql.logicalplan.ExpressionMapper;
+import sparkengine.spark.sql.logicalplan.LogicalPlanMapper;
+import sparkengine.spark.sql.logicalplan.PlanMapperException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -69,7 +69,7 @@ public class TableResolver implements LogicalPlanMapper {
     private LogicalPlan replaceUnresolvedRelation(UnresolvedRelation unresolvedRelation) throws TableResolverException {
         var resolvedRelation = plans.get(unresolvedRelation.tableName());
         if (resolvedRelation == null) {
-            throw new TableResolverException("can't resolve relation " + unresolvedRelation.tableName() + " in plan " + unresolvedRelation);
+            throw new TableResolverException("can't resolve relation " + unresolvedRelation.tableName() + " in plan " + unresolvedRelation + " (relations are: " + plans.keySet() + ")");
         }
         return new SubqueryAlias(new AliasIdentifier(unresolvedRelation.tableName()), resolvedRelation);
     }

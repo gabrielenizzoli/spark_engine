@@ -19,7 +19,6 @@ source2:
   schema: "`key` STRING,`value` INT"
 
 tx:
-  type: sql
   using: [ source1, source2 ]
   udfs:
     ofClasses:

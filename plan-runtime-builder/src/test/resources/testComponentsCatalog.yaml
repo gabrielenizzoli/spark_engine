@@ -1,9 +1,7 @@
 source1:
-  type: sql
   sql: select explode(array(named_struct("num", 0, "str", "a"), named_struct("num", 1, "str", "b"))) as abc
 
 source2:
-  type: sql
   udfs:
     ofClasses:
       - sparkengine.plan.runtime.builder.TestIntUdf
@@ -14,12 +12,10 @@ source2:
     ) as def
 
 source3:
-  type: sql
   sql: >
     select 1 as number
 
 tx:
-  type: sql
   using: [ source1, source2 ]
   udfs:
     ofClasses:

@@ -1,8 +1,11 @@
 package sparkengine.plan.runtime.builder.dataset;
 
+import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.catalog.ComponentCatalog;
+import sparkengine.plan.model.component.impl.FragmentComponent;
 import sparkengine.plan.model.component.impl.InlineComponent;
 import sparkengine.plan.model.component.impl.SqlComponent;
+import sparkengine.plan.model.component.impl.WrapperComponent;
 import sparkengine.plan.runtime.builder.TestCatalog;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.test.SparkSessionBase;
@@ -49,18 +52,92 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
 
         // given
         var componentMap = Map.of(
-                "sqlSrc", SqlComponent.builder().withSql("select 'value01' as clo1, 'value22' as col2").build(),
+                "sqlSrc", SqlComponent.builder().withSql("select 'value01' as col1, 'value22' as col2").build(),
                 "inlineSrc", InlineComponent.builder()
                         .withData(List.of(Map.of("col1", "valueNotExpected", "col2", "value12"), Map.of("col1", "valueExpected", "col2", "value22")))
                         .withSchema(DataTypes.createStructType(List.of(DataTypes.createStructField("col1", DataTypes.StringType, true), DataTypes.createStructField("col2", DataTypes.StringType, true))).toDDL())
                         .build(),
-                "sql", SqlComponent.builder().withUsing(List.of("inlineSrc", "sqlSrc")).withSql("select col1 from inlineSrc join sqlSrc on inlineSrc.col2 = sqlSrc.col2").build()
+                "sql", SqlComponent.builder().withUsing(List.of("inlineSrc", "sqlSrc")).withSql("select inlineSrc.col1 from inlineSrc join sqlSrc on inlineSrc.col2 = sqlSrc.col2").build()
         );
         var catalog = ComponentCatalog.ofMap(componentMap);
         var factory = ComponentDatasetFactory.of(sparkSession, catalog);
 
         // when
         var data = factory.buildDataset("sql").as(Encoders.STRING()).collectAsList();
+
+        // then
+        assertEquals(List.of("valueExpected"), data);
+
+    }
+
+    @Test
+    void testFactoryWithFragment() throws DatasetFactoryException {
+
+        // given
+        var componentFragmentMap =Map.of(
+                "inlineSrc", InlineComponent.builder()
+                        .withData(List.of(Map.of("col1", "valueNotExpected", "col2", "value12"), Map.of("col1", "valueExpected", "col2", "value22")))
+                        .withSchema(DataTypes.createStructType(List.of(DataTypes.createStructField("col1", DataTypes.StringType, true), DataTypes.createStructField("col2", DataTypes.StringType, true))).toDDL())
+                        .build(),
+                "sql", SqlComponent.builder()
+                        .withUsing(List.of("inlineSrc", "sqlSrc"))
+                        .withSql("select inlineSrc.col1 from inlineSrc join sqlSrc on inlineSrc.col2 = sqlSrc.col2")
+                        .build()
+        );
+        var componentMap = Map.<String, Component>of(
+                "sqlSrc", SqlComponent.builder()
+                        .withSql("select 'value01' as col1, 'value22' as col2")
+                        .build(),
+                "fragment", FragmentComponent.builder()
+                        .withUsing(List.of("sqlSrc"))
+                        .withComponents(componentFragmentMap)
+                        .withProviding("sql")
+                        .build()
+        );
+        var catalog = ComponentCatalog.ofMap(componentMap);
+        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+
+        // when
+        var data = factory.buildDataset("fragment").as(Encoders.STRING()).collectAsList();
+
+        // then
+        assertEquals(List.of("valueExpected"), data);
+
+    }
+
+    @Test
+    void testFactoryWithWrapperAndFragment() throws DatasetFactoryException {
+
+        // given
+        var componentFragmentMap =Map.of(
+                "inlineSrc", InlineComponent.builder()
+                        .withData(List.of(Map.of("col1", "valueNotExpected", "col2", "value12"), Map.of("col1", "valueExpected", "col2", "value22")))
+                        .withSchema(DataTypes.createStructType(List.of(DataTypes.createStructField("col1", DataTypes.StringType, true), DataTypes.createStructField("col2", DataTypes.StringType, true))).toDDL())
+                        .build(),
+                "sql", SqlComponent.builder()
+                        .withUsing(List.of("inlineSrc", "sqlSrc"))
+                        .withSql("select inlineSrc.col1 from inlineSrc join sqlSrc on inlineSrc.col2 = sqlSrc.col2")
+                        .build()
+        );
+        var componentMap = Map.<String, Component>of(
+                "sqlSrcExternal", SqlComponent.builder()
+                        .withSql("select 'value01' as col1, 'value22' as col2")
+                        .build(),
+                "wrapper", WrapperComponent
+                        .builder()
+                        .withUsing(List.of("sqlSrcExternal"))
+                        .withComponent(FragmentComponent.builder()
+                                .withUsing(List.of("sqlSrc"))
+                                .withComponents(componentFragmentMap)
+                                .withProviding("sql")
+                                .build())
+                        .build()
+        );
+        var catalog = ComponentCatalog.ofMap(componentMap);
+        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+
+        // when
+        var data = factory.buildDataset("wrapper").as(Encoders.STRING()).collectAsList();
 
         // then
         assertEquals(List.of("valueExpected"), data);
@@ -82,84 +159,6 @@ class ComponentDatasetFactoryTest extends SparkSessionBase {
 
         // then
         assertThrows(DatasetFactoryException.class, () -> factory.buildDataset("sql").as(Encoders.STRING()).collectAsList());
-
-    }
-
-    @Test
-    void buildDatasetWithYamlCatalog() throws DatasetFactoryException {
-
-        // given
-        var catalog = TestCatalog.getComponentCatalog("testComponentsCatalog");
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
-
-        // when
-        var ds = factory.<Row>buildDataset("tx");
-        var rows = ds.collectAsList();
-
-        // then
-        assertEquals(
-                Arrays.asList("a-p1:xxx-p2", "b-p1:yyy-p2"),
-                rows.stream()
-                        .map(r -> r.get(r.fieldIndex("str")) + ":" + r.getString(r.fieldIndex("str2")))
-                        .sorted()
-                        .collect(Collectors.toList())
-        );
-    }
-
-    @Test
-    void buildDatasetWithAggregationInYamlCatalog() throws DatasetFactoryException {
-
-        // given
-        var catalog = TestCatalog.getComponentCatalog("testAggregationComponentsCatalog");
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
-
-        // when
-        var ds = factory.<Row>buildDataset("tx");
-        var rows = ds.collectAsList();
-
-        // then
-        Map<String, Double> avgs = rows.stream()
-                .collect(Collectors.toMap(r -> r.getString(r.fieldIndex("key")), r -> r.getDouble(r.fieldIndex("avg"))));
-
-        Map<String, Double> avgsBuiltin = rows.stream()
-                .collect(Collectors.toMap(r -> r.getString(r.fieldIndex("key")), r -> r.getDouble(r.fieldIndex("avgBuiltin"))));
-
-        Assertions.assertEquals(avgsBuiltin, avgs, () -> "test avg function does not match default avg function");
-
-        Map<String, Double> avgsExpected = new HashMap<>();
-        avgsExpected.put("a", 1.5);
-        avgsExpected.put("b", 150.0);
-        avgsExpected.put("c", 1.0);
-        avgsExpected.put("d", 2.0);
-
-        Assertions.assertEquals(avgsExpected, avgs);
-    }
-
-    @Test
-    void buildDatasetWithTransformationInYamlCatalog() throws DatasetFactoryException {
-
-        // given
-        var catalog = TestCatalog.getComponentCatalog("testTransformationComponentsCatalog");
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
-
-        // when
-        var ds = factory.<Row>buildDataset("tx");
-        var rows = ds.collectAsList();
-
-        // then
-
-        assertEquals(10, rows.size());
-    }
-
-    @Test
-    void buildDatasetWithBadYamlCatalog() throws DatasetFactoryException {
-
-        // given
-        var catalog = TestCatalog.getComponentCatalog("testBadComponentsCatalog");
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
-
-        // then
-        assertThrows(DatasetFactoryException.DatasetCircularReference.class, () -> factory.buildDataset("source2"));
 
     }
 

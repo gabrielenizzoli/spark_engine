@@ -1,0 +1,20 @@
+sqlSrcExternal:
+  sql: "select 'value01' as col1, 'value22' as col2"
+
+wrapper:
+  type: wrapper
+  using: [ sqlSrcExternal ]
+  component:
+    type: fragment
+    using: [ sqlSrc ]
+    providing: sqlInternal
+    components:
+      inlineSrc:
+        type: inline
+        data:
+          - { col1: "valueNotExpected", col2: "value12" }
+          - { col1: "valueExpected", col2: "value22" }
+        schema: "`col1` STRING,`col2` STRING"
+      sqlInternal:
+        using: [ sqlSrc, inlineSrc ]
+        sql: "select inlineSrc.col1 from inlineSrc join sqlSrc on inlineSrc.col2 = sqlSrc.col2"

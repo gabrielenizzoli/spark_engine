@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -52,6 +53,20 @@ class ComponentDatasetFactoryWithYamlCatalogTest extends SparkSessionBase {
                         .sorted()
                         .collect(Collectors.toList())
         );
+    }
+
+    @Test
+    void testFactoryWithFragmentAndWrapperYamlCatalog() throws DatasetFactoryException {
+
+        // given
+        var catalog = TestCatalog.getComponentCatalog("testWrapperAndFragmentCatalog");
+        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+
+        // when
+        var data = factory.buildDataset("wrapper").as(Encoders.STRING()).collectAsList();
+
+        // then
+        assertEquals(List.of("valueExpected"), data);
     }
 
     @Test

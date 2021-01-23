@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import sparkengine.plan.model.component.impl.*;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = SqlComponent.class)
 @JsonSubTypes({
         // sources
         @JsonSubTypes.Type(value = EmptyComponent.class, name = "empty"),
