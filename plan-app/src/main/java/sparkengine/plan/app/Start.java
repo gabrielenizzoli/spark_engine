@@ -4,6 +4,9 @@ import com.beust.jcommander.JCommander;
 import lombok.extern.log4j.Log4j;
 import org.apache.log4j.Level;
 import org.apache.spark.sql.SparkSession;
+import sparkengine.plan.model.builder.PlanResolverException;
+import sparkengine.plan.runtime.PipelineRunnersFactoryException;
+import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -14,7 +17,11 @@ public class Start {
     static final ApplicationArgs APPLICATION_ARGS = new ApplicationArgs();
     static final RuntimeArgs RUNTIME_ARGS = new RuntimeArgs();
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws
+            IOException,
+            PlanResolverException,
+            PipelineRunnersFactoryException,
+            DatasetConsumerException {
 
         var jcmd = initArguments(args);
         if (APPLICATION_ARGS.isHelp()) {

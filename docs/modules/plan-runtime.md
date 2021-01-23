@@ -62,13 +62,13 @@ var pipelineName = PipelineName.of("dataset", "consumer");
 var pipelineNames = List.of(pipelineName);
 var datasetFactory = ...;
 var consumerFactory = ...;
-var planFactory = SimplePlanFactory.builder()
+var pipelineRunnersFactory = SimplePlanFactory.builder()
         .pipleineNames(pipleineNames)
         .datasetFactory(datasetFactory)
         .datasetConsumerFactory(consumerFactory)
         .build();
 
-var pipelineRunner = planFactory.buildPipelineRunner(pipelineName);
+var pipelineRunner = pipelineRunnersFactory.buildPipelineRunner(pipelineName);
 pipelineRunner.run();
 ```
 

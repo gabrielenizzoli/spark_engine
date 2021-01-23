@@ -16,6 +16,8 @@ import java.util.Map;
 @JsonDeserialize(builder = BatchComponent.Builder.class)
 public class BatchComponent implements ComponentWithNoInput, EncodedComponent {
 
+    public static final String TYPE_NAME = "batch";
+
     @Nonnull
     String format;
     @Nullable

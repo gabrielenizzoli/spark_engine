@@ -11,8 +11,8 @@ import sparkengine.plan.runtime.builder.dataset.ComponentDatasetFactory;
 import sparkengine.plan.runtime.builder.datasetconsumer.SinkDatasetConsumerFactory;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 import sparkengine.plan.runtime.PipelineName;
-import sparkengine.plan.runtime.PlanFactoryException;
-import sparkengine.plan.runtime.impl.SimplePlanFactory;
+import sparkengine.plan.runtime.PipelineRunnersFactoryException;
+import sparkengine.plan.runtime.impl.SimplePipelineRunnersFactory;
 import sparkengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.Encoders;
 import org.junit.jupiter.api.Assertions;
@@ -21,10 +21,10 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-class SimplePlanFactoryTest extends SparkSessionBase {
+class SimplePipelineRunnersFactoryTest extends SparkSessionBase {
 
     @Test
-    void testPipelineFactory() throws DatasetConsumerException, PlanFactoryException {
+    void testPipelineFactory() throws DatasetConsumerException, PipelineRunnersFactoryException {
 
         // given
         var datasetFactory = ComponentDatasetFactory.builder()
@@ -44,7 +44,7 @@ class SimplePlanFactoryTest extends SparkSessionBase {
                 .build();
         var key = PipelineName.of("sql", "get");
 
-        var factory = SimplePlanFactory.builder()
+        var factory = SimplePipelineRunnersFactory.builder()
                 .pipelineNames(List.of(key))
                 .datasetFactory(datasetFactory)
                 .datasetConsumerFactory(datasetConsumerFactory)

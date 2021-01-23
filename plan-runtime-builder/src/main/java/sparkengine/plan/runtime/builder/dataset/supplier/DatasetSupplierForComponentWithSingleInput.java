@@ -22,10 +22,10 @@ public class DatasetSupplierForComponentWithSingleInput<T> implements DatasetSup
     @Nonnull
     ComponentWithSingleInput componentWithSingleInput;
     @Nonnull
-    Dataset<Object> inputDataset;
+    Dataset inputDataset;
 
     @Override
-    public Dataset<T> provides() throws DatasetFactoryException {
+    public Dataset<T> getDataset() throws DatasetFactoryException {
         if (componentWithSingleInput instanceof EncodeComponent) {
             var encodeComponent = (EncodeComponent) componentWithSingleInput;
             Encoder<?> encoder = EncoderUtils.buildEncoder(encodeComponent.getEncodedAs());

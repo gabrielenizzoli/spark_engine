@@ -16,6 +16,8 @@ import java.util.Map;
 @JsonDeserialize(builder = StreamComponent.Builder.class)
 public class StreamComponent implements ComponentWithNoInput, EncodedComponent {
 
+    public static final String TYPE_NAME = "stream";
+
     @Nonnull
     String format;
     @Nullable

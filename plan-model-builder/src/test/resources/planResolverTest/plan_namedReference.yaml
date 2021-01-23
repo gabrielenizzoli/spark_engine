@@ -1,0 +1,2 @@
+using: [ source1, source2 ]
+sql: select * from source1

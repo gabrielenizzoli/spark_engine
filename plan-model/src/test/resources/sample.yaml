@@ -26,6 +26,41 @@ components:
     using: [ source1 ]
     transformWith: class.name.Here
     encodedAs: { type: INT }
+  ref1:
+    type: ref
+    using: [ tx2, tx3 ]
+    refType: ABSOLUTE
+    ref: http://some.server/plan.yaml
+  ref2:
+    type: ref
+    using: [ tx2, tx3 ]
+    refType: RELATIVE
+    ref: relativeName
+  wrapper:
+    type: wrapper
+    using: [ tx2, tx3 ]
+    component:
+      type: sql
+      using: [ tx, source2 ]
+      sql: "select * from tx as t join fileIn2 as f on t.id = f.id"
+  fragment:
+    type: fragment
+    using: [ tx2, tx3 ]
+    providing: tx3
+    components:
+      tx:
+        type: encode
+        using: source1
+        encodedAs: { type: INT }
+      tx2:
+        type: sql
+        using: [ tx, source2 ]
+        sql: "select * from tx as t join fileIn2 as f on t.id = f.id"
+      tx3:
+        type: transform
+        using: [ source1 ]
+        transformWith: class.name.Here
+        encodedAs: { type: INT }
 
 sinks:
   out1:
