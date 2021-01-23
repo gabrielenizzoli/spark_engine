@@ -6,6 +6,6 @@ import java.io.IOException;
 
 public interface PlanResolver {
 
-    Plan resolve(Plan plan) throws IOException, PlanResolverException;
+    Plan resolve(Plan plan) throws PlanResolverException;
 
 }

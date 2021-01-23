@@ -28,14 +28,14 @@ public class DefaultReferencePlanResolver implements PlanResolver {
     InputStreamResourceLocator absoluteResourceLocator;
 
     @Override
-    public Plan resolve(Plan plan) throws PlanResolverException, IOException {
+    public Plan resolve(Plan plan) throws PlanResolverException {
         return plan.toBuilder()
                 .withComponents(resolveComponents(null, plan.getComponents()))
                 .build();
     }
 
     public Map<String, Component> resolveComponents(@Nullable String componentRelativeLocation,
-                                                    @Nonnull Map<String, Component> components) throws IOException, PlanResolverException {
+                                                    @Nonnull Map<String, Component> components) throws PlanResolverException {
 
         var newComponents = new LinkedHashMap<String, Component>();
         for (var nameAndComponent : components.entrySet()) {
@@ -51,7 +51,7 @@ public class DefaultReferencePlanResolver implements PlanResolver {
     }
 
     private Component resolveComponent(@Nonnull String componentRelativeLocation,
-                                       @Nonnull Component component) throws IOException, PlanResolverException {
+                                       @Nonnull Component component) throws PlanResolverException {
         if (component instanceof ComponentWithNoRuntime) {
             return resolveComponentWithNoRuntime(componentRelativeLocation, (ComponentWithNoRuntime) component);
         } else if (component instanceof FragmentComponent) {
@@ -65,15 +65,25 @@ public class DefaultReferencePlanResolver implements PlanResolver {
     }
 
     private Component resolveComponentWithNoRuntime(@Nonnull String componentRelativeLocation,
-                                                    @Nonnull ComponentWithNoRuntime componentWithNoRuntime) throws IOException, PlanResolverException {
+                                                    @Nonnull ComponentWithNoRuntime componentWithNoRuntime) throws PlanResolverException {
         if (componentWithNoRuntime instanceof ReferenceComponent) {
             var referenceComponent = (ReferenceComponent) componentWithNoRuntime;
             var inputStreamFactory = getInputStreamFactoryToReadComponent(componentRelativeLocation, referenceComponent);
-            var externalComponent = ModelFactory.readComponentFromYaml(inputStreamFactory);
-            var resolvedExternalComponent = resolveComponent(composeRelativeLocation(componentRelativeLocation, externalComponent.componentTypeName()), externalComponent);
-            return getResolvedComponent(referenceComponent, resolvedExternalComponent);
+            var referredComponent = getReferredComponent(inputStreamFactory, componentRelativeLocation, referenceComponent);
+            var resolvedReferredComponent = resolveComponent(composeRelativeLocation(componentRelativeLocation, referredComponent.componentTypeName()), referredComponent);
+            return transformedReferredComponentComponent(referenceComponent, resolvedReferredComponent);
         }
         throw new PlanResolverException("non-runtime component [" + componentWithNoRuntime + "] not resolvable (since no code has been written to manage it!)");
+    }
+
+    private Component getReferredComponent(@Nonnull InputStreamFactory inputStreamFactory,
+                                           @Nonnull String componentRelativeLocation,
+                                           ReferenceComponent referenceComponent) throws PlanResolverException {
+        try {
+            return ModelFactory.readComponentFromYaml(inputStreamFactory);
+        } catch (IOException e) {
+            throw new PlanResolverException("reference component [" + referenceComponent + "] can't be located (relative path [" + componentRelativeLocation + "])", e);
+        }
     }
 
     @Nullable
@@ -94,17 +104,17 @@ public class DefaultReferencePlanResolver implements PlanResolver {
         throw new PlanResolverException("reference component [" + referenceComponent + "] can't instantiate a proper resource locator");
     }
 
-    private Component getResolvedComponent(@Nonnull ReferenceComponent referenceComponent,
-                                           @Nonnull Component externalComponent) throws PlanResolverException {
+    private Component transformedReferredComponentComponent(@Nonnull ReferenceComponent referenceComponent,
+                                                            @Nonnull Component referredComponent) throws PlanResolverException {
         switch (referenceComponent.getInlineMode()) {
             case INLINE:
-                return externalComponent;
+                return referredComponent;
             case WRAPPED:
-                if (!(externalComponent instanceof FragmentComponent))
-                    throw new PlanResolverException("reference component [" + referenceComponent + "] in WRAPPED inline mode has reference that does not resolve to a fragment component [" + externalComponent + "]");
+                if (!(referredComponent instanceof FragmentComponent))
+                    throw new PlanResolverException("reference component [" + referenceComponent + "] in WRAPPED inline mode has reference that does not resolve to a fragment component [" + referredComponent + "]");
                 return WrapperComponent.builder()
                         .withUsing(referenceComponent.getUsing())
-                        .withComponent(externalComponent)
+                        .withComponent(referredComponent)
                         .build();
             default:
                 throw new PlanResolverException("reference component [" + referenceComponent + "] has inline mode [" + referenceComponent.getInlineMode() + "] that is not managed");

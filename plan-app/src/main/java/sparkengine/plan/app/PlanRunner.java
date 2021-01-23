@@ -54,7 +54,7 @@ public class PlanRunner {
         return sourcePlan;
     }
 
-    private Plan resolvePlan(Plan sourcePlan) throws PlanResolverException, IOException {
+    private Plan resolvePlan(Plan sourcePlan) throws PlanResolverException {
         var relativeResourceLocator = RelativeResourceLocator.builder()
                 .baseLocation(URIBuilder.ofString(runtimeArgs.getPlanLocation()).removePartFromPath().getUri())
                 .extension("yaml")
