@@ -16,6 +16,8 @@ import java.util.List;
 @JsonDeserialize(builder = TransformComponent.Builder.class)
 public class TransformComponent implements ComponentWithMultipleInputs {
 
+    public static final String TYPE_NAME = "transform";
+
     @Nullable
     List<String> using;
     @Nonnull

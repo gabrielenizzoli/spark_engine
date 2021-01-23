@@ -15,6 +15,8 @@ import java.util.List;
 @JsonDeserialize(builder = WrapperComponent.Builder.class)
 public class WrapperComponent implements ComponentWithMultipleInputs {
 
+    public static final String TYPE_NAME = "wrapper";
+
     @Nullable
     List<String> using;
     @Nonnull

@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import sparkengine.plan.model.Plan;
-import sparkengine.plan.model.builder.DefaultPlanResolver;
+import sparkengine.plan.model.builder.DefaultReferencePlanResolver;
 import sparkengine.plan.model.builder.ModelFactory;
 import sparkengine.plan.model.builder.PlanResolverException;
 import sparkengine.plan.model.builder.input.*;
@@ -59,7 +59,7 @@ public class PlanRunner {
                 .baseLocation(URIBuilder.ofString(runtimeArgs.getPlanLocation()).removePartFromPath().getUri())
                 .extension("yaml")
                 .build();
-        var resolver = DefaultPlanResolver.builder()
+        var resolver = DefaultReferencePlanResolver.builder()
                 .relativeResourceLocator(relativeResourceLocator)
                 .absoluteResourceLocator(new AbsoluteResourceLocator())
                 .build();

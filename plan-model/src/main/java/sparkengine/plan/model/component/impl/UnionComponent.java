@@ -14,6 +14,8 @@ import java.util.List;
 @JsonDeserialize(builder = UnionComponent.Builder.class)
 public class UnionComponent implements ComponentWithMultipleInputs {
 
+    public static final String TYPE_NAME = "union";
+
     @Nullable
     List<String> using;
 

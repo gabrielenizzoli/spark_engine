@@ -15,6 +15,8 @@ import java.util.List;
 @JsonDeserialize(builder = ReferenceComponent.Builder.class)
 public class ReferenceComponent implements ComponentWithMultipleInputs, ComponentWithNoRuntime {
 
+    public static final String TYPE_NAME = "ref";
+
     public enum ReferenceType {
         RELATIVE,
         ABSOLUTE

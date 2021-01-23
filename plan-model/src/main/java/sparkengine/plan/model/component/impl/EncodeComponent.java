@@ -15,6 +15,8 @@ import javax.annotation.Nonnull;
 @JsonDeserialize(builder = EncodeComponent.Builder.class)
 public class EncodeComponent implements ComponentWithSingleInput, EncodedComponent {
 
+    public static final String TYPE_NAME = "encode";
+
     @Nonnull
     String using;
     @Nonnull

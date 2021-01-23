@@ -12,9 +12,11 @@ import java.util.List;
 import java.util.Map;
 
 @Value
-@Builder(setterPrefix = "with")
+@Builder(setterPrefix = "with", toBuilder = true)
 @JsonDeserialize(builder = FragmentComponent.Builder.class)
 public class FragmentComponent implements ComponentWithMultipleInputs {
+
+    public static final String TYPE_NAME = "fragment";
 
     @Nullable
     List<String> using;
