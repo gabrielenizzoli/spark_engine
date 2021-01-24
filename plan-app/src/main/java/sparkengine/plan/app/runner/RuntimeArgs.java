@@ -1,7 +1,8 @@
-package sparkengine.plan.app;
+package sparkengine.plan.app.runner;
 
 import com.beust.jcommander.Parameter;
 import lombok.*;
+import sparkengine.plan.model.resolver.impl.SqlComponentResolver;
 
 @ToString
 @EqualsAndHashCode
@@ -23,5 +24,10 @@ public class RuntimeArgs {
     @Parameter(names = {"-skipFaultyPipelines"}, order = 2, description = "Skip a faulty pipeline (instead of exiting the application)")
     @lombok.Builder.Default
     private boolean skipFaultyPipelines = false;
+
+    @Getter
+    @Parameter(names = {"-s", "-sqlResolution"}, order = 3, description = "For sql components, provide validation and/or dependency discovery")
+    @lombok.Builder.Default
+    private SqlComponentResolver.ResolverMode sqlResolution = SqlComponentResolver.ResolverMode.VALIDATE;
 
 }

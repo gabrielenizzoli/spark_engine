@@ -1,4 +1,4 @@
-package sparkengine.plan.model.builder;
+package sparkengine.plan.model.resolver;
 
 public class PlanResolverException extends Exception {
 

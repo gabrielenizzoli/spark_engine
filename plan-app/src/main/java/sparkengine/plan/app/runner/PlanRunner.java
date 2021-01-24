@@ -1,4 +1,4 @@
-package sparkengine.plan.app;
+package sparkengine.plan.app.runner;
 
 import lombok.Builder;
 import lombok.SneakyThrows;
@@ -7,22 +7,29 @@ import org.apache.log4j.Logger;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import sparkengine.plan.model.Plan;
-import sparkengine.plan.model.builder.DefaultReferencePlanResolver;
 import sparkengine.plan.model.builder.ModelFactory;
 import sparkengine.plan.model.builder.ModelFormatException;
-import sparkengine.plan.model.builder.PlanResolverException;
 import sparkengine.plan.model.builder.input.AbsoluteResourceLocator;
 import sparkengine.plan.model.builder.input.InputStreamFactory;
 import sparkengine.plan.model.builder.input.RelativeResourceLocator;
 import sparkengine.plan.model.builder.input.URIBuilder;
+import sparkengine.plan.model.resolver.ComponentsPlanResolver;
+import sparkengine.plan.model.resolver.PlanResolver;
+import sparkengine.plan.model.resolver.PlanResolverException;
+import sparkengine.plan.model.resolver.PlanResolvers;
+import sparkengine.plan.model.resolver.impl.DefaultReferencePlanResolver;
+import sparkengine.plan.model.resolver.impl.SqlComponentResolver;
 import sparkengine.plan.runtime.PipelineName;
 import sparkengine.plan.runtime.PipelineRunnersFactory;
 import sparkengine.plan.runtime.PipelineRunnersFactoryException;
 import sparkengine.plan.runtime.builder.ModelPipelineRunnersFactory;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
+import sparkengine.spark.sql.logicalplan.PlanExplorerException;
+import sparkengine.spark.sql.logicalplan.tablelist.TableListExplorer;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.List;
 import java.util.function.Consumer;
 
 @Value
@@ -65,17 +72,34 @@ public class PlanRunner {
     }
 
     private Plan resolvePlan(Plan sourcePlan) throws PlanResolverException {
+        var resolvedPlan = PlanResolvers
+                .ofResolvers(getReferencePlanResolver(), getSqlResolver())
+                .resolve(sourcePlan);
+
+        log.trace("resolved plan: " + resolvedPlan);
+
+        return resolvedPlan;
+    }
+
+    private PlanResolver getReferencePlanResolver() {
         var relativeResourceLocator = RelativeResourceLocator.builder()
                 .baseLocation(URIBuilder.ofString(runtimeArgs.getPlanLocation()).removePartFromPath().getUri())
                 .extension("yaml")
                 .build();
-        var resolver = DefaultReferencePlanResolver.builder()
+        return DefaultReferencePlanResolver.builder()
                 .relativeResourceLocator(relativeResourceLocator)
                 .build();
-        var resolvedPlan = resolver.resolve(sourcePlan);
-        log.trace("resolved plan: " + resolvedPlan);
+    }
 
-        return resolvedPlan;
+    private PlanResolver getSqlResolver() {
+        SqlComponentResolver.SqlReferenceFinder sqlReferenceFinder = sql -> {
+            try {
+                return TableListExplorer.findTableListInSql(sparkSession, sql);
+            } catch (PlanExplorerException e) {
+                throw new PlanResolverException("error resolving sql tables in sql [" + sql + "]");
+            }
+        };
+        return ComponentsPlanResolver.of(SqlComponentResolver.of(runtimeArgs.getSqlResolution(), sqlReferenceFinder));
     }
 
     private void executePipelines(PipelineRunnersFactory pipelineRunnersFactory)
