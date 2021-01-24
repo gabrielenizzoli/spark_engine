@@ -5,6 +5,8 @@ import sparkengine.plan.model.builder.input.RelativeFileResourceLocator;
 import sparkengine.plan.model.component.impl.ReferenceComponent;
 import sparkengine.plan.model.component.impl.SqlComponent;
 import sparkengine.plan.model.component.impl.WrapperComponent;
+import sparkengine.plan.model.resolver.impl.DefaultReferencePlanResolver;
+import sparkengine.plan.model.resolver.PlanResolverException;
 
 import java.io.FileInputStream;
 import java.io.IOException;

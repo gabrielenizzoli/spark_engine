@@ -1,8 +1,6 @@
-package sparkengine.plan.model.builder;
+package sparkengine.plan.model.resolver;
 
 import sparkengine.plan.model.Plan;
-
-import java.io.IOException;
 
 public interface PlanResolver {
 

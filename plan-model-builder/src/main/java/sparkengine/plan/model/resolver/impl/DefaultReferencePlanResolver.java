@@ -1,8 +1,10 @@
-package sparkengine.plan.model.builder;
+package sparkengine.plan.model.resolver.impl;
 
 import lombok.Builder;
 import lombok.Value;
 import sparkengine.plan.model.Plan;
+import sparkengine.plan.model.builder.ModelFactory;
+import sparkengine.plan.model.builder.ModelFormatException;
 import sparkengine.plan.model.builder.input.InputStreamFactory;
 import sparkengine.plan.model.builder.input.InputStreamResourceLocator;
 import sparkengine.plan.model.component.Component;
@@ -12,6 +14,8 @@ import sparkengine.plan.model.component.ComponentWithNoRuntime;
 import sparkengine.plan.model.component.impl.FragmentComponent;
 import sparkengine.plan.model.component.impl.ReferenceComponent;
 import sparkengine.plan.model.component.impl.WrapperComponent;
+import sparkengine.plan.model.resolver.PlanResolver;
+import sparkengine.plan.model.resolver.PlanResolverException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
