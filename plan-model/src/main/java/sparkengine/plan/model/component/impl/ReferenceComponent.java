@@ -17,25 +17,9 @@ public class ReferenceComponent implements ComponentWithMultipleInputs, Componen
 
     public static final String TYPE_NAME = "ref";
 
-    public enum ReferenceType {
-        RELATIVE,
-        ABSOLUTE
-    }
-
-    public enum InlineMode {
-        INLINE,
-        WRAPPED
-    }
-
     @Nullable
     List<String> using;
-    @Nonnull
-    @lombok.Builder.Default
-    ReferenceType refType = ReferenceType.RELATIVE;
     @Nullable
     String ref;
-    @Nonnull
-    @lombok.Builder.Default
-    InlineMode inlineMode = InlineMode.INLINE;
 
 }

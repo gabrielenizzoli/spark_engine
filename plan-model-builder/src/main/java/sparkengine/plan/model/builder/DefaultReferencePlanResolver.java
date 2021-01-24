@@ -6,6 +6,8 @@ import sparkengine.plan.model.Plan;
 import sparkengine.plan.model.builder.input.InputStreamFactory;
 import sparkengine.plan.model.builder.input.InputStreamResourceLocator;
 import sparkengine.plan.model.component.Component;
+import sparkengine.plan.model.component.ComponentWithChild;
+import sparkengine.plan.model.component.ComponentWithChildren;
 import sparkengine.plan.model.component.ComponentWithNoRuntime;
 import sparkengine.plan.model.component.impl.FragmentComponent;
 import sparkengine.plan.model.component.impl.ReferenceComponent;
@@ -24,8 +26,6 @@ public class DefaultReferencePlanResolver implements PlanResolver {
 
     @Nonnull
     InputStreamResourceLocator relativeResourceLocator;
-    @Nonnull
-    InputStreamResourceLocator absoluteResourceLocator;
 
     @Override
     public Plan resolve(Plan plan) throws PlanResolverException {
@@ -54,71 +54,65 @@ public class DefaultReferencePlanResolver implements PlanResolver {
                                        @Nonnull Component component) throws PlanResolverException {
         if (component instanceof ComponentWithNoRuntime) {
             return resolveComponentWithNoRuntime(componentRelativeLocation, (ComponentWithNoRuntime) component);
-        } else if (component instanceof FragmentComponent) {
-            var fragment = (FragmentComponent) component;
-            var newComponents = resolveComponents(componentRelativeLocation, fragment.getComponents());
-            return fragment.toBuilder()
-                    .withComponents(newComponents)
-                    .build();
+        } else if (component instanceof ComponentWithChild) {
+            return resolveComponentWithChild(componentRelativeLocation, (ComponentWithChild) component);
+        } else if (component instanceof ComponentWithChildren) {
+            return resolveComponentWithChildren(componentRelativeLocation, (ComponentWithChildren) component);
         }
         return component;
+    }
+
+    private Component resolveComponentWithChild(@Nonnull String componentRelativeLocation,
+                                                @Nonnull ComponentWithChild component) throws PlanResolverException {
+        var componentWithChild = component;
+        var newComponent = resolveComponent(componentRelativeLocation, componentWithChild.getComponent());
+        if (componentWithChild instanceof WrapperComponent) {
+            return ((WrapperComponent) componentWithChild).withComponent(newComponent);
+        }
+        throw new PlanResolverException("component with child [" + componentWithChild + "] is not managed to resolve children");
+    }
+
+    private Component resolveComponentWithChildren(@Nonnull String componentRelativeLocation,
+                                                   @Nonnull ComponentWithChildren component) throws PlanResolverException {
+        var componentWithChildren = component;
+        var newComponents = resolveComponents(componentRelativeLocation, componentWithChildren.getComponents());
+        if (componentWithChildren instanceof FragmentComponent) {
+            return ((FragmentComponent) componentWithChildren).withComponents(newComponents);
+        }
+        throw new PlanResolverException("component with children [" + componentWithChildren + "] is not managed to resolve children");
     }
 
     private Component resolveComponentWithNoRuntime(@Nonnull String componentRelativeLocation,
                                                     @Nonnull ComponentWithNoRuntime componentWithNoRuntime) throws PlanResolverException {
         if (componentWithNoRuntime instanceof ReferenceComponent) {
             var referenceComponent = (ReferenceComponent) componentWithNoRuntime;
-            var inputStreamFactory = getInputStreamFactoryToReadComponent(componentRelativeLocation, referenceComponent);
-            var referredComponent = getReferredComponent(inputStreamFactory, componentRelativeLocation, referenceComponent);
-            var resolvedReferredComponent = resolveComponent(composeRelativeLocation(componentRelativeLocation, referredComponent.componentTypeName()), referredComponent);
-            return transformedReferredComponentComponent(referenceComponent, resolvedReferredComponent);
+            componentRelativeLocation = Optional
+                    .ofNullable(referenceComponent.getRef())
+                    .filter(ref -> !ref.isBlank())
+                    .orElse(composeRelativeLocation(componentRelativeLocation, "ref"));
+            var inputStreamFactory = relativeResourceLocator.getInputStreamFactory(componentRelativeLocation);
+            var referredComponent = readReferredComponent(inputStreamFactory, componentRelativeLocation, referenceComponent);
+            return resolveComponent(componentRelativeLocation, referredComponent);
         }
         throw new PlanResolverException("non-runtime component [" + componentWithNoRuntime + "] not resolvable (since no code has been written to manage it!)");
     }
 
-    private Component getReferredComponent(@Nonnull InputStreamFactory inputStreamFactory,
-                                           @Nonnull String componentRelativeLocation,
-                                           ReferenceComponent referenceComponent) throws PlanResolverException {
+    private Component readReferredComponent(@Nonnull InputStreamFactory inputStreamFactory,
+                                            @Nonnull String componentRelativeLocation,
+                                            ReferenceComponent referenceComponent) throws PlanResolverException {
         try {
             return ModelFactory.readComponentFromYaml(inputStreamFactory);
         } catch (IOException e) {
             throw new PlanResolverException("reference component [" + referenceComponent + "] can't be located (relative path [" + componentRelativeLocation + "])", e);
+        } catch (ModelFormatException e) {
+            throw new PlanResolverException("reference component [" + referenceComponent + "] has a bad format (relative path [" + componentRelativeLocation + "])", e);
         }
     }
 
     @Nullable
     private InputStreamFactory getInputStreamFactoryToReadComponent(@Nonnull String componentRelativeLocation,
                                                                     @Nonnull ReferenceComponent referenceComponent) throws PlanResolverException {
-        switch (referenceComponent.getRefType()) {
-            case RELATIVE:
-                return relativeResourceLocator.getInputStreamFactory(Optional
-                        .ofNullable(referenceComponent.getRef())
-                        .filter(ref -> !ref.isBlank())
-                        .orElse(componentRelativeLocation));
-            case ABSOLUTE:
-                return absoluteResourceLocator.getInputStreamFactory(Optional
-                        .ofNullable(referenceComponent.getRef())
-                        .filter(ref -> !ref.isBlank())
-                        .orElseThrow(() -> new PlanResolverException("reference component [" + referenceComponent + "] needs a full reference in ABSOLUTE resolution mode")));
-        }
-        throw new PlanResolverException("reference component [" + referenceComponent + "] can't instantiate a proper resource locator");
-    }
-
-    private Component transformedReferredComponentComponent(@Nonnull ReferenceComponent referenceComponent,
-                                                            @Nonnull Component referredComponent) throws PlanResolverException {
-        switch (referenceComponent.getInlineMode()) {
-            case INLINE:
-                return referredComponent;
-            case WRAPPED:
-                if (!(referredComponent instanceof FragmentComponent))
-                    throw new PlanResolverException("reference component [" + referenceComponent + "] in WRAPPED inline mode has reference that does not resolve to a fragment component [" + referredComponent + "]");
-                return WrapperComponent.builder()
-                        .withUsing(referenceComponent.getUsing())
-                        .withComponent(referredComponent)
-                        .build();
-            default:
-                throw new PlanResolverException("reference component [" + referenceComponent + "] has inline mode [" + referenceComponent.getInlineMode() + "] that is not managed");
-        }
+        return relativeResourceLocator.getInputStreamFactory(componentRelativeLocation);
     }
 
     @Nonnull

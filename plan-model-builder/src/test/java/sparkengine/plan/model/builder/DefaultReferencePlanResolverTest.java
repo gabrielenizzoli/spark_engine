@@ -1,26 +1,24 @@
 package sparkengine.plan.model.builder;
 
 import org.junit.jupiter.api.Test;
-import sparkengine.plan.model.builder.input.AbsoluteFileResourceLocator;
 import sparkengine.plan.model.builder.input.RelativeFileResourceLocator;
-import sparkengine.plan.model.component.catalog.ComponentCatalog;
 import sparkengine.plan.model.component.impl.ReferenceComponent;
 import sparkengine.plan.model.component.impl.SqlComponent;
+import sparkengine.plan.model.component.impl.WrapperComponent;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DefaultReferencePlanResolverTest {
 
     @Test
-    void resolve() throws IOException, PlanResolverException {
+    void resolve() throws IOException, PlanResolverException, ModelFormatException {
 
         // given
         var resolver = DefaultReferencePlanResolver.builder()
-                .absoluteResourceLocator(new AbsoluteFileResourceLocator())
                 .relativeResourceLocator(RelativeFileResourceLocator.of("src/test/resources/planResolverTest/plan_", "yaml"))
                 .build();
         var plan = ModelFactory.readPlanFromYaml(() -> new FileInputStream("src/test/resources/planResolverTest/plan.yaml"));
@@ -38,11 +36,26 @@ class DefaultReferencePlanResolverTest {
     }
 
     @Test
-    void failedResolve() throws IOException, PlanResolverException {
+    void resolveVeryNestedPlan() throws IOException, PlanResolverException, ModelFormatException {
 
         // given
         var resolver = DefaultReferencePlanResolver.builder()
-                .absoluteResourceLocator(new AbsoluteFileResourceLocator())
+                .relativeResourceLocator(RelativeFileResourceLocator.of("src/test/resources/planResolverTest/veryNestedPlan_", "yaml"))
+                .build();
+        var plan = ModelFactory.readPlanFromYaml(() -> new FileInputStream("src/test/resources/planResolverTest/veryNestedPlan.yaml"));
+
+        // when
+        var newPlan = resolver.resolve(plan);
+
+        // then
+        assertEquals(WrapperComponent.TYPE_NAME, newPlan.getComponents().get("wrapperComponentName").componentTypeName());
+    }
+
+    @Test
+    void failedResolve() throws IOException, ModelFormatException {
+
+        // given
+        var resolver = DefaultReferencePlanResolver.builder()
                 .relativeResourceLocator(RelativeFileResourceLocator.of("src/test/resources/planResolverTest/failedPlan_", "yaml"))
                 .build();
         var plan = ModelFactory.readPlanFromYaml(() -> new FileInputStream("src/test/resources/planResolverTest/failedPlan.yaml"));

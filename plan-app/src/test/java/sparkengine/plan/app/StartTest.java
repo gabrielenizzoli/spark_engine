@@ -1,5 +1,6 @@
 package sparkengine.plan.app;
 
+import sparkengine.plan.model.builder.ModelFormatException;
 import sparkengine.plan.model.builder.PlanResolverException;
 import sparkengine.plan.runtime.PipelineRunnersFactoryException;
 import sparkengine.plan.runtime.builder.datasetconsumer.GlobalCounterConsumer;
@@ -12,7 +13,11 @@ import java.io.IOException;
 class StartTest {
 
     @Test
-    void testMain() throws IOException, DatasetConsumerException, PlanResolverException, PipelineRunnersFactoryException {
+    void testMain() throws IOException,
+            DatasetConsumerException,
+            PlanResolverException,
+            PipelineRunnersFactoryException,
+            ModelFormatException {
 
         // given
         System.setProperty("spark.master", "local[1]");

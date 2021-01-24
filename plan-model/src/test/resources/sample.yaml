@@ -26,15 +26,9 @@ components:
     using: [ source1 ]
     transformWith: class.name.Here
     encodedAs: { type: INT }
-  ref1:
-    type: ref
-    using: [ tx2, tx3 ]
-    refType: ABSOLUTE
-    ref: http://some.server/plan.yaml
   ref2:
     type: ref
     using: [ tx2, tx3 ]
-    refType: RELATIVE
     ref: relativeName
   wrapper:
     type: wrapper

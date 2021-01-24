@@ -9,8 +9,12 @@ import org.apache.spark.sql.streaming.StreamingQueryException;
 import sparkengine.plan.model.Plan;
 import sparkengine.plan.model.builder.DefaultReferencePlanResolver;
 import sparkengine.plan.model.builder.ModelFactory;
+import sparkengine.plan.model.builder.ModelFormatException;
 import sparkengine.plan.model.builder.PlanResolverException;
-import sparkengine.plan.model.builder.input.*;
+import sparkengine.plan.model.builder.input.AbsoluteResourceLocator;
+import sparkengine.plan.model.builder.input.InputStreamFactory;
+import sparkengine.plan.model.builder.input.RelativeResourceLocator;
+import sparkengine.plan.model.builder.input.URIBuilder;
 import sparkengine.plan.runtime.PipelineName;
 import sparkengine.plan.runtime.PipelineRunnersFactory;
 import sparkengine.plan.runtime.PipelineRunnersFactoryException;
@@ -33,13 +37,19 @@ public class PlanRunner {
     @lombok.Builder.Default
     Logger log = Logger.getLogger(PlanRunner.class);
 
-    public void run() throws IOException, PlanResolverException, DatasetConsumerException, PipelineRunnersFactoryException {
+    public void run() throws
+            IOException, // cant read plan
+            ModelFormatException, // plan is bad
+            PlanResolverException, // cant resolve plan
+            PipelineRunnersFactoryException, // error creating pipeline
+            DatasetConsumerException // error during run
+    {
         PipelineRunnersFactory pipelineRunnersFactory = getPipelineRunnersFactory();
         executePipelines(pipelineRunnersFactory);
         waitOnSpark();
     }
 
-    private PipelineRunnersFactory getPipelineRunnersFactory() throws IOException, PlanResolverException {
+    private PipelineRunnersFactory getPipelineRunnersFactory() throws IOException, PlanResolverException, ModelFormatException {
         var resourceLocator = new AbsoluteResourceLocator();
         var planInputStream = resourceLocator.getInputStreamFactory(runtimeArgs.getPlanLocation());
         var sourcePlan = getPlan(planInputStream);
@@ -47,7 +57,7 @@ public class PlanRunner {
         return ModelPipelineRunnersFactory.ofPlan(sparkSession, resolvedPlan);
     }
 
-    private Plan getPlan(InputStreamFactory inputStreamFactory) throws IOException {
+    private Plan getPlan(InputStreamFactory inputStreamFactory) throws IOException, ModelFormatException {
         var sourcePlan = ModelFactory.readPlanFromYaml(inputStreamFactory);
         log.trace("source plan: " + sourcePlan);
 
@@ -61,7 +71,6 @@ public class PlanRunner {
                 .build();
         var resolver = DefaultReferencePlanResolver.builder()
                 .relativeResourceLocator(relativeResourceLocator)
-                .absoluteResourceLocator(new AbsoluteResourceLocator())
                 .build();
         var resolvedPlan = resolver.resolve(sourcePlan);
         log.trace("resolved plan: " + resolvedPlan);

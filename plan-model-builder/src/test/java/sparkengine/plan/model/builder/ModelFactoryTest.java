@@ -15,7 +15,7 @@ import java.util.Optional;
 class ModelFactoryTest {
 
     @Test
-    void testYaml() throws IOException, ComponentCatalogException {
+    void testYaml() throws IOException, ComponentCatalogException, ModelFormatException {
 
 
         // given

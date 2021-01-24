@@ -1,5 +1,7 @@
 package sparkengine.plan.runtime.impl;
 
+import lombok.Builder;
+import lombok.Value;
 import sparkengine.plan.runtime.PipelineName;
 import sparkengine.plan.runtime.PipelineRunner;
 import sparkengine.plan.runtime.PipelineRunnersFactory;
@@ -8,8 +10,6 @@ import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactory;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactoryException;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactory;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
-import lombok.Builder;
-import lombok.Value;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -36,7 +36,7 @@ public class SimplePipelineRunnersFactory implements PipelineRunnersFactory {
             var consumer = datasetConsumerFactory.buildConsumer(pipelineName.getConsumer());
             return SimplePipelineRunner.builder().dataset(dataset).datasetConsumer(consumer).build();
         } catch (DatasetConsumerFactoryException | DatasetFactoryException e) {
-            throw new PipelineRunnersFactoryException("can't create pipeline runner for " +pipelineName, e);
+            throw new PipelineRunnersFactoryException("can't create pipeline runner for " + pipelineName, e);
         }
 
     }

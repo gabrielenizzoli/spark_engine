@@ -1,0 +1,7 @@
+type: wrapper
+component:
+  type: wrapper
+  component:
+    type: wrapper
+    component:
+      type: ref

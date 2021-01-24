@@ -1,0 +1,5 @@
+type: fragment
+providing: component1
+components:
+  component1:
+    type: ref

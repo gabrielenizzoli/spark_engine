@@ -4,6 +4,7 @@ import com.beust.jcommander.JCommander;
 import lombok.extern.log4j.Log4j;
 import org.apache.log4j.Level;
 import org.apache.spark.sql.SparkSession;
+import sparkengine.plan.model.builder.ModelFormatException;
 import sparkengine.plan.model.builder.PlanResolverException;
 import sparkengine.plan.runtime.PipelineRunnersFactoryException;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
@@ -21,7 +22,7 @@ public class Start {
             IOException,
             PlanResolverException,
             PipelineRunnersFactoryException,
-            DatasetConsumerException {
+            DatasetConsumerException, ModelFormatException {
 
         var jcmd = initArguments(args);
         if (APPLICATION_ARGS.isHelp()) {
