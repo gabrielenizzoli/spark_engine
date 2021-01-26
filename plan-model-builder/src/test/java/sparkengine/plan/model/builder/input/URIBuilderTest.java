@@ -1,6 +1,7 @@
 package sparkengine.plan.model.builder.input;
 
 import org.junit.jupiter.api.Test;
+import sparkengine.plan.model.builder.URIBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -100,4 +101,14 @@ class URIBuilderTest {
         assertEquals(URI.create("./folder1/folder2"), u2.getUri());
     }
 
+    @Test
+    void getLastPartFromPath() {
+
+        // given
+        var u = URIBuilder.ofString("./folder1/folder2/file.yaml");
+
+        // then
+        assertEquals("file.yaml", u.getLastPartFromPath());
+
+    }
 }

@@ -2,7 +2,7 @@ package sparkengine.plan.model.builder.input;
 
 import java.io.FileInputStream;
 
-public class AbsoluteFileResourceLocator implements InputStreamResourceLocator {
+public class FileResourceLocator implements InputStreamResourceLocator {
 
     @Override
     public InputStreamFactory getInputStreamFactory(String name) {

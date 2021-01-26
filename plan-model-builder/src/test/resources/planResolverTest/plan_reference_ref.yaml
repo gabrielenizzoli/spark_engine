@@ -1,8 +1,0 @@
-using: [ source1, source2 ]
-sql: >
-  select
-    s1.abc.str as str,
-    s2.def.stuff as str2
-  from source1 as s1
-  join source2 as s2
-  on s1.abc.num = s2.def.zum

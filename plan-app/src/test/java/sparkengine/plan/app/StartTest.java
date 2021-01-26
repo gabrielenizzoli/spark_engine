@@ -1,7 +1,7 @@
 package sparkengine.plan.app;
 
 import sparkengine.plan.model.builder.ModelFormatException;
-import sparkengine.plan.model.resolver.PlanResolverException;
+import sparkengine.plan.model.mapper.PlanMapperException;
 import sparkengine.plan.runtime.PipelineRunnersFactoryException;
 import sparkengine.plan.runtime.builder.datasetconsumer.GlobalCounterConsumer;
 import org.junit.jupiter.api.Assertions;
@@ -15,7 +15,7 @@ class StartTest {
     @Test
     void testMain() throws IOException,
             DatasetConsumerException,
-            PlanResolverException,
+            PlanMapperException,
             PipelineRunnersFactoryException,
             ModelFormatException {
 

@@ -7,7 +7,7 @@ import org.apache.spark.sql.SparkSession;
 import sparkengine.plan.app.runner.PlanRunner;
 import sparkengine.plan.app.runner.RuntimeArgs;
 import sparkengine.plan.model.builder.ModelFormatException;
-import sparkengine.plan.model.resolver.PlanResolverException;
+import sparkengine.plan.model.mapper.PlanMapperException;
 import sparkengine.plan.runtime.PipelineRunnersFactoryException;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 
@@ -22,7 +22,7 @@ public class Start {
 
     public static void main(String[] args) throws
             IOException,
-            PlanResolverException,
+            PlanMapperException,
             PipelineRunnersFactoryException,
             DatasetConsumerException, ModelFormatException {
 
