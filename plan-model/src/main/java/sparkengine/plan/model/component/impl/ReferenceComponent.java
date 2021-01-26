@@ -17,8 +17,16 @@ public class ReferenceComponent implements ComponentWithMultipleInputs, Componen
 
     public static final String TYPE_NAME = "ref";
 
+    public enum ReferenceMode {
+        RELATIVE,
+        ABSOLUTE
+    }
+
     @Nullable
     List<String> using;
+    @Nonnull
+    @lombok.Builder.Default
+    ReferenceMode mode = ReferenceMode.RELATIVE;
     @Nullable
     String ref;
 

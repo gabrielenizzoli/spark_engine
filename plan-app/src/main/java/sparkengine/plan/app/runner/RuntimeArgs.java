@@ -2,7 +2,7 @@ package sparkengine.plan.app.runner;
 
 import com.beust.jcommander.Parameter;
 import lombok.*;
-import sparkengine.plan.model.resolver.impl.SqlComponentResolver;
+import sparkengine.plan.model.mapper.impl.SqlComponentMapper;
 
 @ToString
 @EqualsAndHashCode
@@ -28,6 +28,6 @@ public class RuntimeArgs {
     @Getter
     @Parameter(names = {"-s", "-sqlResolution"}, order = 3, description = "For sql components, provide validation and/or dependency discovery")
     @lombok.Builder.Default
-    private SqlComponentResolver.ResolverMode sqlResolution = SqlComponentResolver.ResolverMode.VALIDATE;
+    private SqlComponentMapper.ResolverMode sqlResolutionMode = SqlComponentMapper.ResolverMode.VALIDATE;
 
 }

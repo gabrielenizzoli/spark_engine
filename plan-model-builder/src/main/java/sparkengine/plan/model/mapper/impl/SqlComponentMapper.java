@@ -1,24 +1,25 @@
-package sparkengine.plan.model.resolver.impl;
+package sparkengine.plan.model.mapper.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Value;
 import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.impl.SqlComponent;
-import sparkengine.plan.model.resolver.ComponentResolver;
-import sparkengine.plan.model.resolver.PlanResolverException;
+import sparkengine.plan.model.component.mapper.ComponentMapper;
+import sparkengine.plan.model.mapper.PlanMapperException;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 @Value(staticConstructor = "of")
-public class SqlComponentResolver implements ComponentResolver {
+public class SqlComponentMapper implements ComponentMapper {
 
     @FunctionalInterface
     public interface SqlReferenceFinder {
-        Set<String> findReferences(String sql) throws PlanResolverException;
+        Set<String> findReferences(String sql) throws PlanMapperException;
     }
 
     @AllArgsConstructor
@@ -38,7 +39,7 @@ public class SqlComponentResolver implements ComponentResolver {
     SqlReferenceFinder sqlReferenceFinder;
 
     @Override
-    public Component resolveSqlComponent(SqlComponent component) throws PlanResolverException {
+    public Component mapSqlComponent(Stack<String> location, SqlComponent component) throws Exception {
 
         if (resolverMode == ResolverMode.SKIP) {
             return component;
@@ -48,7 +49,7 @@ public class SqlComponentResolver implements ComponentResolver {
         var discoveredDependencies = sqlReferenceFinder.findReferences(component.getSql());
 
         if (resolverMode.isValidate() && !declaredDependencies.equals(discoveredDependencies)) {
-            throw new PlanResolverException("while validating for sql component [" + component + "] declared and discovered dependencies are not matching: " + declaredDependencies + " != " + discoveredDependencies);
+            throw new IllegalArgumentException("declared and discovered dependencies are not matching: " + declaredDependencies + " != " + discoveredDependencies);
         }
 
         if (resolverMode.isReplace()) {

@@ -15,6 +15,7 @@ import java.util.Map;
 @JsonDeserialize(builder = Plan.Builder.class)
 public class Plan {
 
+    @With
     Map<String, Component> components;
     Map<String, Sink> sinks;
     List<Pipeline> pipelines;

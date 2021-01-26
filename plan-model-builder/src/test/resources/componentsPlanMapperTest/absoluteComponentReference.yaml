@@ -1,0 +1,7 @@
+type: fragment
+providing: component1
+components:
+  component1:
+    sql: select explode(array(named_struct("num", 1, "str", "a"), named_struct("num", 2, "str", "b"))) as abc
+  component2:
+    type: ref
