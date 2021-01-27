@@ -1,0 +1,8 @@
+type: fragment
+providing: component1
+components:
+  component1:
+    type: ref
+  component2:
+    type: ref
+    ref: providedRef

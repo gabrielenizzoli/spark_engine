@@ -12,25 +12,22 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Optional;
 
-class ModelFactoriesTest {
+class ModelFactoryTest {
 
     @Test
-    void testYaml() throws IOException, ComponentCatalogException {
+    void testYaml() throws IOException, ComponentCatalogException, ModelFormatException {
 
+
+        // given
         File yamlSource = new File("src/test/resources/components.yaml");
-        ComponentCatalog catalog = ModelFactories.readComponentMapFromYaml(() -> {
-            try {
-                return new FileInputStream(yamlSource);
-            } catch (FileNotFoundException e) {
-                throw new IllegalStateException();
-            }
-        });
+        ComponentCatalog catalog = ModelFactory.readComponentCatalogFromYaml(() -> new FileInputStream(yamlSource));
 
+        // when
         Optional<Component> sourceComponent = catalog.lookup("tx");
 
+        // then
         Assertions.assertNotNull(sourceComponent);
         Assertions.assertTrue(sourceComponent.isPresent());
-
     }
 
 }

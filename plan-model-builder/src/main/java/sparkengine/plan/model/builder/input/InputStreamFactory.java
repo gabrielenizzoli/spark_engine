@@ -1,9 +1,9 @@
-package sparkengine.plan.model.builder;
+package sparkengine.plan.model.builder.input;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public interface InputStreamSupplier {
+public interface InputStreamFactory {
 
     InputStream getInputStream() throws IOException;
 

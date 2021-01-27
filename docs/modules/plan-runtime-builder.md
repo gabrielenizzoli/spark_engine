@@ -27,8 +27,8 @@ This factory provides:
 
 As simple use case in which pipelines are created and executed sequentially is:
 ```java
-for (var pipelineName : planFactory.getPipelineNames()){
-    var pipelineRunner = planFactory.buildPipelineRunner(pipelineName);
+for (var pipelineName : pipelineRunnersFactory.getPipelineNames()){
+    var pipelineRunner = pipelineRunnersFactory.buildPipelineRunner(pipelineName);
     pipelineRunner.run();
 }
 ```
@@ -36,8 +36,8 @@ for (var pipelineName : planFactory.getPipelineNames()){
 To create a pipeline factory we use the `ModelPlanFactory` class:
 ```java
 import sparkengine.plan.model.Plan;
-import sparkengine.plan.runtime.builder.ModelPlanFactory;
+import sparkengine.plan.runtime.builder.ModelPipelineRunnersFactory;
 
 var plan = ...;
-var planFactory = ModelPlanFactory.ofPlan(sprkSession, plan);
+var pipelineRunnersFactory = ModelPlanFactory.ofPlan(sprkSession, plan);
 ```

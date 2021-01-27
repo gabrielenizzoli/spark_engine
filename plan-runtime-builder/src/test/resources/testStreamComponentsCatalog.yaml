@@ -4,7 +4,6 @@ source:
   options: { rowsPerSecond: 1 }
 
 tx:
-  type: sql
   using: [ source ]
   udfs:
     ofClasses:

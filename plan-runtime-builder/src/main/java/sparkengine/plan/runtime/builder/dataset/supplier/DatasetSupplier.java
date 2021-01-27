@@ -5,6 +5,6 @@ import org.apache.spark.sql.Dataset;
 
 public interface DatasetSupplier<T> {
 
-    Dataset<T> provides() throws DatasetFactoryException;
+    Dataset<T> getDataset() throws DatasetFactoryException;
 
 }

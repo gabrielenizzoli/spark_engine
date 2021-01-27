@@ -35,12 +35,12 @@ public class DatasetSupplierForComponentWithNoInput<T> implements DatasetSupplie
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Override
-    public Dataset<T> provides() throws DatasetFactoryException {
+    public Dataset<T> getDataset() throws DatasetFactoryException {
         if (componentWithNoInput instanceof BatchComponent) {
-            return getBatchDataset((BatchComponent) componentWithNoInput).provides();
+            return getBatchDataset((BatchComponent) componentWithNoInput).getDataset();
         }
         if (componentWithNoInput instanceof StreamComponent) {
-            return getStreamDataset((StreamComponent) componentWithNoInput).provides();
+            return getStreamDataset((StreamComponent) componentWithNoInput).getDataset();
         }
         if (componentWithNoInput instanceof InlineComponent) {
             return getInlineDataframeSourceDataset((InlineComponent) componentWithNoInput);

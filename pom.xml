@@ -9,8 +9,39 @@
     <version>${revision}</version>
     <packaging>pom</packaging>
 
+    <licenses>
+        <license>
+            <name>GPL-3.0 License</name>
+            <url>https://github.com/gabrielenizzoli/spark_engine</url>
+        </license>
+    </licenses>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/gabrielenizzoli/spark_engine/issues</url>
+    </issueManagement>
+
+    <scm>
+        <connection>scm:git:https://github.com/gabrielenizzoli/spark_engine.git</connection>
+        <developerConnection>scm:git:https://github.com/gabrielenizzoli/spark_engine.git</developerConnection>
+        <url>https://github.com/gabrielenizzoli/spark_engine</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <organization>
+        <name>Gabe</name>
+        <url>https://github.com/gabrielenizzoli</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <id>gabrielenizzoli</id>
+            <name>Gabriele Nizzoli</name>
+        </developer>
+    </developers>
+
     <properties>
-        <revision>0.5</revision>
+        <revision>0.6.1</revision>
 
         <!-- params -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

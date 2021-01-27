@@ -14,6 +14,8 @@ import java.util.Map;
 @JsonDeserialize(builder = InlineComponent.Builder.class)
 public class InlineComponent implements ComponentWithNoInput {
 
+    public static final String TYPE_NAME = "inline";
+
     @Nullable
     List<Map<String, Object>> data;
     @Nullable

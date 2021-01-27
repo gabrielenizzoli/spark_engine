@@ -14,7 +14,9 @@ import java.util.List;
 @Value
 @Builder(setterPrefix = "with")
 @JsonDeserialize(builder = TransformComponent.Builder.class)
-public class TransformComponent implements Component, ComponentWithMultipleInputs {
+public class TransformComponent implements ComponentWithMultipleInputs {
+
+    public static final String TYPE_NAME = "transform";
 
     @Nullable
     List<String> using;

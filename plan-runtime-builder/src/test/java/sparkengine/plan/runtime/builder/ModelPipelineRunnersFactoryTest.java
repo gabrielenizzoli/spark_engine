@@ -1,10 +1,8 @@
 package sparkengine.plan.runtime.builder;
 
-import sparkengine.plan.runtime.builder.ModelPlanFactory;
-import sparkengine.plan.runtime.builder.TestCatalog;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 import sparkengine.plan.runtime.PipelineName;
-import sparkengine.plan.runtime.PlanFactoryException;
+import sparkengine.plan.runtime.PipelineRunnersFactoryException;
 import sparkengine.spark.test.SparkSessionBase;
 import org.apache.spark.sql.Encoders;
 import org.junit.jupiter.api.Assertions;
@@ -13,13 +11,13 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.List;
 
-class ModelPlanFactoryTest extends SparkSessionBase {
+class ModelPipelineRunnersFactoryTest extends SparkSessionBase {
 
     @Test
-    void runWithYamlCatalogs() throws IOException, DatasetConsumerException, PlanFactoryException {
+    void runWithYamlCatalogs() throws IOException, DatasetConsumerException, PipelineRunnersFactoryException {
 
         // given
-        var planFactory = ModelPlanFactory.ofPlan(sparkSession, TestCatalog.getPlan("testPlan"));
+        var planFactory = ModelPipelineRunnersFactory.ofPlan(sparkSession, TestCatalog.getPlan("testPlan"));
 
         // then
         Assertions.assertEquals(1, planFactory.getPipelineNames().size());

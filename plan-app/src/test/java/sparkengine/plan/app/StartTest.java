@@ -1,15 +1,23 @@
 package sparkengine.plan.app;
 
+import sparkengine.plan.model.builder.ModelFormatException;
+import sparkengine.plan.model.mapper.PlanMapperException;
+import sparkengine.plan.runtime.PipelineRunnersFactoryException;
 import sparkengine.plan.runtime.builder.datasetconsumer.GlobalCounterConsumer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 
 import java.io.IOException;
 
 class StartTest {
 
     @Test
-    void testMain() throws IOException {
+    void testMain() throws IOException,
+            DatasetConsumerException,
+            PlanMapperException,
+            PipelineRunnersFactoryException,
+            ModelFormatException {
 
         // given
         System.setProperty("spark.master", "local[1]");

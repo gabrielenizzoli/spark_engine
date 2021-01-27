@@ -14,6 +14,8 @@ import javax.annotation.Nonnull;
 @JsonDeserialize(builder = EmptyComponent.Builder.class)
 public class EmptyComponent implements ComponentWithNoInput, EncodedComponent {
 
+    public static final String TYPE_NAME = "empty";
+
     @Nonnull
     DataEncoder encodedAs;
 
