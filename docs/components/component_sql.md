@@ -1,5 +1,5 @@
 ---
-sort: 6
+sort: 7
 ---
 
 ## Sql Component
@@ -7,7 +7,7 @@ sort: 6
 Probably the most important component of all, the sql component allows to define a sql transformation on a possible set of inputs.
 Inputs is a list of other components, that will be used as a list of predefined tables to be referenced by the sql in the component.
 
-The list of fields supported is:
+### Fields
 
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
@@ -16,6 +16,8 @@ The list of fields supported is:
 | `sql` | yes | The sql statement |
 | `udfs` | no | An optional list of user provided functions (see below) |
 | `encodedAs` | no | An optional encoded specification |
+
+### Examples
 
 Yaml example:
 ```yaml
@@ -52,7 +54,7 @@ sqlComponentThatGeneratesData:
     )) as abc
 ```
 
-#### UDF/UDAF Functions
+### UDF/UDAF Functions
 
 The sql component can be extended by providing externally defined user defined function (UDF) or user defined aggregation functions (UDAF).
 These function should extend the `dataengine.spark.sql.udf.SqlFunction` interface.
@@ -99,27 +101,4 @@ public class TestIntUdf implements Udf {
         return Integer::sum;
     }
 }
-```
-
-### Encode Component
-
-An encode components applies an encoding to its input. The input is specified using the `using` field.
-
-The list of fields supported is:
-
-| Field | Required | Possible Value |
-| ----- | -------- | -------------- |
-| `type` | yes | `encode` |
-| `encodedAs` | no | An optional encoded specification |
-
-Yaml example:
-```yaml
-someComponent:
-  ...
-
-# example of an encoded component 
-encodeComponet:
-  type: encode
-  using: someComponent
-  encodedAs: { value: STRING }
 ```

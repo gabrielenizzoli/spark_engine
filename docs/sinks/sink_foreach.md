@@ -6,9 +6,9 @@ sort: 7
 
 A streaming dataset can write its output in batch mode.
 This sink will wire each micro batch dataset to one or more pipelines described as a full fledged execution plan (see below).
-Not ethat the execution plan will be fully reevaluated on every new micro batch dataset (ie: every trigger).
+Note that the execution plan will be fully reevaluated on every new micro batch dataset (ie: every trigger).
 
-List of fields:
+### Fields
 
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
@@ -19,6 +19,8 @@ List of fields:
 | `options` | no | A key-value map of options. Meaning is format-dependent |
 | `plan` | yes | An execution plan that will describe all the operations that should be executed on the micro batch dataset  |
 | `batchComponentName` | yes | The name of the virtual component that can be referenced in the plan. This component will provide a dataset equal to the micro batch of the stream |
+
+### Examples
 
 Yaml Examples:
 ```yaml

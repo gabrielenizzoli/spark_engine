@@ -4,7 +4,7 @@ sort: 1
 
 # Get up and running in a few minutes
 
-## 1. Create an execution plan
+## Create an execution plan
 
 An execution plan describes one or more spark data pipelines, streams or batches.
 Usually an execution plan is hosted in hdfs and witten in yaml.
@@ -12,9 +12,9 @@ Usually an execution plan is hosted in hdfs and witten in yaml.
 Here is a sample execution plan with 2 pipelines, one is a batch pipeline, the other is a stream:
 ```yaml
 components:
-  sql: { type: sql, sql: select 'value' as column }
+  sql: { sql: "select 'value' as column" }
   rate: { type: stream, format: rate }
-  sqlOnRate: { type: sql, using: [rate], sql: "select *, value * 100 as bigValue from rate" }
+  sqlOnRate: { using: [rate], sql: "select *, value * 100 as bigValue from rate" }
 
 sinks:
   showTable: { type: show }
@@ -24,22 +24,21 @@ sinks:
     format: console
     mode: APPEND
     trigger: { milliseconds: 1000 }
-    options: 
-      "spark.sql.streaming.forceDeleteTempCheckpointLocation": true
 
 pipelines:
   - { component: sql, sink: showTable }
   - { component: sqlOnRate, sink: showRate }
 ```
 
-## 2. Get spark
+## Get Java + Spark
 
-Download and unpack apache spark. In the `bin\` sub-folder there is the `spark-submit` command. 
-Also, you should also have Java installed.
+* Download and unpack apache spark.
+* Also, you should also have Java 11+ installed.
 
-## 3. Run the plan
+## Run the plan
 
-If the plan is saved in the filesystem, in the `/tmp` folder, with the `plan.yaml` name, then running it is as easy as executing:
+Regarding spark, in the `bin/` sub-folder there is the `spark-submit` command.
+Assuming the plan is saved in the filesystem, as `/tmp/plan.yaml`, then running it is as easy as executing:
 ```shell
 cd spark/bin
 ./spark-submit --master local --packages sparkengine:spark-app:1.0 

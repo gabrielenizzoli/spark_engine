@@ -7,7 +7,7 @@ sort: 5
 This sink describes a write operation of a dataset to the standard spark writer interface.
 Refer to spark documentation for details.
 
-List of fields:
+### Fields
 
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
@@ -16,6 +16,8 @@ List of fields:
 | `mode` | no | Write mode. One of: `APPEND`, `OVERWRITE`, `ERROR_IF_EXISTS`, `IGNORE`. |
 | `options` | no | A key-value map of options. Meaning is format-dependent |
 | `partitionColumns` | no | A list of columns to be used to partition during save of data. |
+
+### Examples
 
 Yaml Example:
 ```yaml

@@ -6,12 +6,14 @@ sort: 3
 
 This component specifies an empty dataset. It is optionally possible to specify an encoding.
 
-The list of fields supported is:
+### Fields
 
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
 | `type` | yes | `empty` |
 | `encodedAs` | no | An optional encoded specification |
+
+### Examples
 
 Yaml example:
 ```yaml
@@ -19,3 +21,4 @@ Yaml example:
 emptyComponet:
   type: empty
   encodedAs: { value: STRING }
+```
