@@ -2,7 +2,7 @@
 sort: 1
 ---
 
-## Execution Plan
+# Execution Plan
 
 As we stated before, an _execution plan_ is a set of datasets that can be routed to a set of consumers.
 A single pair dataset/dataset consumer is called a _pipeline_, while the full set of all components/consumers/pipelines is an _execution plan_.
@@ -13,7 +13,7 @@ In yaml term, an execution plan can be represented by a document divided in 3 pa
 * a list of _sinks_ - this will define dataset consumers
 * a list of _pipelines_ - to pair a component with a sink
 
-### Examples
+## Examples
 
 A high level example in yaml:
 ```yaml

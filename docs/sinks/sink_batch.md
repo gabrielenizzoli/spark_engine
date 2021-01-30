@@ -2,12 +2,12 @@
 sort: 5
 ---
 
-### Batch Sink
+# Batch Sink
 
 This sink describes a write operation of a dataset to the standard spark writer interface.
 Refer to spark documentation for details.
 
-### Fields
+## Fields
 
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
@@ -17,7 +17,7 @@ Refer to spark documentation for details.
 | `options` | no | A key-value map of options. Meaning is format-dependent |
 | `partitionColumns` | no | A list of columns to be used to partition during save of data. |
 
-### Examples
+## Examples
 
 Yaml Example:
 ```yaml

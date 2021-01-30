@@ -2,12 +2,12 @@
 sort: 7
 ---
 
-## Sql Component
+# Sql Component
 
 Probably the most important component of all, the sql component allows to define a sql transformation on a possible set of inputs.
 Inputs is a list of other components, that will be used as a list of predefined tables to be referenced by the sql in the component.
 
-### Fields
+## Fields
 
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
@@ -17,7 +17,7 @@ Inputs is a list of other components, that will be used as a list of predefined 
 | `udfs` | no | An optional list of user provided functions (see below) |
 | `encodedAs` | no | An optional encoded specification |
 
-### Examples
+## Examples
 
 Yaml example:
 ```yaml

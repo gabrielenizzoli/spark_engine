@@ -2,13 +2,13 @@
 sort: 2
 ---
 
-## Encoder Field
+# Encoder Field
 
 Datasets in spark can be encoded (something similar to a strong typing).
 A component may define an _encodedAs_ field. 
 If present, the encoder will describe what format should be applied to the dataset.
 
-### Fields
+## Fields
 
 Available encoders are `value`, `tuple`, `bean` and `seralization`:
 
@@ -19,7 +19,7 @@ Available encoders are `value`, `tuple`, `bean` and `seralization`:
 | `bean` | The fully qualified name of a a Java class to represent the schema and type of all fields |
 | `serialization` | One of: `JAVA`, `KRYO`; plus a class name. |
 
-### Examples
+## Examples
 
 Some example of an encoder in yaml representation:
 ```yaml
