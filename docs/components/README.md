@@ -1,7 +1,7 @@
 ---
-sort: 1
+sort: 2
 ---
 
-# Quick Start
+# Components
 
 {% include list.liquid all=true %}

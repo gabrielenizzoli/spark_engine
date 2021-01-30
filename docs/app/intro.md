@@ -2,7 +2,7 @@
 sort: 6
 ---
 
-# The plan-app module
+# The command line application
 
 At the end of the day, what we want is to have an easy way to run our execution plan inside a spark application, without having to do any complex coding.
 

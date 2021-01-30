@@ -1,7 +1,7 @@
 ---
-sort: 1
+sort: 3
 ---
 
-# Quick Start
+# Sinks
 
 {% include list.liquid all=true %}

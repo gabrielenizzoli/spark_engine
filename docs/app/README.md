@@ -1,7 +1,7 @@
 ---
-sort: 1
+sort: 5
 ---
 
-# Quick Start
+# Application
 
 {% include list.liquid all=true %}
