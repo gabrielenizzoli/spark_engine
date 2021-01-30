@@ -2,18 +2,18 @@
 sort: 3
 ---
 
-## Empty Component
+# Empty Component
 
 This component specifies an empty dataset. It is optionally possible to specify an encoding.
 
-### Fields
+## Fields
 
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
 | `type` | yes | `empty` |
 | `encodedAs` | no | An optional encoded specification |
 
-### Examples
+## Examples
 
 Yaml example:
 ```yaml

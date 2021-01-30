@@ -2,11 +2,11 @@
 sort: 3
 ---
 
-### Show Sink
+# Show Sink
 
 For debugging purposes, a show sink can be used to print on the output terminal the head of the dataset.
 
-### Fields
+## Fields
 
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
@@ -14,7 +14,7 @@ For debugging purposes, a show sink can be used to print on the output terminal 
 | `numRows` | no | Number of rows to show, defaults to 20.  |
 | `truncate` | no | Number of chars for each column, defaults to 30.  |
 
-### Examples
+## Examples
 
 Yaml Example:
 ```yaml

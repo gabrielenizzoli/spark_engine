@@ -2,18 +2,18 @@
 sort: 4
 ---
 
-## Encode Component
+# Encode Component
 
 A encode components applies an encoding to its input. The input is specified using the `using` field.
 
-### Fields
+## Fields
 
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
 | `type` | yes | `encode` |
 | `encodedAs` | no | An optional encoded specification |
 
-### Examples
+## Examples
 
 Yaml example:
   ```yaml

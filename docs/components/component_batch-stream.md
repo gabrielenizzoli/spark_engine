@@ -2,12 +2,12 @@
 sort: 5
 ---
 
-## Batch and Stream Component
+# Batch and Stream Component
 
 In spark, it is possible to define an external source (like a file, or a kafka topic).
 This component allows for defining one of such sources.
 
-### Fields
+## Fields
 
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
@@ -16,7 +16,7 @@ This component allows for defining one of such sources.
 | `options` | no | A map of values |
 | `encodedAs` | no | An optional encoded specification |
 
-### Examples
+## Examples
 
 Yaml examples:
 ```yaml
