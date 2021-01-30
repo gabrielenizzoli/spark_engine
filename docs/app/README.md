@@ -1,7 +1,7 @@
 ---
-sort: 10
+sort: 5
 ---
 
-# Modules (Obsolete)
+# Application
 
 {% include list.liquid all=true %}

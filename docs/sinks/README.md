@@ -1,7 +1,7 @@
 ---
-sort: 10
+sort: 3
 ---
 
-# Modules (Obsolete)
+# Sinks
 
 {% include list.liquid all=true %}

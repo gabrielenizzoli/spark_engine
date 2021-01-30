@@ -1,7 +1,7 @@
 ---
-sort: 10
+sort: 1
 ---
 
-# Modules (Obsolete)
+# Quick Start
 
 {% include list.liquid all=true %}

@@ -1,7 +1,7 @@
 ---
-sort: 10
+sort: 2
 ---
 
-# Modules (Obsolete)
+# Components
 
 {% include list.liquid all=true %}

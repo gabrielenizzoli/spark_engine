@@ -2,7 +2,7 @@
 sort: 6
 ---
 
-# The plan-app module
+# The command line application
 
 At the end of the day, what we want is to have an easy way to run our execution plan inside a spark application, without having to do any complex coding.
 
@@ -21,11 +21,11 @@ pipelines:
 ```
 
 Then we can run it in a terminal:
-```yaml
+```shell
 cd spark/bin
-./spark-submit --master local --packages sparkengine:spark-app:1.0 \
-  --class sparkengine.plan.app.Start spark-internal \
-  -p file:///tmp/plan.yaml
+./spark-submit --master local --packages sparkengine:spark-app:1.0 
+    --class sparkengine.plan.app.Start spark-internal 
+    -p file:///tmp/plan.yaml
 ```
 
 ## Command line
