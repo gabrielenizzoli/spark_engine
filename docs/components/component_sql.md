@@ -54,7 +54,7 @@ sqlComponentThatGeneratesData:
     )) as abc
 ```
 
-### UDF/UDAF Functions
+## UDF/UDAF Functions
 
 The sql component can be extended by providing externally defined user defined function (UDF) or user defined aggregation functions (UDAF).
 These function should extend the `dataengine.spark.sql.udf.SqlFunction` interface.

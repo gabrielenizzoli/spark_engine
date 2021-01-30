@@ -4,6 +4,11 @@ sort: 1
 
 # Get up and running in a few minutes
 
+## Get Java + Spark
+
+* Download and unpack Apache Spark, version 3+.
+* Also, you should also have Java 11+ installed.
+
 ## Create an execution plan
 
 An execution plan describes one or more spark data pipelines, streams or batches.
@@ -30,12 +35,7 @@ pipelines:
   - { component: sqlOnRate, sink: showRate }
 ```
 
-## Get Java + Spark
-
-* Download and unpack apache spark.
-* Also, you should also have Java 11+ installed.
-
-## Run the plan
+## Run the execution plan
 
 Regarding spark, in the `bin/` sub-folder there is the `spark-submit` command.
 Assuming the plan is saved in the filesystem, as `/tmp/plan.yaml`, then running it is as easy as executing:

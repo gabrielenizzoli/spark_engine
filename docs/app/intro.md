@@ -6,7 +6,7 @@ sort: 6
 
 At the end of the day, what we want is to have an easy way to run our execution plan inside a spark application, without having to do any complex coding.
 
-## Running an app
+## Running a plan
 
 If our execution plan is somewhere in a folder in a hdfs-compatible filesystem (eg: in a location like `file:///tmp/plan.yaml`) and looks like this:
 ```yaml
@@ -28,7 +28,7 @@ cd spark/bin
     -p file:///tmp/plan.yaml
 ```
 
-## Command line
+## Command line help
 
 Usage:
 ```dtd
