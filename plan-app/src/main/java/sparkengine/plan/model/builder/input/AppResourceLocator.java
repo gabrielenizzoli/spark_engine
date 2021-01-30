@@ -14,9 +14,10 @@ public class AppResourceLocator implements InputStreamResourceLocator {
     }
 
     private InputStreamFactory getInputStreamFactory(URI uri) {
-        switch (Optional.ofNullable(uri.getScheme()).orElse("")) {
+        var scheme = Optional.ofNullable(uri.getScheme()).orElse("");
+        switch (scheme) {
             case "http":
-            case "https:":
+            case "https":
                 return HttpInputStreamFactory.ofURI(uri, Duration.ofSeconds(30));
             default:
                 return HdfsInputStreamFactory.of(uri);

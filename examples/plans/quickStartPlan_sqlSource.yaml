@@ -1,0 +1,2 @@
+sql: >
+  select 'value' as column
