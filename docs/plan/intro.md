@@ -13,6 +13,14 @@ In yaml term, an execution plan can be represented by a document divided in 3 pa
 * a list of _sinks_ - this will define dataset consumers
 * a list of _pipelines_ - to pair a component with a sink
 
+## Fields
+
+| Field | Possible Value |
+| ----- | -------------- |
+| `components` | A set of named components. |
+| `sinks` | A set of named sinks.  |
+| `pipelines` | A list of pipelines, where each pipeline names a component to provide a dataset and a sink to consume the dataset. The pipeline is a yaml object with a `component` field and a `sink` field. |
+
 ## Examples
 
 A high level example in yaml:
@@ -39,4 +47,31 @@ pipelines:
   - { component: component1, sink: consumer1 }
   - { component: component2, sink: consumer2 }
 ```
+
+A practical example:
+```yaml
+components:
+  sql: { sql: "select 'value' as column" }
+  rate: { type: stream, format: rate }
+  sqlOnRate: { using: [rate], sql: "select *, value * 100 as bigValue from rate" }
+
+sinks:
+  showTable: { type: show }
+  showRate: 
+    type: stream
+    name: query
+    format: console
+    mode: APPEND
+    trigger: { milliseconds: 1000 }
+
+pipelines:
+  - { component: sql, sink: showTable }
+  - { component: sqlOnRate, sink: showRate }
+```
+
+Notes:
+* a sink or component that is not used in a pipeline will simply not be utilized,
+* a pipeline with the same component and sink can be repeated multiple times,
+* a plan with no pipeline will do nothing,
+* a missing sink or component will cause the pipeline (and eventually the plan) to fail.
 

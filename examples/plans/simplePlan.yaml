@@ -1,0 +1,17 @@
+components:
+  sql: { sql: "select 'value' as column" }
+  rate: { type: stream, format: rate }
+  sqlOnRate: { using: [rate], sql: "select *, value * 100 as bigValue from rate" }
+
+sinks:
+  showTable: { type: show }
+  showRate:
+    type: stream
+    name: query
+    format: console
+    mode: APPEND
+    trigger: { milliseconds: 1000 }
+
+pipelines:
+  - { component: sql, sink: showTable }
+  - { component: sqlOnRate, sink: showRate }
