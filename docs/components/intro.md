@@ -12,14 +12,14 @@ All these steps can be separated and described as single atomic operations, that
 
 An additional advantage to have a model describing a set of transformations, is that it can be expressed in a shareable format, usually yaml (or json).
 
-In the spark engine projcet, these pieces that describe a dataset are called _components_.
+In the spark engine project, these pieces that describe a dataset are called **components**.
 
 ## Dataset Components
 
 A component is an abstraction that describes how a dataset is built. 
 In Java terms, the root of the component hierarchy is the `sparkengine.plan.model.component.Component` interface. Every component extends form it.
 
-The common characteristic of a component is to carry all the data needed to produce or transform a dataset described by another component.
+The common characteristic of a component is to carry all the data needed to describe how to produce or transform a dataset.
 Some components provide information on how to generate datasets from external sources (like the _batch_ component), while others make use of an existing dataset and transforms it (like the _encode_ component).
 By properly chaining many components it is thus possible to compose a complex dataset.
 
@@ -55,3 +55,4 @@ The practical advantages of splitting a complex system into smaller sets are:
 * _clear inputs and outputs_ - each component is fully described by the model, and it is not possible to reference datasets not explicitly defined in the model
 * _easier to test in isolation_ - test each component independently, by providing mock input data and then verifying the output
 * _easier to refactor_ - changes can be planned and implemented in stages
+

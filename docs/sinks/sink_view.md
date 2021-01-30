@@ -6,12 +6,14 @@ sort: 4
 
 A view sink can be used to register the  in the dataset as a table in the catalog.
 
-List of fields:
+### Fields
 
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
 | `type` | yes | `collect` |
 | `name` | yes | Name of the temporary view. |
+
+### Examples
 
 Yaml Example:
 ```yaml

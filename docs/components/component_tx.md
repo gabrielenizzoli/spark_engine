@@ -1,12 +1,12 @@
 ---
-sort: 7
+sort: 8
 ---
 
 ## Transform Component
 
 The most generic component of them all, the transform components allow for a specification of an external Java class to provide a user provided transformation.
 
-The list of fields supported is:
+### Fields
 
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
@@ -14,6 +14,8 @@ The list of fields supported is:
 | `using` | no | An optional list of other components to be passed as input to the transform component  |
 | `transformWith` | yes | A Java fully qualified name of a class that specifies an implementation of the `dataengine.spark.transformation.DataTransformationN` interface |
 | `encodedAs` | no | An optional encoded specification |
+
+### Examples
 
 Yaml example:
 ```yaml
