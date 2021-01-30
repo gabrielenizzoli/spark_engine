@@ -1,5 +1,5 @@
 components:
-  sql: { sql: "select 'value' as column" }
+  sqlSource: { type: ref }
   rate: { type: stream, format: rate }
   sqlOnRate: { using: [rate], sql: "select *, value * 100 as bigValue from rate" }
 
