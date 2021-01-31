@@ -13,5 +13,5 @@ sinks:
     trigger: { milliseconds: 1000 }
 
 pipelines:
-  batch: { component: sql, sink: showTable }
+  batch: { component: sqlSource, sink: showTable }
   stream: { component: sqlOnRate, sink: showRate }

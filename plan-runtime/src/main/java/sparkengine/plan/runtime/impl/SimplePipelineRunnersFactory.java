@@ -53,7 +53,7 @@ public class SimplePipelineRunnersFactory implements PipelineRunnersFactory {
             var consumer = datasetConsumerFactory.buildConsumer(pipelineDef.getConsumer());
             return SimplePipelineRunner.builder().dataset(dataset).datasetConsumer(consumer).build();
         } catch (DatasetConsumerFactoryException | DatasetFactoryException e) {
-            throw new PipelineRunnersFactoryException(String.format("can't create pipeline runner for  %s (%s)", pipelineName, pipelineDef), e);
+            throw new PipelineRunnersFactoryException(String.format("can't create pipeline runner for [%s], pipeline definition [%s]", pipelineName, pipelineDef), e);
         }
 
     }

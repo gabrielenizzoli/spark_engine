@@ -14,6 +14,7 @@ import sparkengine.plan.model.sink.catalog.SinkCatalog;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 
 public class ModelFactory {
@@ -58,6 +59,10 @@ public class ModelFactory {
         } catch (JsonProcessingException e) {
             throw new ModelFormatException("component format is not as expected", e);
         }
+    }
+
+    public static void writePlanAsYaml(@Nonnull Plan plan, @Nonnull OutputStream outputStream) throws IOException, ModelFormatException {
+        YAML_OBJECT_MAPPER.writeValue(outputStream, plan);
     }
 
 }
