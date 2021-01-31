@@ -5,6 +5,7 @@ sort: 8
 # Transform Component
 
 The most generic component of them all, the transform components allow for a specification of an external Java class to provide a user provided transformation.
+The provided class must extend `sparkengine.spark.transformation.DataTransformationN`.
 
 ## Fields
 
