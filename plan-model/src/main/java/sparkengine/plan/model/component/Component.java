@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
         // transformation with single input
         @JsonSubTypes.Type(value = EncodeComponent.class, name = EncodeComponent.TYPE_NAME),
+        @JsonSubTypes.Type(value = MapComponent.class, name = MapComponent.TYPE_NAME),
 
         // transformation with many inputs
         @JsonSubTypes.Type(value = TransformComponent.class, name = TransformComponent.TYPE_NAME),
@@ -25,6 +26,8 @@ import java.util.stream.Collectors;
         @JsonSubTypes.Type(value = FragmentComponent.class, name = FragmentComponent.TYPE_NAME),
         @JsonSubTypes.Type(value = WrapperComponent.class, name = WrapperComponent.TYPE_NAME),
         @JsonSubTypes.Type(value = SqlComponent.class, name = SqlComponent.TYPE_NAME),
+
+        // not-runtime component
         @JsonSubTypes.Type(value = ReferenceComponent.class, name = ReferenceComponent.TYPE_NAME)
 })
 public interface Component {

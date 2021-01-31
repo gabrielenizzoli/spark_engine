@@ -1,5 +1,6 @@
 package sparkengine.plan.runtime.builder.dataset;
 
+import org.apache.spark.util.AccumulatorContext;
 import sparkengine.plan.runtime.builder.TestCatalog;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.test.SparkSessionBase;
@@ -110,8 +111,23 @@ class ComponentDatasetFactoryWithYamlCatalogTest extends SparkSessionBase {
         var rows = ds.collectAsList();
 
         // then
-
         Assertions.assertEquals(10, rows.size());
+    }
+
+    @Test
+    void testFactoryWithMapInYamlCatalog() throws DatasetFactoryException {
+
+        // given
+        var catalog = TestCatalog.getComponentCatalog("testTransformationComponentsCatalog");
+        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+
+        // when
+        var ds = factory.<Row>buildDataset("map");
+        var rows = ds.collectAsList();
+
+        // then
+        Assertions.assertEquals(1, rows.size());
+        Assertions.assertEquals(310, rows.get(0).<Long>getAs("sum(value)"));
     }
 
     @Test
