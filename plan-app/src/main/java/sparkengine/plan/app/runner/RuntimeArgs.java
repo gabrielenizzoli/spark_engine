@@ -33,13 +33,23 @@ public class RuntimeArgs {
     private boolean skipRun = false;
 
     @Getter
-    @Parameter(names = {"--skipFaultyPipelines"}, order = 4, description = "Skip a faulty pipeline (instead of exiting the application)")
+    @Parameter(names = {"--skipResolution"}, description = "Skip any resolution of the plan (plan will be executed as-is!)")
+    @lombok.Builder.Default
+    private boolean skipResolution = false;
+
+    @Getter
+    @Parameter(names = {"--skipFaultyPipelines"}, description = "Skip a faulty pipeline (instead of exiting the application)")
     @lombok.Builder.Default
     private boolean skipFaultyPipelines = false;
 
     @Getter
-    @Parameter(names = {"--parallelPipelineExecution"}, order = 4, description = "Executes the pipelines of the plan in parallel (instead of sequentially)")
+    @Parameter(names = {"--parallelPipelineExecution"}, description = "Executes the pipelines of the plan in parallel (instead of sequentially)")
     @lombok.Builder.Default
     private boolean parallelPipelineExecution = false;
+
+    @Getter
+    @Parameter(names = {"--writeResolvedPlan"}, description = "write the resolved plan (to a temporary location)")
+    @lombok.Builder.Default
+    private boolean writeResolvedPlan = false;
 
 }

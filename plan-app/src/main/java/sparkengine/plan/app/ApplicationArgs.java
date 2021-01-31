@@ -16,8 +16,13 @@ public class ApplicationArgs {
     private boolean help = false;
 
     @Getter
-    @Parameter(names = {"-l", "--log"}, order = 2, description = "Set main application log level (one of OFF,FATAL,ERROR,WARN,INFO,DEBUG,TRACE,ALL)")
+    @Parameter(names = {"-l", "--log"}, description = "Set main application log level (one of OFF,FATAL,ERROR,WARN,INFO,DEBUG,TRACE,ALL)")
     @lombok.Builder.Default
     private String logLevel = "INFO";
+
+    @Getter
+    @Parameter(names = {"--skipStackTrace"}, description = "Skip full stackTrace")
+    @lombok.Builder.Default
+    private boolean skipStackTrace = false;
 
 }

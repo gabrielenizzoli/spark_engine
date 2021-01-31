@@ -17,11 +17,14 @@ import sparkengine.plan.model.mapper.impl.SqlComponentMapper;
 import sparkengine.plan.runtime.PipelineRunnersFactory;
 import sparkengine.plan.runtime.PipelineRunnersFactoryException;
 import sparkengine.plan.runtime.builder.ModelPipelineRunnersFactory;
+import sparkengine.plan.runtime.builder.datasetconsumer.WriterFormatter;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 import sparkengine.spark.sql.logicalplan.PlanExplorerException;
 import sparkengine.spark.sql.logicalplan.tablelist.TableListExplorer;
 
 import javax.annotation.Nonnull;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.function.Consumer;
@@ -47,7 +50,7 @@ public class PlanRunner {
     {
         PipelineRunnersFactory pipelineRunnersFactory = getPipelineRunnersFactory();
         if (runtimeArgs.isSkipRun()) {
-            log.info("skip run option enabled");
+            log.warn("skip run");
         } else {
             executePipelines(pipelineRunnersFactory);
             waitOnSpark();
@@ -59,27 +62,44 @@ public class PlanRunner {
         var planInputStream = resourceLocator.getInputStreamFactory(runtimeArgs.getPlanLocation());
         var sourcePlan = getPlan(planInputStream);
         var resolvedPlan = resolvePlan(sourcePlan);
+        writeResolvedPlan(resolvedPlan);
         return ModelPipelineRunnersFactory.ofPlan(sparkSession, resolvedPlan);
     }
 
     private Plan getPlan(InputStreamFactory inputStreamFactory) throws IOException, ModelFormatException {
         var sourcePlan = ModelFactory.readPlanFromYaml(inputStreamFactory);
-        log.trace("source plan: " + sourcePlan);
+        log.trace(String.format("source plan [%s]", sourcePlan));
 
         return sourcePlan;
     }
 
     private Plan resolvePlan(Plan sourcePlan) throws PlanMapperException {
+        if (runtimeArgs.isSkipResolution()) {
+            log.info("skipping resolution of the plan, resolved plan will be the same as the source plan");
+            return sourcePlan;
+        }
+
         var resolvedPlan = PlanMappers
                 .ofMappers(
                         getReferencePlanResolver(),
                         getSqlResolver())
                 .map(sourcePlan);
 
-        if (log.isTraceEnabled())
-            log.trace(String.format("resolved plan: %s", resolvedPlan));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format("resolved plan [%s]", resolvedPlan));
+        }
 
         return resolvedPlan;
+    }
+
+    private void writeResolvedPlan(Plan resolvedPlan) throws IOException, ModelFormatException {
+        if (runtimeArgs.isWriteResolvedPlan()) {
+            var resolvedFilePlan = File.createTempFile("resolvedPlan_", ".yaml");
+            log.warn(String.format("writing resolved plan to [%s]", resolvedFilePlan));
+            try (var out = new FileOutputStream(resolvedFilePlan)) {
+                ModelFactory.writePlanAsYaml(resolvedPlan, out);
+            }
+        }
     }
 
     private PlanMapper getReferencePlanResolver() {
@@ -110,7 +130,7 @@ public class PlanRunner {
             pipelinesToExecute = new LinkedList<>(runtimeArgs.getPipelines());
             pipelinesToExecute.retainAll(pipelinesDeclared);
         }
-        log.info(String.format("found pipelines %s (user override: %b; parallel execution: %b)",
+        log.info(String.format("found pipelines [%s] (user override: %b; parallel execution: %b)",
                 pipelinesToExecute,
                 runtimeArgs.getPipelines() != null,
                 runtimeArgs.isParallelPipelineExecution()));
@@ -124,18 +144,18 @@ public class PlanRunner {
     @SneakyThrows
     private void runPipeline(PipelineRunnersFactory pipelineRunnersFactory,
                              String pipelineName) {
-        log.info(String.format("running pipeline %s", pipelineName));
+        log.info(String.format("running pipeline [%s]", pipelineName));
         try {
             var pipeline = pipelineRunnersFactory.buildPipelineRunner(pipelineName);
             pipeline.run();
         } catch (PipelineRunnersFactoryException e) {
-            String msg = String.format("can't instantiate pipeline %s", pipelineName);
+            String msg = String.format("can't instantiate pipeline [%s]", pipelineName);
             if (runtimeArgs.isSkipFaultyPipelines())
                 log.warn(msg, e);
             else
                 throw new PipelineRunnersFactoryException(msg, e);
         } catch (DatasetConsumerException e) {
-            String msg = String.format("can't execute pipeline %s", pipelineName);
+            String msg = String.format("can't execute pipeline [%s]", pipelineName);
             if (runtimeArgs.isSkipFaultyPipelines())
                 log.warn(msg, e);
             else

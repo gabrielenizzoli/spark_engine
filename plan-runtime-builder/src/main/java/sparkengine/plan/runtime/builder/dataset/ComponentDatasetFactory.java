@@ -73,7 +73,7 @@ public class ComponentDatasetFactory implements DatasetFactory {
         try {
             return componentCatalog.lookup(name).orElseThrow(() -> new DatasetFactoryException.DatasetNotFound(name));
         } catch (ComponentCatalogException e) {
-            throw new DatasetFactoryException("issues locating component with name " + name, e);
+            throw new DatasetFactoryException(String.format("issues locating component with name %s", name), e);
         }
     }
 
@@ -81,7 +81,7 @@ public class ComponentDatasetFactory implements DatasetFactory {
     private <T> Dataset<T> getDataset(String name, Component component, List<String> childrenPath) throws DatasetFactoryException {
 
         if (component instanceof ComponentWithNoRuntime) {
-            throw new DatasetFactoryException("component [" + component + "] has no runtime equivalent and must be resolved");
+            throw new DatasetFactoryException(String.format("component [%s] has no runtime equivalent and must be resolved", component));
         }
 
         DatasetSupplier<T> datasetSupplier = null;

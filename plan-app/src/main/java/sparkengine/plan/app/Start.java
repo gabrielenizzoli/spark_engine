@@ -6,10 +6,6 @@ import org.apache.log4j.Level;
 import org.apache.spark.sql.SparkSession;
 import sparkengine.plan.app.runner.PlanRunner;
 import sparkengine.plan.app.runner.RuntimeArgs;
-import sparkengine.plan.model.builder.ModelFormatException;
-import sparkengine.plan.model.mapper.PlanMapperException;
-import sparkengine.plan.runtime.PipelineRunnersFactoryException;
-import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -20,28 +16,36 @@ public class Start {
     static final ApplicationArgs APPLICATION_ARGS = new ApplicationArgs();
     static final RuntimeArgs RUNTIME_ARGS = new RuntimeArgs();
 
-    public static void main(String[] args) throws
-            IOException,
-            PlanMapperException,
-            PipelineRunnersFactoryException,
-            DatasetConsumerException, ModelFormatException {
+    public static void main(String[] args) throws Throwable {
 
-        var jcmd = initArguments(args);
-        if (APPLICATION_ARGS.isHelp()) {
-            jcmd.usage();
-        } else {
-            log.trace("application starting");
-            try (var sparkSession = initializeSpark()) {
-                PlanRunner.builder()
-                        .log(log)
-                        .sparkSession(sparkSession)
-                        .runtimeArgs(RUNTIME_ARGS)
-                        .build()
-                        .run();
+        var commandLine = initArguments(args);
+
+        log.info("START ====================================================================");
+
+        try {
+            if (APPLICATION_ARGS.isHelp()) {
+                commandLine.usage();
+            } else {
+                try (var sparkSession = initializeSpark()) {
+                    PlanRunner.builder()
+                            .log(log)
+                            .sparkSession(sparkSession)
+                            .runtimeArgs(RUNTIME_ARGS)
+                            .build()
+                            .run();
+                }
             }
-            log.trace("application exiting");
+        } catch (Throwable t) {
+            if (APPLICATION_ARGS.isSkipStackTrace()) {
+                for (var error = t; error != null; error = error.getCause()) {
+                    log.error(String.format("%s: %s", error.getClass().getSimpleName(), error.getMessage()));
+                }
+            } else {
+                throw t;
+            }
+        } finally {
+            log.info("STOP =====================================================================");
         }
-
 
     }
 
@@ -50,8 +54,8 @@ public class Start {
         var jcmd = JCommander.newBuilder().addObject(new Object[]{APPLICATION_ARGS, RUNTIME_ARGS}).build();
         jcmd.parse(args);
         log.setLevel(Level.toLevel(APPLICATION_ARGS.getLogLevel()));
-        log.info("loaded application arguments " + APPLICATION_ARGS);
-        log.info("loaded runtime arguments " + RUNTIME_ARGS);
+        log.info(String.format("loaded application arguments [%s]", APPLICATION_ARGS));
+        log.info(String.format("loaded runtime arguments [%s]", RUNTIME_ARGS));
         return jcmd;
     }
 
