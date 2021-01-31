@@ -18,6 +18,6 @@ public class Plan {
     @With
     Map<String, Component> components;
     Map<String, Sink> sinks;
-    List<Pipeline> pipelines;
+    Map<String, Pipeline> pipelines;
 
 }

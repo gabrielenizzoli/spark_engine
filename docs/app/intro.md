@@ -17,7 +17,7 @@ sinks:
   show: { type: show }
 
 pipelines:
-  - { source: sql, sink: show }
+  batch: { source: sql, sink: show }
 ```
 
 Then we can run it in a terminal:

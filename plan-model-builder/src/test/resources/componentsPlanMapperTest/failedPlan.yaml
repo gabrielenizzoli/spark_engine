@@ -10,4 +10,4 @@ sinks:
   view: { type: view, name: tmpView }
 
 pipelines:
-  - { component: reference, sink: view }
+  pipe1: { component: reference, sink: view }

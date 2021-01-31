@@ -11,4 +11,4 @@ foreachSink:
     sinks:
       saveInView: { type: counter, key: testForeachStreamWithCatalog }
     pipelines:
-      - { component: tx2, sink: saveInView }
+      out: { component: tx2, sink: saveInView }

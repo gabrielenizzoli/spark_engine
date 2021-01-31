@@ -1,22 +1,20 @@
 package sparkengine.plan.runtime.builder;
 
-import sparkengine.plan.model.component.catalog.ComponentCatalog;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.SparkSession;
 import sparkengine.plan.model.Plan;
+import sparkengine.plan.model.component.catalog.ComponentCatalog;
 import sparkengine.plan.model.sink.catalog.SinkCatalogFromMap;
+import sparkengine.plan.runtime.PipelineRunnersFactory;
 import sparkengine.plan.runtime.builder.dataset.ComponentDatasetFactory;
 import sparkengine.plan.runtime.builder.datasetconsumer.SinkDatasetConsumerFactory;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactory;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactory;
-import sparkengine.plan.runtime.PipelineName;
-import sparkengine.plan.runtime.PipelineRunnersFactory;
 import sparkengine.plan.runtime.impl.SimplePipelineRunnersFactory;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.SparkSession;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,17 +29,20 @@ public class ModelPipelineRunnersFactory {
                                                 @Nonnull Plan plan,
                                                 @Nullable Map<String, Dataset> predefinedDatasets) {
         return SimplePipelineRunnersFactory.builder()
-                .pipelineNames(getPipelineNames(plan))
+                .pipelineDefinitions(getPipelineDefinitions(plan))
                 .datasetFactory(getDatasetFactory(sparkSession, plan, predefinedDatasets))
                 .datasetConsumerFactory(getConsumerFactory(plan))
                 .build();
     }
 
     @Nonnull
-    private static List<PipelineName> getPipelineNames(@Nonnull Plan plan) {
-        return plan.getPipelines().stream()
-                .map(pipeline -> PipelineName.of(pipeline.getComponent(), pipeline.getSink()))
-                .collect(Collectors.toList());
+    private static Map<String, SimplePipelineRunnersFactory.PipelineDefinition> getPipelineDefinitions(@Nonnull Plan plan) {
+        return plan.getPipelines()
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> SimplePipelineRunnersFactory.PipelineDefinition.of(e.getValue().getComponent(), e.getValue().getSink())));
     }
 
     private static DatasetFactory getDatasetFactory(@Nonnull SparkSession sparkSession,
@@ -60,7 +61,6 @@ public class ModelPipelineRunnersFactory {
         var sinkCatalog = SinkCatalogFromMap.of(plan.getSinks());
         return SinkDatasetConsumerFactory.of(sinkCatalog);
     }
-
 
 
 }
