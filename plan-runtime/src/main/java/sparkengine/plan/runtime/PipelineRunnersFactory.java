@@ -1,11 +1,11 @@
 package sparkengine.plan.runtime;
 
-import java.util.List;
+import java.util.Set;
 
 public interface PipelineRunnersFactory {
 
-    List<PipelineName> getPipelineNames();
+    Set<String> getPipelineNames();
 
-    PipelineRunner buildPipelineRunner(PipelineName pipelineName) throws PipelineRunnersFactoryException;
+    PipelineRunner buildPipelineRunner(String pipelineName) throws PipelineRunnersFactoryException;
 
 }

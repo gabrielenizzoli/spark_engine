@@ -44,8 +44,8 @@ sinks:
     ...
 
 pipelines:
-  - { component: component1, sink: consumer1 }
-  - { component: component2, sink: consumer2 }
+  pipe1: { component: component1, sink: consumer1 }
+  pipe2: { component: component2, sink: consumer2 }
 ```
 
 A practical example:
@@ -65,13 +65,14 @@ sinks:
     trigger: { milliseconds: 1000 }
 
 pipelines:
-  - { component: sql, sink: showTable }
-  - { component: sqlOnRate, sink: showRate }
+  batch: { component: sql, sink: showTable }
+  stream: { component: sqlOnRate, sink: showRate }
 ```
 
 Notes:
 * a sink or component that is not used in a pipeline will simply not be utilized,
 * a pipeline with the same component and sink can be repeated multiple times,
-* a plan with no pipeline will do nothing,
+* a plan with no pipelines will do nothing,
+* pipelines are executed in non-deterministic order,
 * a missing sink or component will cause the pipeline (and eventually the plan) to fail.
 
