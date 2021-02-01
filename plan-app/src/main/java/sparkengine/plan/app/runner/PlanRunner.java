@@ -17,7 +17,6 @@ import sparkengine.plan.model.mapper.impl.SqlComponentMapper;
 import sparkengine.plan.runtime.PipelineRunnersFactory;
 import sparkengine.plan.runtime.PipelineRunnersFactoryException;
 import sparkengine.plan.runtime.builder.ModelPipelineRunnersFactory;
-import sparkengine.plan.runtime.builder.datasetconsumer.WriterFormatter;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 import sparkengine.spark.sql.logicalplan.PlanExplorerException;
 import sparkengine.spark.sql.logicalplan.tablelist.TableListExplorer;

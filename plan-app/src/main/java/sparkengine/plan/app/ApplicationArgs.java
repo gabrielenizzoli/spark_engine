@@ -25,4 +25,9 @@ public class ApplicationArgs {
     @lombok.Builder.Default
     private boolean skipStackTrace = false;
 
+    @Getter
+    @Parameter(names = {"--sparkSessionReuse"}, description = "Reuse spark session if already defined")
+    @lombok.Builder.Default
+    private boolean sparkSessionReuse = false;
+
 }
