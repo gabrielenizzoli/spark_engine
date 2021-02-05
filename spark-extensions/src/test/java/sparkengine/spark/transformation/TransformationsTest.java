@@ -176,4 +176,40 @@ class TransformationsTest extends SparkSessionBase {
 
     }
 
+    @Test
+    void testSchema() {
+
+        // given
+        var schema = DataTypes.createStructType(List.of(
+                DataTypes.createStructField("n1", DataTypes.StringType, true),
+                DataTypes.createStructField("n2", DataTypes.IntegerType, true)));
+        var src = sparkSession.createDataFrame(List.of(), schema);
+        var tx = Transformations.<Row>verifySchemaWith(schema);
+
+        // when
+        var dst = tx.apply(src);
+
+        // then
+        assertEquals(schema, dst.schema());
+    }
+
+    @Test
+    void testBadSchema() {
+
+        // given
+        var schemaSrc = DataTypes.createStructType(List.of(
+                DataTypes.createStructField("n1", DataTypes.StringType, true),
+                DataTypes.createStructField("n2", DataTypes.IntegerType, true)));
+        var src = sparkSession.createDataFrame(List.of(), schemaSrc);
+
+        var schemaTest = DataTypes.createStructType(List.of(
+                DataTypes.createStructField("n2", DataTypes.IntegerType, true),
+                DataTypes.createStructField("n1", DataTypes.StringType, true)));
+        var tx = Transformations.<Row>verifySchemaWith(schemaTest);
+
+        // when
+        assertThrows(TransformationException.InvalidSchema.class, () -> tx.apply(src));
+
+    }
+
 }

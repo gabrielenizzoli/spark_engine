@@ -1,5 +1,6 @@
 package sparkengine.spark.transformation;
 
+import org.apache.spark.sql.types.StructType;
 import sparkengine.spark.sql.logicalplan.PlanMapperException;
 import sparkengine.spark.sql.logicalplan.SqlCompiler;
 import sparkengine.spark.sql.logicalplan.tableresolver.Table;
@@ -44,6 +45,16 @@ public class Transformations {
 
     public static <S, D> DataTransformation<S, D> encodeAs(Encoder<D> encoder) {
         return s -> s.as(encoder);
+    }
+
+    public static <S> DataTransformation<S, S> verifySchemaWith(StructType testSchema) {
+        return s -> {
+            var sourceSchema = s.schema();
+            if (!sourceSchema.sameType(testSchema)) {
+                throw new TransformationException.InvalidSchema(String.format("dataset schema [%s] does not match expected schema [%s]", sourceSchema, testSchema), testSchema);
+            }
+            return s;
+        };
     }
 
     public static <S> DataTransformation<S, Row> encodeAsRow() {
