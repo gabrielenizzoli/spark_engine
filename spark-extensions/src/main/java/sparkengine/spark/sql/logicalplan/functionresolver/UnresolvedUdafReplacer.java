@@ -25,6 +25,7 @@ public class UnresolvedUdafReplacer implements UnresolvedFunctionReplacer {
                 unresolvedFunction.children(),
                 udaf.getAggregator(),
                 (ExpressionEncoder) udaf.inputEncoder(),
+                (ExpressionEncoder) udaf.getAggregator().bufferEncoder(),
                 true,
                 true,
                 0,

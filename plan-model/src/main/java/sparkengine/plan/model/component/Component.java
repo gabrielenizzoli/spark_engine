@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
         @JsonSubTypes.Type(value = StreamComponent.class, name = StreamComponent.TYPE_NAME),
 
         // transformation with single input
+        @JsonSubTypes.Type(value = SchemaValidationComponent.class, name = SchemaValidationComponent.TYPE_NAME),
         @JsonSubTypes.Type(value = EncodeComponent.class, name = EncodeComponent.TYPE_NAME),
         @JsonSubTypes.Type(value = MapComponent.class, name = MapComponent.TYPE_NAME),
 

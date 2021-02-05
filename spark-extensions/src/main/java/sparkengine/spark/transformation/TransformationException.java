@@ -1,5 +1,7 @@
 package sparkengine.spark.transformation;
 
+import org.apache.spark.sql.types.StructType;
+
 public class TransformationException extends RuntimeException {
 
     public TransformationException(String str) {
@@ -10,5 +12,15 @@ public class TransformationException extends RuntimeException {
         super(str, t);
     }
 
+    public static class InvalidSchema extends TransformationException {
+
+        private final StructType expectedSchema;
+
+        public InvalidSchema(String str, StructType expectedSchema) {
+            super(str);
+            this.expectedSchema = expectedSchema;
+        }
+
+    }
 
 }
