@@ -1,16 +1,13 @@
 package sparkengine.plan.runtime.builder.dataset.supplier;
 
-import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructType;
 import sparkengine.plan.model.component.ComponentWithSingleInput;
 import sparkengine.plan.model.component.impl.EncodeComponent;
 import sparkengine.plan.model.component.impl.MapComponent;
-import sparkengine.plan.model.component.impl.SchemaComponent;
-import sparkengine.plan.model.component.impl.TransformComponent;
+import sparkengine.plan.model.component.impl.SchemaValidationComponent;
 import sparkengine.plan.runtime.builder.dataset.utils.EncoderUtils;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.transformation.DataTransformation;
-import sparkengine.spark.transformation.DataTransformationN;
 import sparkengine.spark.transformation.Transformations;
 import lombok.Builder;
 import lombok.Value;
@@ -19,7 +16,6 @@ import org.apache.spark.sql.Encoder;
 import org.apache.spark.sql.SparkSession;
 
 import javax.annotation.Nonnull;
-import java.util.stream.Collectors;
 
 @Value
 @Builder
@@ -34,8 +30,8 @@ public class DatasetSupplierForComponentWithSingleInput<T> implements DatasetSup
 
     @Override
     public Dataset<T> getDataset() throws DatasetFactoryException {
-        if (componentWithSingleInput instanceof SchemaComponent) {
-            var schemaComponent = (SchemaComponent)componentWithSingleInput;
+        if (componentWithSingleInput instanceof SchemaValidationComponent) {
+            var schemaComponent = (SchemaValidationComponent)componentWithSingleInput;
             var schema = StructType.fromDDL(schemaComponent.getSchema());
 
 

@@ -10,10 +10,10 @@ import javax.annotation.Nonnull;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = SchemaComponent.Builder.class)
-public class SchemaComponent implements ComponentWithSingleInput, ComponentWithSchema {
+@JsonDeserialize(builder = SchemaValidationComponent.Builder.class)
+public class SchemaValidationComponent implements ComponentWithSingleInput, ComponentWithSchema {
 
-    public static final String TYPE_NAME = "schema";
+    public static final String TYPE_NAME = "schemaValidation";
 
     @Nonnull
     String using;

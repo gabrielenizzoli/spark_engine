@@ -32,6 +32,11 @@ public interface ComponentMapper {
         return component;
     }
 
+    default Component mapSchemaValidationComponent(Stack<String> location,
+                                                   SchemaValidationComponent component) throws Exception {
+        return component;
+    }
+
     default Component mapEncodeComponent(Stack<String> location,
                                          EncodeComponent component) throws Exception {
         return component;

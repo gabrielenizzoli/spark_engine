@@ -60,6 +60,8 @@ public class ComponentsMapper {
                 return componentMapper.mapBatchComponent(location, (BatchComponent) component);
             if (component instanceof StreamComponent)
                 return componentMapper.mapStreamComponent(location, (StreamComponent) component);
+            if (component instanceof SchemaValidationComponent)
+                return componentMapper.mapSchemaValidationComponent(location, (SchemaValidationComponent) component);
             if (component instanceof EncodeComponent)
                 return componentMapper.mapEncodeComponent(location, (EncodeComponent) component);
             if (component instanceof TransformComponent)
