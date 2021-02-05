@@ -1,8 +1,11 @@
 package sparkengine.plan.runtime.builder.dataset.supplier;
 
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.StructType;
 import sparkengine.plan.model.component.ComponentWithSingleInput;
 import sparkengine.plan.model.component.impl.EncodeComponent;
 import sparkengine.plan.model.component.impl.MapComponent;
+import sparkengine.plan.model.component.impl.SchemaComponent;
 import sparkengine.plan.model.component.impl.TransformComponent;
 import sparkengine.plan.runtime.builder.dataset.utils.EncoderUtils;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
@@ -31,7 +34,13 @@ public class DatasetSupplierForComponentWithSingleInput<T> implements DatasetSup
 
     @Override
     public Dataset<T> getDataset() throws DatasetFactoryException {
-        if (componentWithSingleInput instanceof EncodeComponent) {
+        if (componentWithSingleInput instanceof SchemaComponent) {
+            var schemaComponent = (SchemaComponent)componentWithSingleInput;
+            var schema = StructType.fromDDL(schemaComponent.getSchema());
+
+
+
+        } else if (componentWithSingleInput instanceof EncodeComponent) {
             var encodeComponent = (EncodeComponent) componentWithSingleInput;
             Encoder<?> encoder = EncoderUtils.buildEncoder(encodeComponent.getEncodedAs());
             return (Dataset<T>) Transformations.encodeAs(encoder).apply(inputDataset);
