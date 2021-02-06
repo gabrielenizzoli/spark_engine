@@ -1,96 +1,55 @@
 package sparkengine.plan.model.sink.mapper;
 
-import sparkengine.plan.model.component.Component;
-import sparkengine.plan.model.component.impl.*;
-import sparkengine.plan.model.component.mapper.ComponentMapper;
-import sparkengine.plan.model.component.mapper.ComponentsMapper;
+import sparkengine.plan.model.sink.Sink;
+import sparkengine.plan.model.sink.impl.*;
 
 import javax.annotation.Nonnull;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Stack;
-import java.util.stream.Collectors;
 
 public class SinksMapper {
 
-    private ComponentsMapper() {
+    private SinksMapper() {
     }
 
-    public static Stack<String> locationEmpty() {
-        return new Stack<>();
-    }
+    public static Map<String, Sink> mapSinks(
+            @Nonnull SinkMapper sinkMapper,
+            @Nonnull Map<String, Sink> sinks) throws Exception {
 
-    public static Stack<String> locationOf(String... parts) {
-        var stack = new Stack<String>();
-        for (var part : parts)
-            stack.push(part);
-        return stack;
-    }
+        var newSinks = new LinkedHashMap<String, Sink>();
+        for (var nameAndSink : sinks.entrySet()) {
 
-    public static Map<String, Component> mapComponents(
-            @Nonnull Stack<String> location,
-            @Nonnull ComponentMapper componentMapper,
-            @Nonnull Map<String, Component> components) throws Exception {
+            var name = nameAndSink.getKey();
+            var component = nameAndSink.getValue();
+            var newSink = mapSink(sinkMapper, component);
 
-        var newComponents = new LinkedHashMap<String, Component>();
-        for (var nameAndComponent : components.entrySet()) {
-
-            var name = nameAndComponent.getKey();
-            var component = nameAndComponent.getValue();
-            location.push(name);
-            var newComponent = mapComponent(location, componentMapper, component);
-            location.pop();
-
-            newComponents.put(name, newComponent);
+            newSinks.put(name, newSink);
         }
 
-        return newComponents;
+        return newSinks;
     }
 
-    public static Component mapComponent(@Nonnull Stack<String> location,
-                                         @Nonnull ComponentMapper componentMapper,
-                                         @Nonnull Component component) throws Exception {
+    public static Sink mapSink(@Nonnull SinkMapper sinkMapper,
+                               @Nonnull Sink sink) throws Exception {
 
         try {
-            if (component instanceof EmptyComponent)
-                return componentMapper.mapEmptyComponent(location, (EmptyComponent) component);
-            if (component instanceof InlineComponent)
-                return componentMapper.mapInlineComponent(location, (InlineComponent) component);
-            if (component instanceof BatchComponent)
-                return componentMapper.mapBatchComponent(location, (BatchComponent) component);
-            if (component instanceof StreamComponent)
-                return componentMapper.mapStreamComponent(location, (StreamComponent) component);
-            if (component instanceof SchemaValidationComponent)
-                return componentMapper.mapSchemaValidationComponent(location, (SchemaValidationComponent) component);
-            if (component instanceof EncodeComponent)
-                return componentMapper.mapEncodeComponent(location, (EncodeComponent) component);
-            if (component instanceof TransformComponent)
-                return componentMapper.mapTransformComponent(location, (TransformComponent) component);
-            if (component instanceof UnionComponent)
-                return componentMapper.mapUnionComponent(location, (UnionComponent) component);
-            if (component instanceof FragmentComponent) {
-                FragmentComponent fragmentComponent = (FragmentComponent) component;
-                fragmentComponent = fragmentComponent.withComponents(mapComponents(location, componentMapper, fragmentComponent.getComponents()));
-                return componentMapper.mapFragmentComponent(location, fragmentComponent);
-            }
-            if (component instanceof WrapperComponent) {
-                WrapperComponent wrapperComponent = (WrapperComponent) component;
-                location.push(WRAPPER);
-                wrapperComponent = wrapperComponent.withComponent(mapComponent(location, componentMapper, wrapperComponent.getComponent()));
-                location.pop();
-                return componentMapper.mapWrapperComponent(location, wrapperComponent);
-            }
-            if (component instanceof SqlComponent) {
-                return componentMapper.mapSqlComponent(location, (SqlComponent) component);
-            }
-            if (component instanceof ReferenceComponent) {
-                return componentMapper.mapReferenceComponent(location, (ReferenceComponent) component);
-            }
+            if (sink instanceof ShowSink)
+                return sinkMapper.mapShowSink((ShowSink) sink);
+            if (sink instanceof ViewSink)
+                return sinkMapper.mapViewSink((ViewSink) sink);
+            if (sink instanceof CounterSink)
+                return sinkMapper.mapCounterSink((CounterSink) sink);
+            if (sink instanceof BatchSink)
+                return sinkMapper.mapBatchSink((BatchSink) sink);
+            if (sink instanceof StreamSink)
+                return sinkMapper.mapStreamSink((StreamSink) sink);
+            if (sink instanceof ForeachSink)
+                return sinkMapper.mapForeachSink((ForeachSink) sink);
         } catch (Exception t) {
-            throw new ComponentsMapper.InternalMapperError("issue resolving " + component.componentTypeName() + " component in location " + location.stream().collect(Collectors.joining("/")), t);
+            throw new InternalMapperError("issue resolving " + sink.sinkTypeName() + " sink", t);
         }
 
-        throw new ComponentsMapper.InternalMapperError("unmanaged " + component.componentTypeName() + " component in location " + location.stream().collect(Collectors.joining("/")));
+        throw new InternalMapperError("unmanaged " + sink.sinkTypeName() + " sink");
     }
 
     public static class InternalMapperError extends Error {
