@@ -10,6 +10,8 @@ import sparkengine.plan.model.sink.Sink;
 @JsonDeserialize(builder = ShowSink.Builder.class)
 public class ShowSink implements Sink {
 
+    public static final String TYPE_NAME = "show";
+
     @lombok.Builder.Default
     int numRows = 20;
     @lombok.Builder.Default

@@ -12,6 +12,8 @@ import javax.annotation.Nonnull;
 @JsonDeserialize(builder = CounterSink.Builder.class)
 public class CounterSink implements Sink {
 
+    public static final String TYPE_NAME = "counter";
+
     @Nonnull
     String key;
 

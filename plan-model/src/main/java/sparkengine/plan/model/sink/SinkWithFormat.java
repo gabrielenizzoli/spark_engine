@@ -1,4 +1,4 @@
-package sparkengine.plan.model.sink.impl;
+package sparkengine.plan.model.sink;
 
 import sparkengine.plan.model.sink.Sink;
 

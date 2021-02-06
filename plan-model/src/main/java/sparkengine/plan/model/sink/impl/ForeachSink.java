@@ -15,6 +15,8 @@ import java.util.Map;
 @JsonDeserialize(builder = ForeachSink.Builder.class)
 public class ForeachSink implements Sink {
 
+    public static final String TYPE_NAME = "foreach";
+
     @Nonnull
     String name;
     @Nullable

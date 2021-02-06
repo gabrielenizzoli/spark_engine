@@ -3,7 +3,7 @@ package sparkengine.plan.model.sink.impl;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Value;
-import sparkengine.plan.model.sink.Sink;
+import sparkengine.plan.model.sink.SinkWithFormat;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -13,7 +13,9 @@ import java.util.Map;
 @Value
 @Builder(setterPrefix = "with")
 @JsonDeserialize(builder = BatchSink.Builder.class)
-public class BatchSink implements Sink, SinkWithFormat {
+public class BatchSink implements SinkWithFormat {
+
+    public static final String TYPE_NAME = "batch";
 
     @Nonnull
     String format;
