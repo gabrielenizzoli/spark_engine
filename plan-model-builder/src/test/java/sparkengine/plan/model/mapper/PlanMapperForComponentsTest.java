@@ -5,14 +5,13 @@ import sparkengine.plan.model.builder.ModelFactory;
 import sparkengine.plan.model.builder.ModelFormatException;
 import sparkengine.plan.model.builder.input.FileResourceLocator;
 import sparkengine.plan.model.component.impl.WrapperComponent;
-import sparkengine.plan.model.mapper.impl.ReferenceComponentMapper;
+import sparkengine.plan.model.mapper.reference.ReferenceComponentMapper;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ComponentsPlanMapperTest {
+class PlanMapperForComponentsTest {
 
     @Test
     void testReferenceMapper() throws IOException, ModelFormatException, PlanMapperException {
@@ -21,9 +20,9 @@ class ComponentsPlanMapperTest {
         var planLocation = "src/test/resources/componentsPlanMapperTest/nestedPlan.yaml";
         var resourceLocator = new FileResourceLocator();
         var plan = ModelFactory.readPlanFromYaml(resourceLocator.getInputStreamFactory(planLocation));
-        var resourceLocationBuilder = new ComponentResourceLocationBuilder(planLocation, "_", "yaml");
+        var resourceLocationBuilder = new ResourceLocationBuilder(planLocation, "_", "yaml");
         var referenceComponentMapper = ReferenceComponentMapper.of(resourceLocationBuilder, resourceLocator);
-        var componentsPlanMapper = ComponentsPlanMapper.of(referenceComponentMapper);
+        var componentsPlanMapper = PlanMapperForComponents.of(referenceComponentMapper);
 
         // when
         var newPlan = componentsPlanMapper.map(plan);
@@ -40,9 +39,9 @@ class ComponentsPlanMapperTest {
         var planLocation = "src/test/resources/componentsPlanMapperTest/failedPlan.yaml";
         var resourceLocator = new FileResourceLocator();
         var plan = ModelFactory.readPlanFromYaml(resourceLocator.getInputStreamFactory(planLocation));
-        var resourceLocationBuilder = new ComponentResourceLocationBuilder(planLocation, "_", "yaml");
+        var resourceLocationBuilder = new ResourceLocationBuilder(planLocation, "_", "yaml");
         var referenceComponentMapper = ReferenceComponentMapper.of(resourceLocationBuilder, resourceLocator);
-        var componentsPlanMapper = ComponentsPlanMapper.of(referenceComponentMapper);
+        var componentsPlanMapper = PlanMapperForComponents.of(referenceComponentMapper);
 
         // when
         assertThrows(PlanMapperException.class, () -> componentsPlanMapper.map(plan));

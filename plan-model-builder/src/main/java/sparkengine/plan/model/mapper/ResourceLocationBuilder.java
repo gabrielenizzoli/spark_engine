@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 import java.util.Stack;
 
 @Value
-public class ComponentResourceLocationBuilder {
+public class ResourceLocationBuilder {
 
     @With
     @Nonnull

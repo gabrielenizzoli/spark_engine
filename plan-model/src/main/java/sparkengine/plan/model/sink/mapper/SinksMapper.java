@@ -6,6 +6,7 @@ import sparkengine.plan.model.sink.impl.*;
 import javax.annotation.Nonnull;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Stack;
 
 public class SinksMapper {
 
@@ -13,6 +14,7 @@ public class SinksMapper {
     }
 
     public static Map<String, Sink> mapSinks(
+            @Nonnull Stack<String> location,
             @Nonnull SinkMapper sinkMapper,
             @Nonnull Map<String, Sink> sinks) throws Exception {
 
@@ -21,7 +23,9 @@ public class SinksMapper {
 
             var name = nameAndSink.getKey();
             var component = nameAndSink.getValue();
-            var newSink = mapSink(sinkMapper, component);
+            location.push(name);
+            var newSink = mapSink(location, sinkMapper, component);
+            location.pop();
 
             newSinks.put(name, newSink);
         }
@@ -29,22 +33,26 @@ public class SinksMapper {
         return newSinks;
     }
 
-    public static Sink mapSink(@Nonnull SinkMapper sinkMapper,
-                               @Nonnull Sink sink) throws Exception {
+    public static Sink mapSink(
+            @Nonnull Stack<String> location,
+            @Nonnull SinkMapper sinkMapper,
+            @Nonnull Sink sink) throws Exception {
 
         try {
             if (sink instanceof ShowSink)
-                return sinkMapper.mapShowSink((ShowSink) sink);
+                return sinkMapper.mapShowSink(location, (ShowSink) sink);
             if (sink instanceof ViewSink)
-                return sinkMapper.mapViewSink((ViewSink) sink);
+                return sinkMapper.mapViewSink(location, (ViewSink) sink);
             if (sink instanceof CounterSink)
-                return sinkMapper.mapCounterSink((CounterSink) sink);
+                return sinkMapper.mapCounterSink(location, (CounterSink) sink);
             if (sink instanceof BatchSink)
-                return sinkMapper.mapBatchSink((BatchSink) sink);
+                return sinkMapper.mapBatchSink(location, (BatchSink) sink);
             if (sink instanceof StreamSink)
-                return sinkMapper.mapStreamSink((StreamSink) sink);
+                return sinkMapper.mapStreamSink(location, (StreamSink) sink);
             if (sink instanceof ForeachSink)
-                return sinkMapper.mapForeachSink((ForeachSink) sink);
+                return sinkMapper.mapForeachSink(location, (ForeachSink) sink);
+            if (sink instanceof ReferenceSink)
+                return sinkMapper.mapReferenceSink(location, (ReferenceSink) sink);
         } catch (Exception t) {
             throw new InternalMapperError("issue resolving " + sink.sinkTypeName() + " sink", t);
         }

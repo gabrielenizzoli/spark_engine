@@ -34,7 +34,7 @@ public class ModelFactory {
             return YAML_OBJECT_MAPPER.readValue(inputStream, new TypeReference<Map<String, Component>>() {
             });
         } catch (JsonProcessingException e) {
-            throw new ModelFormatException("component format is not as expected", e);
+            throw new ModelFormatException("component map format is not as expected", e);
         }
     }
 
@@ -42,14 +42,26 @@ public class ModelFactory {
         return ComponentCatalog.ofMap(readComponentMapFromYaml(inputStreamFactory));
     }
 
-    public static SinkCatalog readSinkMapFromYaml(@Nonnull InputStreamFactory inputStreamFactory) throws IOException, ModelFormatException {
+    public static Sink readSinkFromYaml(@Nonnull InputStreamFactory inputStreamFactory) throws IOException, ModelFormatException {
+        try (InputStream inputStream = inputStreamFactory.getInputStream()) {
+            return YAML_OBJECT_MAPPER.readValue(inputStream, Sink.class);
+        } catch (JsonProcessingException e) {
+            throw new ModelFormatException("sink format is not as expected", e);
+        }
+    }
+
+    public static Map<String, Sink> readSinkMapFromYaml(@Nonnull InputStreamFactory inputStreamFactory) throws IOException, ModelFormatException {
         try (InputStream inputStream = inputStreamFactory.getInputStream()) {
             var map = YAML_OBJECT_MAPPER.readValue(inputStream, new TypeReference<Map<String, Sink>>() {
             });
-            return SinkCatalog.ofMap(map);
+            return map;
         } catch (JsonProcessingException e) {
-            throw new ModelFormatException("component format is not as expected", e);
+            throw new ModelFormatException("sink map format is not as expected", e);
         }
+    }
+
+    public static SinkCatalog readSinkCatalogFromYaml(@Nonnull InputStreamFactory inputStreamFactory) throws IOException, ModelFormatException {
+        return SinkCatalog.ofMap(readSinkMapFromYaml(inputStreamFactory));
     }
 
     public static Plan readPlanFromYaml(@Nonnull InputStreamFactory inputStreamFactory) throws IOException, ModelFormatException {

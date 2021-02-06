@@ -1,8 +1,8 @@
 package sparkengine.plan.model.mapper;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Value;
-import lombok.experimental.SuperBuilder;
+import sparkengine.plan.model.LocationUtils;
 import sparkengine.plan.model.Plan;
 import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.mapper.ComponentMapper;
@@ -14,14 +14,19 @@ import sparkengine.plan.model.sink.mapper.SinksMapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Stack;
 
-@Value(staticConstructor = "of")
+@Value
+@Builder
 public class DefaultPlanMapper implements PlanMapper {
 
     @Nullable
     ComponentMapper componentMapper;
     @Nullable
     SinkMapper sinkMapper;
+    @Nonnull
+    @lombok.Builder.Default
+    Stack<String> location = LocationUtils.empty();
 
     @Override
     public @Nonnull
@@ -41,7 +46,7 @@ public class DefaultPlanMapper implements PlanMapper {
             return components;
 
         try {
-            return ComponentsMapper.mapComponents(ComponentsMapper.locationEmpty(), componentMapper, components);
+            return ComponentsMapper.mapComponents(location, componentMapper, components);
         } catch (Exception | ComponentsMapper.InternalMapperError e) {
             throw new PlanMapperException("exception resolving pan with resolver " + this.getClass().getName(), e);
         }
@@ -54,7 +59,7 @@ public class DefaultPlanMapper implements PlanMapper {
             return sinks;
 
         try {
-            return SinksMapper.mapSinks(sinkMapper, sinks);
+            return SinksMapper.mapSinks(location, sinkMapper, sinks);
         } catch (Exception | SinksMapper.InternalMapperError e) {
             throw new PlanMapperException("exception resolving pan with resolver " + this.getClass().getName(), e);
         }

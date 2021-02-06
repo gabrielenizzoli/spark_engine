@@ -16,7 +16,8 @@ import java.util.stream.Collectors;
         @JsonSubTypes.Type(value = ForeachSink.class, name = ForeachSink.TYPE_NAME),
         @JsonSubTypes.Type(value = ShowSink.class, name = ShowSink.TYPE_NAME),
         @JsonSubTypes.Type(value = ViewSink.class, name = ViewSink.TYPE_NAME),
-        @JsonSubTypes.Type(value = CounterSink.class, name = CounterSink.TYPE_NAME)
+        @JsonSubTypes.Type(value = CounterSink.class, name = CounterSink.TYPE_NAME),
+        @JsonSubTypes.Type(value = ReferenceSink.class, name = ReferenceSink.TYPE_NAME)
 })
 public interface Sink {
 

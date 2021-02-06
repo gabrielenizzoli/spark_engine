@@ -1,8 +1,7 @@
-package sparkengine.plan.model.mapper.impl;
+package sparkengine.plan.model.mapper.sql;
 
 import org.junit.jupiter.api.Test;
 import sparkengine.plan.model.component.impl.SqlComponent;
-import sparkengine.plan.model.mapper.PlanMapperException;
 
 import java.util.List;
 import java.util.Set;
@@ -20,7 +19,7 @@ class SqlComponentMapperTest {
                 .withUsing(List.of("a", "b"))
                 .withSql("select a.id from a join b on a.id = b.id")
                 .build();
-        var resolvedComponent = (SqlComponent) SqlComponentMapper.of(SqlComponentMapper.ResolverMode.VALIDATE, sql -> Set.of("b", "a")).mapSqlComponent(new Stack<>(), sqlComponent);
+        var resolvedComponent = (SqlComponent) SqlComponentMapper.of(ResolverMode.VALIDATE, sql -> Set.of("b", "a")).mapSqlComponent(new Stack<>(), sqlComponent);
         assertEquals(List.of("a", "b"), resolvedComponent.getUsing());
 
     }
@@ -31,7 +30,7 @@ class SqlComponentMapperTest {
                 .withUsing(null)
                 .withSql("select a.id from a join b on a.id = b.id")
                 .build();
-        var resolvedComponent = (SqlComponent) SqlComponentMapper.of(SqlComponentMapper.ResolverMode.INFER, sql -> Set.of("b", "a")).mapSqlComponent(new Stack<>(), sqlComponent);
+        var resolvedComponent = (SqlComponent) SqlComponentMapper.of(ResolverMode.INFER, sql -> Set.of("b", "a")).mapSqlComponent(new Stack<>(), sqlComponent);
         assertEquals(List.of("a", "b"), resolvedComponent.getUsing());
     }
 
@@ -41,7 +40,7 @@ class SqlComponentMapperTest {
                 .withUsing(List.of("a"))
                 .withSql("select a.id from a join b on a.id = b.id")
                 .build();
-        assertThrows(Exception.class, () -> SqlComponentMapper.of(SqlComponentMapper.ResolverMode.VALIDATE, sql -> Set.of("b", "a")).mapSqlComponent(new Stack<>(), sqlComponent));
+        assertThrows(Exception.class, () -> SqlComponentMapper.of(ResolverMode.VALIDATE, sql -> Set.of("b", "a")).mapSqlComponent(new Stack<>(), sqlComponent));
     }
 
     @Test
@@ -50,7 +49,7 @@ class SqlComponentMapperTest {
                 .withUsing(List.of())
                 .withSql("select a.id from a join b on a.id = b.id")
                 .build();
-        assertThrows(Exception.class, () -> SqlComponentMapper.of(SqlComponentMapper.ResolverMode.VALIDATE, sql -> Set.of("b", "a")).mapSqlComponent(new Stack<>(), sqlComponent));
+        assertThrows(Exception.class, () -> SqlComponentMapper.of(ResolverMode.VALIDATE, sql -> Set.of("b", "a")).mapSqlComponent(new Stack<>(), sqlComponent));
     }
 
     @Test
@@ -59,7 +58,7 @@ class SqlComponentMapperTest {
                 .withUsing(List.of())
                 .withSql("select a.id from a join b on a.id = b.id")
                 .build();
-        var resolvedComponent = (SqlComponent) SqlComponentMapper.of(SqlComponentMapper.ResolverMode.SKIP, sql -> Set.of("b", "a")).mapSqlComponent(new Stack<>(), sqlComponent);
+        var resolvedComponent = (SqlComponent) SqlComponentMapper.of(ResolverMode.SKIP, sql -> Set.of("b", "a")).mapSqlComponent(new Stack<>(), sqlComponent);
         assertEquals(List.of(), resolvedComponent.getUsing());
     }
 

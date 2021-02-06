@@ -12,8 +12,10 @@ import sparkengine.plan.model.builder.ModelFormatException;
 import sparkengine.plan.model.builder.input.AppResourceLocator;
 import sparkengine.plan.model.builder.input.InputStreamFactory;
 import sparkengine.plan.model.mapper.*;
-import sparkengine.plan.model.mapper.impl.ReferenceComponentMapper;
-import sparkengine.plan.model.mapper.impl.SqlComponentMapper;
+import sparkengine.plan.model.mapper.reference.ReferenceComponentMapper;
+import sparkengine.plan.model.mapper.reference.ReferencePlanMapper;
+import sparkengine.plan.model.mapper.sql.SqlComponentMapper;
+import sparkengine.plan.model.mapper.sql.SqlPlanMapper;
 import sparkengine.plan.runtime.PipelineRunnersFactory;
 import sparkengine.plan.runtime.PipelineRunnersFactoryException;
 import sparkengine.plan.runtime.builder.ModelPipelineRunnersFactory;
@@ -102,22 +104,19 @@ public class PlanRunner {
     }
 
     private PlanMapper getReferencePlanResolver() {
-        var resourceLocationBuilder = new ComponentResourceLocationBuilder(runtimeArgs.getPlanLocation(), "_", "yaml");
+        var resourceLocationBuilder = new ResourceLocationBuilder(runtimeArgs.getPlanLocation(), "_", "yaml");
         var resourceLocator = new AppResourceLocator();
-        var referenceMapper = ReferenceComponentMapper.of(resourceLocationBuilder, resourceLocator);
-
-        return ComponentsPlanMapper.of(referenceMapper);
+        return ReferencePlanMapper.of(resourceLocationBuilder, resourceLocator);
     }
 
     private PlanMapper getSqlResolver() {
-        var sqlComponentResolver = SqlComponentMapper.of(runtimeArgs.getSqlResolutionMode(), sql -> {
+        return SqlPlanMapper.of(runtimeArgs.getSqlResolutionMode(), sql -> {
             try {
                 return TableListExplorer.findTableListInSql(sparkSession, sql);
             } catch (PlanExplorerException e) {
                 throw new PlanMapperException(String.format("error resolving sql tables in sql [%s]", sql));
             }
         });
-        return ComponentsPlanMapper.of(sqlComponentResolver);
     }
 
     private void executePipelines(PipelineRunnersFactory pipelineRunnersFactory)

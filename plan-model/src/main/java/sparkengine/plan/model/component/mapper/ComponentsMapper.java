@@ -1,5 +1,6 @@
 package sparkengine.plan.model.component.mapper;
 
+import sparkengine.plan.model.LocationUtils;
 import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.impl.*;
 
@@ -16,17 +17,6 @@ public class ComponentsMapper {
     private ComponentsMapper() {
     }
 
-    public static Stack<String> locationEmpty() {
-        return new Stack<>();
-    }
-
-    public static Stack<String> locationOf(String... parts) {
-        var stack = new Stack<String>();
-        for (var part : parts)
-            stack.push(part);
-        return stack;
-    }
-
     public static Map<String, Component> mapComponents(
             @Nonnull Stack<String> location,
             @Nonnull ComponentMapper componentMapper,
@@ -37,10 +27,7 @@ public class ComponentsMapper {
 
             var name = nameAndComponent.getKey();
             var component = nameAndComponent.getValue();
-            location.push(name);
-            var newComponent = mapComponent(location, componentMapper, component);
-            location.pop();
-
+            var newComponent = mapComponent(LocationUtils.push(location, name), componentMapper, component);
             newComponents.put(name, newComponent);
         }
 
@@ -75,9 +62,7 @@ public class ComponentsMapper {
             }
             if (component instanceof WrapperComponent) {
                 WrapperComponent wrapperComponent = (WrapperComponent) component;
-                location.push(WRAPPER);
-                wrapperComponent = wrapperComponent.withComponent(mapComponent(location, componentMapper, wrapperComponent.getComponent()));
-                location.pop();
+                wrapperComponent = wrapperComponent.withComponent(mapComponent(LocationUtils.push(location, WRAPPER), componentMapper, wrapperComponent.getComponent()));
                 return componentMapper.mapWrapperComponent(location, wrapperComponent);
             }
             if (component instanceof SqlComponent) {
