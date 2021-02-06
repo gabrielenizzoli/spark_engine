@@ -6,7 +6,7 @@ import sparkengine.plan.model.builder.input.FileResourceLocator;
 import sparkengine.plan.model.component.impl.ReferenceComponent;
 import sparkengine.plan.model.component.impl.SqlComponent;
 import sparkengine.plan.model.LocationUtils;
-import sparkengine.plan.model.mapper.ResourceLocationBuilder;
+import sparkengine.plan.model.builder.ResourceLocationBuilder;
 import sparkengine.plan.model.mapper.reference.ReferenceComponentMapper;
 
 import java.io.IOException;

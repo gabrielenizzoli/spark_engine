@@ -1,4 +1,4 @@
-package sparkengine.plan.model.mapper;
+package sparkengine.plan.model.builder;
 
 import lombok.Value;
 import lombok.With;

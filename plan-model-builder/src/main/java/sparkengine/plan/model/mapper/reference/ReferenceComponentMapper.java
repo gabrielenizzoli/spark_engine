@@ -10,7 +10,7 @@ import sparkengine.plan.model.component.impl.ReferenceComponent;
 import sparkengine.plan.model.component.mapper.ComponentMapper;
 import sparkengine.plan.model.component.mapper.ComponentsMapper;
 import sparkengine.plan.model.LocationUtils;
-import sparkengine.plan.model.mapper.ResourceLocationBuilder;
+import sparkengine.plan.model.builder.ResourceLocationBuilder;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;

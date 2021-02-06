@@ -3,7 +3,7 @@ package sparkengine.plan.model.mapper.reference;
 import sparkengine.plan.model.builder.input.InputStreamResourceLocator;
 import sparkengine.plan.model.mapper.DefaultPlanMapper;
 import sparkengine.plan.model.mapper.PlanMapper;
-import sparkengine.plan.model.mapper.ResourceLocationBuilder;
+import sparkengine.plan.model.builder.ResourceLocationBuilder;
 
 import javax.annotation.Nonnull;
 

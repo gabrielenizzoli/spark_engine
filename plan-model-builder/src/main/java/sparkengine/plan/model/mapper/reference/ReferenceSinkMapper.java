@@ -1,19 +1,14 @@
 package sparkengine.plan.model.mapper.reference;
 
-import lombok.AllArgsConstructor;
-import lombok.Value;
-import lombok.With;
 import sparkengine.plan.model.LocationUtils;
 import sparkengine.plan.model.Reference;
 import sparkengine.plan.model.builder.ModelFactory;
 import sparkengine.plan.model.builder.input.InputStreamResourceLocator;
 import sparkengine.plan.model.component.mapper.ComponentMapper;
-import sparkengine.plan.model.mapper.ResourceLocationBuilder;
+import sparkengine.plan.model.builder.ResourceLocationBuilder;
 import sparkengine.plan.model.mapper.SinkMapperForComponents;
 import sparkengine.plan.model.sink.Sink;
-import sparkengine.plan.model.sink.impl.ForeachSink;
 import sparkengine.plan.model.sink.impl.ReferenceSink;
-import sparkengine.plan.model.sink.mapper.SinkMapper;
 import sparkengine.plan.model.sink.mapper.SinksMapper;
 
 import javax.annotation.Nonnull;
