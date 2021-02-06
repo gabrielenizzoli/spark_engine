@@ -8,11 +8,11 @@ This project is based on a model abstraction to describe a dataset.
 The final goal of this model is to be able to describe how a spark dataset can be composed.
 Since in spark a dataset is defined as a set of operations on data, a component encapsulate a logical subset of these operations.
 For example, we might be interested in acquiring data from a source, modify it to fit a given schema, aggregate it so that we can compute some statistics, join it with a different dataset, and finally save the outcome somewhere.
-All these steps can be separated and described as single atomic operations, that can be tested in isolation, and later aggregated to create a complete end-to-end workflow.
+All these steps can be separated and described as standalone operations that can be tested in isolation, and later composed to create a complete end-to-end workflow.
 
-An additional advantage to have a model describing a set of transformations, is that it can be expressed in a shareable format, usually yaml (or json).
+An additional advantage to have a model describing a set of transformations is that it can be expressed in a shareable format (usually yaml or json).
 
-In the spark engine project, these pieces that describe a dataset are called **components**.
+In the spark engine project, these parts that describe a dataset are called **components**.
 
 ## Dataset Components
 

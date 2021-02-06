@@ -1,5 +1,5 @@
 ---
-sort: 6
+sort: 1
 ---
 
 # The command line application
@@ -31,21 +31,40 @@ cd spark/bin
 ## Command line help
 
 Usage:
-```dtd
-Usage: sparkengine.plan.app.Start [options]
+```
+Usage: <main class> [options]
   Options:
     -h, --help
       Help usage
+  * -p, --planLocation
+      Location of the execution plan (in yaml format)
+    -s, --sqlResolution
+      For sql components, provide validation and/or dependency discovery
+      Default: VALIDATE
+      Possible Values: [SKIP, VALIDATE, INFER]
+    --skipRun
+      Do everything, but do not run the pipelines
+      Default: false
+    --pipelines
+      Provide an list of pipelines to execute (if pipeline is not in plan, it 
+      will be ignored)
     -l, --log
       Set main application log level (one of 
       OFF,FATAL,ERROR,WARN,INFO,DEBUG,TRACE,ALL) 
       Default: INFO
-  * -p, -planLocation
-      Location of the execution plan (in yaml format)
-    -skipFaultyPipelines
+    --parallelPipelineExecution
+      Executes the pipelines of the plan in parallel (instead of sequentially)
+      Default: false
+    --skipFaultyPipelines
       Skip a faulty pipeline (instead of exiting the application)
       Default: false
-    -parallelPipelineExecution
-      Executes the pipelines of the plan in parallel (instead of sequentially)
+    --skipResolution
+      Skip any resolution of the plan (plan will be executed as-is!)
+      Default: false
+    --skipStackTrace
+      Skip full stackTrace
+      Default: false
+    --writeResolvedPlan
+      write the resolved plan (to a temporary location)
       Default: false
 ```

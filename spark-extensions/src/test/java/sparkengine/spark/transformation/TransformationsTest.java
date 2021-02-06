@@ -181,10 +181,12 @@ class TransformationsTest extends SparkSessionBase {
 
         // given
         var schema = DataTypes.createStructType(List.of(
-                DataTypes.createStructField("n1", DataTypes.StringType, true),
-                DataTypes.createStructField("n2", DataTypes.IntegerType, true)));
+                DataTypes.createStructField("key", DataTypes.StringType, true),
+                DataTypes.createStructField("value", DataTypes.IntegerType, true)));
         var src = sparkSession.createDataFrame(List.of(), schema);
         var tx = Transformations.<Row>verifySchemaWith(schema);
+
+        System.out.println(schema.toDDL());
 
         // when
         var dst = tx.apply(src);

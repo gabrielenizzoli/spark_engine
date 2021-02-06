@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 @JsonDeserialize(builder = SchemaValidationComponent.Builder.class)
 public class SchemaValidationComponent implements ComponentWithSingleInput, ComponentWithSchema {
 
-    public static final String TYPE_NAME = "schemaValidation";
+    public static final String TYPE_NAME = "schemaTest";
 
     @Nonnull
     String using;
