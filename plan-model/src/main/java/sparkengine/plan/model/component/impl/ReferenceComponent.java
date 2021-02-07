@@ -3,7 +3,7 @@ package sparkengine.plan.model.component.impl;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Value;
-import sparkengine.plan.model.Reference;
+import sparkengine.plan.model.common.Reference;
 import sparkengine.plan.model.component.ComponentWithMultipleInputs;
 import sparkengine.plan.model.component.ComponentWithNoRuntime;
 

@@ -1,12 +1,12 @@
 package sparkengine.plan.model.sink.mapper;
 
+import sparkengine.plan.model.common.Location;
 import sparkengine.plan.model.sink.Sink;
 import sparkengine.plan.model.sink.impl.*;
 
 import javax.annotation.Nonnull;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Stack;
 
 public class SinksMapper {
 
@@ -14,7 +14,7 @@ public class SinksMapper {
     }
 
     public static Map<String, Sink> mapSinks(
-            @Nonnull Stack<String> location,
+            @Nonnull Location location,
             @Nonnull SinkMapper sinkMapper,
             @Nonnull Map<String, Sink> sinks) throws Exception {
 
@@ -23,9 +23,7 @@ public class SinksMapper {
 
             var name = nameAndSink.getKey();
             var component = nameAndSink.getValue();
-            location.push(name);
-            var newSink = mapSink(location, sinkMapper, component);
-            location.pop();
+            var newSink = mapSink(location.push(name), sinkMapper, component);
 
             newSinks.put(name, newSink);
         }
@@ -34,7 +32,7 @@ public class SinksMapper {
     }
 
     public static Sink mapSink(
-            @Nonnull Stack<String> location,
+            @Nonnull Location location,
             @Nonnull SinkMapper sinkMapper,
             @Nonnull Sink sink) throws Exception {
 

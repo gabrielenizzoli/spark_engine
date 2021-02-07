@@ -1,6 +1,6 @@
-package sparkengine.plan.model.mapper;
+package sparkengine.plan.model.plan.mapper;
 
-import sparkengine.plan.model.Plan;
+import sparkengine.plan.model.plan.Plan;
 
 import javax.annotation.Nonnull;
 

@@ -1,9 +1,9 @@
-package sparkengine.plan.model.mapper;
+package sparkengine.plan.model.plan.mapper;
 
 import lombok.Builder;
 import lombok.Value;
-import sparkengine.plan.model.LocationUtils;
-import sparkengine.plan.model.Plan;
+import sparkengine.plan.model.common.Location;
+import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.mapper.ComponentMapper;
 import sparkengine.plan.model.component.mapper.ComponentsMapper;
@@ -14,7 +14,6 @@ import sparkengine.plan.model.sink.mapper.SinksMapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
-import java.util.Stack;
 
 @Value
 @Builder
@@ -26,7 +25,7 @@ public class DefaultPlanMapper implements PlanMapper {
     SinkMapper sinkMapper;
     @Nonnull
     @lombok.Builder.Default
-    Stack<String> location = LocationUtils.empty();
+    Location location = Location.empty();
 
     @Override
     public @Nonnull

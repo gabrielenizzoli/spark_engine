@@ -1,4 +1,4 @@
-package sparkengine.plan.model;
+package sparkengine.plan.model.common;
 
 public interface Reference {
 

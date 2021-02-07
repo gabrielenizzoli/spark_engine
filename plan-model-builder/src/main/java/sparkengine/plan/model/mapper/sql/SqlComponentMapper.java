@@ -1,6 +1,7 @@
 package sparkengine.plan.model.mapper.sql;
 
 import lombok.Value;
+import sparkengine.plan.model.common.Location;
 import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.impl.SqlComponent;
 import sparkengine.plan.model.component.mapper.ComponentMapper;
@@ -8,7 +9,6 @@ import sparkengine.plan.model.component.mapper.ComponentMapper;
 import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Stack;
 import java.util.stream.Collectors;
 
 @Value(staticConstructor = "of")
@@ -20,7 +20,7 @@ public class SqlComponentMapper implements ComponentMapper {
     SqlReferenceFinder sqlReferenceFinder;
 
     @Override
-    public Component mapSqlComponent(Stack<String> location, SqlComponent component) throws Exception {
+    public Component mapSqlComponent(Location location, SqlComponent component) throws Exception {
 
         if (resolverMode == ResolverMode.SKIP) {
             return component;

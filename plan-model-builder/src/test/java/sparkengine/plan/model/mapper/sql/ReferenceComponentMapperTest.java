@@ -1,11 +1,11 @@
 package sparkengine.plan.model.mapper.sql;
 
 import org.junit.jupiter.api.Test;
-import sparkengine.plan.model.Reference;
+import sparkengine.plan.model.common.Location;
+import sparkengine.plan.model.common.Reference;
 import sparkengine.plan.model.builder.input.FileResourceLocator;
 import sparkengine.plan.model.component.impl.ReferenceComponent;
 import sparkengine.plan.model.component.impl.SqlComponent;
-import sparkengine.plan.model.LocationUtils;
 import sparkengine.plan.model.builder.ResourceLocationBuilder;
 import sparkengine.plan.model.mapper.reference.ReferenceComponentMapper;
 
@@ -23,7 +23,7 @@ class ReferenceComponentMapperTest {
         var resourceLocationBuilder = new ResourceLocationBuilder("src/test/resources/referenceComponentMapperTest/plan.yaml", "_", "yaml");
         var referenceComponentMapper = ReferenceComponentMapper.of(resourceLocationBuilder, new FileResourceLocator());
         var referenceComponent = ReferenceComponent.builder().withMode(Reference.ReferenceMode.RELATIVE).build();
-        var location = LocationUtils.of("location");
+        var location = Location.of("location");
 
         // when
         var referencedComponent = referenceComponentMapper.mapReferenceComponent(location, referenceComponent);
@@ -39,7 +39,7 @@ class ReferenceComponentMapperTest {
         var resourceLocationBuilder = new ResourceLocationBuilder("src/test/resources/referenceComponentMapperTest/plan.yaml", "_", "yaml");
         var referenceComponentMapper = ReferenceComponentMapper.of(resourceLocationBuilder, new FileResourceLocator());
         var referenceComponent = ReferenceComponent.builder().withMode(Reference.ReferenceMode.RELATIVE).build();
-        var location = LocationUtils.of("location1", "location2");
+        var location = Location.of("location1", "location2");
 
         // when
         var referencedComponent = referenceComponentMapper.mapReferenceComponent(location, referenceComponent);
@@ -55,7 +55,7 @@ class ReferenceComponentMapperTest {
         var resourceLocationBuilder = new ResourceLocationBuilder("src/test/resources/referenceComponentMapperTest/plan.yaml", "_", "yaml");
         var referenceComponentMapper = ReferenceComponentMapper.of(resourceLocationBuilder, new FileResourceLocator());
         var referenceComponent = ReferenceComponent.builder().withMode(Reference.ReferenceMode.RELATIVE).build();
-        var location = LocationUtils.of("location2", "location1");
+        var location = Location.of("location2", "location1");
 
         // then
         assertThrows(IOException.class, () -> referenceComponentMapper.mapReferenceComponent(location, referenceComponent));
@@ -71,7 +71,7 @@ class ReferenceComponentMapperTest {
                 .withMode(Reference.ReferenceMode.ABSOLUTE)
                 .withRef("src/test/resources/referenceComponentMapperTest/plan_location.yaml")
                 .build();
-        var location = LocationUtils.of("another-location");
+        var location = Location.of("another-location");
 
         // when
         var referencedComponent = referenceComponentMapper.mapReferenceComponent(location, referenceComponent);

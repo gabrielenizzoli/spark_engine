@@ -1,4 +1,4 @@
-package sparkengine.plan.model.mapper;
+package sparkengine.plan.model.plan.mapper;
 
 public class PlanMapperException extends Exception {
 

@@ -8,6 +8,7 @@ import sparkengine.plan.model.builder.input.FileResourceLocator;
 import sparkengine.plan.model.component.impl.WrapperComponent;
 import sparkengine.plan.model.mapper.reference.ReferenceComponentMapper;
 import sparkengine.plan.model.mapper.reference.ReferencePlanMapper;
+import sparkengine.plan.model.plan.mapper.PlanMapperException;
 
 import java.io.IOException;
 

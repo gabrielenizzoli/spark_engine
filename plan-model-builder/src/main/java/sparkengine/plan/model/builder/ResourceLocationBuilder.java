@@ -2,10 +2,9 @@ package sparkengine.plan.model.builder;
 
 import lombok.Value;
 import lombok.With;
-import sparkengine.plan.model.builder.URIBuilder;
+import sparkengine.plan.model.common.Location;
 
 import javax.annotation.Nonnull;
-import java.util.Stack;
 
 @Value
 public class ResourceLocationBuilder {
@@ -18,11 +17,11 @@ public class ResourceLocationBuilder {
     @Nonnull
     String extension;
 
-    public String build(Stack<String> parts) {
+    public String build(Location location) {
         var rootURI = URIBuilder.ofString(root);
         var planName = rootURI.getLastPartFromPath().replaceAll("\\..*$", "");
         var cleanedRootURI = rootURI.removePartFromPath().addPartToPath(planName);
-        var partsString = parts.isEmpty() ? "" : locationJoin + String.join(locationJoin, parts);
+        var partsString = location.isEmpty() ? "" : locationJoin + location.joinWith(locationJoin);
         return cleanedRootURI.addToPath(partsString + "." + extension).toString();
     }
 

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.catalog.ComponentCatalog;
 import sparkengine.plan.model.component.catalog.ComponentCatalogException;
-import sparkengine.plan.model.Plan;
+import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.sink.Sink;
 import sparkengine.plan.model.sink.catalog.SinkCatalog;
 import sparkengine.plan.model.sink.catalog.SinkCatalogException;

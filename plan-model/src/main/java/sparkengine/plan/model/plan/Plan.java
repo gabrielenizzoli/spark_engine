@@ -1,4 +1,4 @@
-package sparkengine.plan.model;
+package sparkengine.plan.model.plan;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
@@ -7,7 +7,6 @@ import lombok.With;
 import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.sink.Sink;
 
-import java.util.List;
 import java.util.Map;
 
 @Value

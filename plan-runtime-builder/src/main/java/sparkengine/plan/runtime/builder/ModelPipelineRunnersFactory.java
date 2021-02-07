@@ -2,7 +2,7 @@ package sparkengine.plan.runtime.builder;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.SparkSession;
-import sparkengine.plan.model.Plan;
+import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.component.catalog.ComponentCatalog;
 import sparkengine.plan.model.sink.catalog.SinkCatalogFromMap;
 import sparkengine.plan.runtime.PipelineRunnersFactory;

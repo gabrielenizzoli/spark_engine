@@ -1,6 +1,6 @@
 package sparkengine.plan.model.mapper.sql;
 
-import sparkengine.plan.model.mapper.PlanMapperException;
+import sparkengine.plan.model.plan.mapper.PlanMapperException;
 
 import java.util.Set;
 

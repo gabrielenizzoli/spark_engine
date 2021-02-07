@@ -1,4 +1,4 @@
-package sparkengine.plan.model;
+package sparkengine.plan.model.plan;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
