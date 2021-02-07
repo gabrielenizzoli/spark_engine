@@ -1,7 +1,7 @@
 package sparkengine.plan.runtime.builder.datasetconsumer;
 
 import sparkengine.plan.model.plan.Plan;
-import sparkengine.plan.runtime.builder.ModelPipelineRunnersFactory;
+import sparkengine.plan.runtime.builder.runner.ModelPipelineRunnersFactory;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumer;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 import lombok.Builder;

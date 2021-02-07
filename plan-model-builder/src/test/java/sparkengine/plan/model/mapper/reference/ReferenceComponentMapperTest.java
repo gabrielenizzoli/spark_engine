@@ -1,4 +1,4 @@
-package sparkengine.plan.model.mapper.sql;
+package sparkengine.plan.model.mapper.reference;
 
 import org.junit.jupiter.api.Test;
 import sparkengine.plan.model.common.Location;

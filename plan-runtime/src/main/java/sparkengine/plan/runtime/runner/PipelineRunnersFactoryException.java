@@ -1,4 +1,4 @@
-package sparkengine.plan.runtime;
+package sparkengine.plan.runtime.runner;
 
 public class PipelineRunnersFactoryException extends Exception {
 

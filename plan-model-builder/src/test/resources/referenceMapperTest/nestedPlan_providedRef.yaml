@@ -6,4 +6,4 @@ components:
   component2:
     type: ref
     mode: ABSOLUTE
-    ref: src/test/resources/componentsPlanMapperTest/absoluteComponentReference.yaml
+    ref: src/test/resources/referenceMapperTest/absoluteComponentReference.yaml

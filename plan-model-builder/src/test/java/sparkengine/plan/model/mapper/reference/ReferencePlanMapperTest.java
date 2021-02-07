@@ -1,4 +1,4 @@
-package sparkengine.plan.model.mapper;
+package sparkengine.plan.model.mapper.reference;
 
 import org.junit.jupiter.api.Test;
 import sparkengine.plan.model.builder.ModelFactory;
@@ -11,26 +11,29 @@ import sparkengine.plan.model.mapper.reference.ReferencePlanMapper;
 import sparkengine.plan.model.plan.mapper.PlanMapperException;
 
 import java.io.IOException;
+import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PlanMapperForComponentsTest {
+class ReferencePlanMapperTest {
 
     @Test
     void testReferenceMapper() throws IOException, ModelFormatException, PlanMapperException {
 
         // given
-        var planLocation = "src/test/resources/componentsPlanMapperTest/nestedPlan.yaml";
+        var planLocation = "src/test/resources/referenceMapperTest/nestedPlan.yaml";
         var resourceLocator = new FileResourceLocator();
         var plan = ModelFactory.readPlanFromYaml(resourceLocator.getInputStreamFactory(planLocation));
         var resourceLocationBuilder = new ResourceLocationBuilder(planLocation, "_", "yaml");
         var planMapper = ReferencePlanMapper.of(resourceLocationBuilder, resourceLocator);
 
         // when
-        var newPlan = planMapper.map(plan);
+        var resolvedPlan = planMapper.map(plan);
 
         // then
-        assertEquals(WrapperComponent.TYPE_NAME, newPlan.getComponents().get("wrapperComponentName").componentTypeName());
+        var expectedPlanLocation = "src/test/resources/referenceMapperTest/nestedPlanExpected.yaml";
+        var expectedPlan = ModelFactory.readPlanFromYaml(resourceLocator.getInputStreamFactory(expectedPlanLocation));
+        assertEquals(expectedPlan, resolvedPlan);
 
     }
 
@@ -38,7 +41,7 @@ class PlanMapperForComponentsTest {
     void testReferenceMapperWithFailure() throws IOException, ModelFormatException {
 
         // given
-        var planLocation = "src/test/resources/componentsPlanMapperTest/failedPlan.yaml";
+        var planLocation = "src/test/resources/referenceMapperTest/failedPlan.yaml";
         var resourceLocator = new FileResourceLocator();
         var plan = ModelFactory.readPlanFromYaml(resourceLocator.getInputStreamFactory(planLocation));
         var resourceLocationBuilder = new ResourceLocationBuilder(planLocation, "_", "yaml");

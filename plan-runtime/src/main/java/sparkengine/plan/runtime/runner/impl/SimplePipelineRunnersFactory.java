@@ -1,17 +1,16 @@
-package sparkengine.plan.runtime.impl;
+package sparkengine.plan.runtime.runner.impl;
 
 import lombok.Builder;
 import lombok.Value;
-import sparkengine.plan.runtime.PipelineRunner;
-import sparkengine.plan.runtime.PipelineRunnersFactory;
-import sparkengine.plan.runtime.PipelineRunnersFactoryException;
+import sparkengine.plan.runtime.runner.PipelineRunner;
+import sparkengine.plan.runtime.runner.PipelineRunnersFactory;
+import sparkengine.plan.runtime.runner.PipelineRunnersFactoryException;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactory;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactoryException;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactory;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
