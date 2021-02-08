@@ -33,9 +33,7 @@ public class DatasetSupplierForComponentWithSingleInput<T> implements DatasetSup
         if (componentWithSingleInput instanceof SchemaValidationComponent) {
             var schemaComponent = (SchemaValidationComponent)componentWithSingleInput;
             var schema = StructType.fromDDL(schemaComponent.getSchema());
-
-
-
+            return (Dataset<T>) Transformations.verifySchemaWith(schema).apply(inputDataset);
         } else if (componentWithSingleInput instanceof EncodeComponent) {
             var encodeComponent = (EncodeComponent) componentWithSingleInput;
             Encoder<?> encoder = EncoderUtils.buildEncoder(encodeComponent.getEncodedAs());

@@ -1,13 +1,12 @@
 package sparkengine.plan.model.component.mapper;
 
+import sparkengine.plan.model.common.Location;
 import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.impl.*;
 
 import javax.annotation.Nonnull;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Stack;
-import java.util.stream.Collectors;
 
 public class ComponentsMapper {
 
@@ -16,19 +15,8 @@ public class ComponentsMapper {
     private ComponentsMapper() {
     }
 
-    public static Stack<String> locationEmpty() {
-        return new Stack<>();
-    }
-
-    public static Stack<String> locationOf(String... parts) {
-        var stack = new Stack<String>();
-        for (var part : parts)
-            stack.push(part);
-        return stack;
-    }
-
     public static Map<String, Component> mapComponents(
-            @Nonnull Stack<String> location,
+            @Nonnull Location location,
             @Nonnull ComponentMapper componentMapper,
             @Nonnull Map<String, Component> components) throws Exception {
 
@@ -37,17 +25,14 @@ public class ComponentsMapper {
 
             var name = nameAndComponent.getKey();
             var component = nameAndComponent.getValue();
-            location.push(name);
-            var newComponent = mapComponent(location, componentMapper, component);
-            location.pop();
-
+            var newComponent = mapComponent(location.push(name), componentMapper, component);
             newComponents.put(name, newComponent);
         }
 
         return newComponents;
     }
 
-    public static Component mapComponent(@Nonnull Stack<String> location,
+    public static Component mapComponent(@Nonnull Location location,
                                          @Nonnull ComponentMapper componentMapper,
                                          @Nonnull Component component) throws Exception {
 
@@ -75,9 +60,7 @@ public class ComponentsMapper {
             }
             if (component instanceof WrapperComponent) {
                 WrapperComponent wrapperComponent = (WrapperComponent) component;
-                location.push(WRAPPER);
-                wrapperComponent = wrapperComponent.withComponent(mapComponent(location, componentMapper, wrapperComponent.getComponent()));
-                location.pop();
+                wrapperComponent = wrapperComponent.withComponent(mapComponent(location.push(WRAPPER), componentMapper, wrapperComponent.getComponent()));
                 return componentMapper.mapWrapperComponent(location, wrapperComponent);
             }
             if (component instanceof SqlComponent) {
@@ -87,10 +70,10 @@ public class ComponentsMapper {
                 return componentMapper.mapReferenceComponent(location, (ReferenceComponent) component);
             }
         } catch (Exception t) {
-            throw new InternalMapperError("issue resolving " + component.componentTypeName() + " component in location " + location.stream().collect(Collectors.joining("/")), t);
+            throw new InternalMapperError("issue resolving " + component.componentTypeName() + " component in location " + location, t);
         }
 
-        throw new InternalMapperError("unmanaged " + component.componentTypeName() + " component in location " + location.stream().collect(Collectors.joining("/")));
+        throw new InternalMapperError("unmanaged " + component.componentTypeName() + " component in location " + location);
     }
 
     public static class InternalMapperError extends Error {

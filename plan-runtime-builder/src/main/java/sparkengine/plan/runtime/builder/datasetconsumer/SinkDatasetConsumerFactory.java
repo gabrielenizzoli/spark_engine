@@ -1,6 +1,8 @@
 package sparkengine.plan.runtime.builder.datasetconsumer;
 
+import sparkengine.plan.model.component.ComponentWithNoRuntime;
 import sparkengine.plan.model.sink.Sink;
+import sparkengine.plan.model.sink.SinkWithNoRuntime;
 import sparkengine.plan.model.sink.catalog.SinkCatalog;
 import sparkengine.plan.model.sink.catalog.SinkCatalogException;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumer;
@@ -9,6 +11,7 @@ import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactoryException;
 import lombok.Builder;
 import lombok.Value;
 import sparkengine.plan.model.sink.impl.*;
+import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 
 import javax.annotation.Nonnull;
 
@@ -44,6 +47,11 @@ public class SinkDatasetConsumerFactory implements DatasetConsumerFactory {
     }
 
     private <T> DatasetConsumer<T> getConsumer(Sink sink) throws DatasetConsumerFactoryException {
+
+        if (sink instanceof SinkWithNoRuntime) {
+            throw new DatasetConsumerFactoryException.ConsumerInstantiationException(String.format("sink [%s] has no runtime equivalent and must be resolved", sink));
+        }
+
         if (sink instanceof ShowSink) {
             var show = (ShowSink) sink;
             return (DatasetConsumer<T>) ShowConsumer.builder()

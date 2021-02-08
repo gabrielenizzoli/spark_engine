@@ -12,6 +12,8 @@ import javax.annotation.Nonnull;
 @JsonDeserialize(builder = ViewSink.Builder.class)
 public class ViewSink implements Sink {
 
+    public static final String TYPE_NAME = "view";
+
     @Nonnull
     String name;
 

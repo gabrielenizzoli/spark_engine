@@ -1,0 +1,85 @@
+components:
+  source: !<sql>
+    using: null
+    sql: "select explode(array(named_struct(\"num\", 1, \"str\", \"a\"), named_struct(\"\
+      num\", 2, \"str\", \"b\"))) as abc"
+    udfs: null
+    encodedAs: null
+  wrapperComponentName: !<wrapper>
+    using: null
+    component: !<wrapper>
+      using: null
+      component: !<wrapper>
+        using: null
+        component: !<wrapper>
+          using: null
+          component: !<wrapper>
+            using: null
+            component: !<fragment>
+              using: null
+              providing: "component1"
+              components:
+                component1: !<sql>
+                  using: null
+                  sql: "select 1"
+                  udfs: null
+                  encodedAs: null
+                component2: !<fragment>
+                  using: null
+                  providing: "component1"
+                  components:
+                    component1: !<sql>
+                      using: null
+                      sql: "select 2"
+                      udfs: null
+                      encodedAs: null
+                    component2: !<fragment>
+                      using: null
+                      providing: "component1"
+                      components:
+                        component1: !<sql>
+                          using: null
+                          sql: "select explode(array(named_struct(\"num\", 1, \"str\"\
+                            , \"a\"), named_struct(\"num\", 2, \"str\", \"b\"))) as\
+                            \ abc"
+                          udfs: null
+                          encodedAs: null
+                        component2: !<sql>
+                          using: null
+                          sql: "select 1"
+                          udfs: null
+                          encodedAs: null
+sinks:
+  view: !<view>
+    name: "tmpView"
+  foreach: !<foreach>
+    name: "out3"
+    options: null
+    trigger: !<interval>
+      milliseconds: 60
+    mode: "APPEND"
+    batchComponentName: "src"
+    plan:
+      components:
+        tx: !<encode>
+          using: "src"
+          encodedAs: !<value>
+            type: "INT"
+      sinks:
+        out: !<batch>
+          format: "parquet"
+          options:
+            path: "abc"
+          partitionColumns: null
+          mode: "OVERWRITE"
+      pipelines:
+        pipe1:
+          component: "tx"
+          sink: "out"
+pipelines:
+  pipe1:
+    component: "reference"
+    sink: "view"
+  pipe2:
+    component: "reference2"
+    sink: "view"

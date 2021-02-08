@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import sparkengine.plan.model.Plan;
+import sparkengine.plan.model.plan.Plan;
 
 import java.io.File;
 import java.io.IOException;

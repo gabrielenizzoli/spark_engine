@@ -1,68 +1,67 @@
 package sparkengine.plan.model.component.mapper;
 
+import sparkengine.plan.model.common.Location;
 import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.impl.*;
 
-import java.util.Stack;
-
 public interface ComponentMapper {
 
-    default Component mapEmptyComponent(Stack<String> location,
+    default Component mapEmptyComponent(Location location,
                                         EmptyComponent component) throws Exception {
         return component;
     }
 
-    default Component mapInlineComponent(Stack<String> location,
+    default Component mapInlineComponent(Location location,
                                          InlineComponent component) throws Exception {
         return component;
     }
 
-    default Component mapBatchComponent(Stack<String> location,
+    default Component mapBatchComponent(Location location,
                                         BatchComponent component) throws Exception {
         return component;
     }
 
-    default Component mapStreamComponent(Stack<String> location,
+    default Component mapStreamComponent(Location location,
                                          StreamComponent component) throws Exception {
         return component;
     }
 
-    default Component mapSqlComponent(Stack<String> location,
+    default Component mapSqlComponent(Location location,
                                       SqlComponent component) throws Exception {
         return component;
     }
 
-    default Component mapSchemaValidationComponent(Stack<String> location,
+    default Component mapSchemaValidationComponent(Location location,
                                                    SchemaValidationComponent component) throws Exception {
         return component;
     }
 
-    default Component mapEncodeComponent(Stack<String> location,
+    default Component mapEncodeComponent(Location location,
                                          EncodeComponent component) throws Exception {
         return component;
     }
 
-    default Component mapTransformComponent(Stack<String> location,
+    default Component mapTransformComponent(Location location,
                                             TransformComponent component) throws Exception {
         return component;
     }
 
-    default Component mapReferenceComponent(Stack<String> location,
+    default Component mapReferenceComponent(Location location,
                                             ReferenceComponent component) throws Exception {
         return component;
     }
 
-    default Component mapUnionComponent(Stack<String> location,
+    default Component mapUnionComponent(Location location,
                                         UnionComponent component) throws Exception {
         return component;
     }
 
-    default Component mapFragmentComponent(Stack<String> location,
+    default Component mapFragmentComponent(Location location,
                                            FragmentComponent component) throws Exception {
         return component;
     }
 
-    default Component mapWrapperComponent(Stack<String> location,
+    default Component mapWrapperComponent(Location location,
                                           WrapperComponent component) throws Exception {
         return component;
     }

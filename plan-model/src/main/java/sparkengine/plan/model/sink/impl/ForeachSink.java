@@ -3,7 +3,8 @@ package sparkengine.plan.model.sink.impl;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Value;
-import sparkengine.plan.model.Plan;
+import lombok.With;
+import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.sink.Sink;
 
 import javax.annotation.Nonnull;
@@ -14,6 +15,8 @@ import java.util.Map;
 @Builder(setterPrefix = "with")
 @JsonDeserialize(builder = ForeachSink.Builder.class)
 public class ForeachSink implements Sink {
+
+    public static final String TYPE_NAME = "foreach";
 
     @Nonnull
     String name;
@@ -26,6 +29,7 @@ public class ForeachSink implements Sink {
     @Nonnull
     String batchComponentName;
     @Nonnull
+    @With
     Plan plan;
 
 }
