@@ -49,11 +49,33 @@ components:
                           sql: "select 1"
                           udfs: null
                           encodedAs: null
-
 sinks:
   view: !<view>
     name: "tmpView"
-
+  foreach: !<foreach>
+    name: "out3"
+    options: null
+    trigger: !<interval>
+      milliseconds: 60
+    mode: "APPEND"
+    batchComponentName: "src"
+    plan:
+      components:
+        tx: !<encode>
+          using: "src"
+          encodedAs: !<value>
+            type: "INT"
+      sinks:
+        out: !<batch>
+          format: "parquet"
+          options:
+            path: "abc"
+          partitionColumns: null
+          mode: "OVERWRITE"
+      pipelines:
+        pipe1:
+          component: "tx"
+          sink: "out"
 pipelines:
   pipe1:
     component: "reference"

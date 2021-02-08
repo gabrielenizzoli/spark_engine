@@ -19,6 +19,9 @@ import java.util.Map;
 @Builder
 public class DefaultPlanMapper implements PlanMapper {
 
+    public static final String COMPONENTS = "components";
+    public static final String SINKS = "sinks";
+
     @Nullable
     ComponentMapper componentMapper;
     @Nullable
@@ -45,7 +48,7 @@ public class DefaultPlanMapper implements PlanMapper {
             return components;
 
         try {
-            return ComponentsMapper.mapComponents(location, componentMapper, components);
+            return ComponentsMapper.mapComponents(location.push(COMPONENTS), componentMapper, components);
         } catch (Exception | ComponentsMapper.InternalMapperError e) {
             throw new PlanMapperException("exception resolving pan with resolver " + this.getClass().getName(), e);
         }
@@ -58,7 +61,7 @@ public class DefaultPlanMapper implements PlanMapper {
             return sinks;
 
         try {
-            return SinksMapper.mapSinks(location, sinkMapper, sinks);
+            return SinksMapper.mapSinks(location.push(SINKS), sinkMapper, sinks);
         } catch (Exception | SinksMapper.InternalMapperError e) {
             throw new PlanMapperException("exception resolving pan with resolver " + this.getClass().getName(), e);
         }

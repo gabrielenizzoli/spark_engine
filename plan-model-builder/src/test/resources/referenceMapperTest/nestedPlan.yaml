@@ -10,6 +10,19 @@ components:
 
 sinks:
   view: { type: view, name: tmpView }
+  foreach:
+    type: foreach
+    name: out3
+    trigger: { milliseconds: 60 }
+    mode: APPEND
+    batchComponentName: src
+    plan:
+      components:
+        tx: { type: ref }
+      sinks:
+        out: { type: ref }
+      pipelines:
+        pipe1: { component: tx, sink: out }
 
 pipelines:
   pipe1: { component: reference, sink: view }
