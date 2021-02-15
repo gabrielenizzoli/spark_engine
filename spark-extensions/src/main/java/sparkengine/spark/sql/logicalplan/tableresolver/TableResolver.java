@@ -69,7 +69,7 @@ public class TableResolver implements LogicalPlanMapper {
     private LogicalPlan replaceUnresolvedRelation(UnresolvedRelation unresolvedRelation) throws TableResolverException {
         var resolvedRelation = plans.get(unresolvedRelation.tableName());
         if (resolvedRelation == null) {
-            throw new TableResolverException("can't resolve relation " + unresolvedRelation.tableName() + " in plan " + unresolvedRelation + " (relations are: " + plans.keySet() + ")");
+            throw new TableResolverException("can't resolve relation " + unresolvedRelation.tableName() + " in plan " + unresolvedRelation + " (available relations are: " + plans.keySet() + ")");
         }
         return new SubqueryAlias(new AliasIdentifier(unresolvedRelation.tableName()), resolvedRelation);
     }

@@ -16,13 +16,42 @@ Usually an execution plan is hosted in hdfs and witten in yaml.
 The plan we will use is available directly from the GitHub repository here: [quickStartPlan.yaml](https://raw.githubusercontent.com/gabrielenizzoli/spark_engine/master/examples/plans/quickStartPlan.yaml).
 This sample plan has 2 pipelines, one is a batch pipeline, the other is a stream:
 
+### quickStartPLan.yaml
+
+The plan looks like this:
+```yaml
+components:
+  sqlSource: { type: ref }
+  rate: { type: stream, format: rate }
+  sqlOnRate: { using: [rate], sql: "select *, value * 100 as bigValue from rate" }
+
+sinks:
+  showTable: { type: show }
+  showRate:
+    type: stream
+    name: query
+    format: console
+    mode: APPEND
+    trigger: { milliseconds: 1000 }
+
+pipelines:
+  batch: { component: sqlSource, sink: showTable }
+  stream: { component: sqlOnRate, sink: showRate }
+```
+
+And the referenced component:
+```yaml
+sql: >
+  select 'value' as column
+```
+
 ## Run the execution plan
 
 Regarding Spark, in the `bin/` sub-folder there is the `spark-submit` command.
 Running our sample remote plan it is as easy as executing:
 ```shell
 cd spark/bin
-./spark-submit --master local --packages sparkengine:plan-app:1.0.0 --class sparkengine.plan.app.Start spark-internal -p https://raw.githubusercontent.com/gabrielenizzoli/spark_engine/master/examples/plans/quickStartPlan.yaml
+./spark-submit --master local --packages sparkengine:plan-app:x.x.x --class sparkengine.plan.app.Start spark-internal -p https://raw.githubusercontent.com/gabrielenizzoli/spark_engine/master/examples/plans/quickStartPlan.yaml
 ```
 
 **That is it!** Note how this plan will execute both the batch operation and the stream.
