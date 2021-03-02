@@ -23,7 +23,7 @@ pipelines:
 Then we can run it in a terminal:
 ```shell
 cd spark/bin
-./spark-submit --master local --packages sparkengine:spark-app:1.0 
+./spark-submit --master local --packages com.spark-engine:spark-app:1.0 
     --class sparkengine.plan.app.Start spark-internal 
     -p file:///tmp/plan.yaml
 ```

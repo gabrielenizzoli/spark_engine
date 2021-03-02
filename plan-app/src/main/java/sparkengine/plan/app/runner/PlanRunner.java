@@ -63,7 +63,7 @@ public class PlanRunner {
         var resourceLocator = new AppResourceLocator();
         var planInputStream = resourceLocator.getInputStreamFactory(runtimeArgs.getPlanLocation());
         var sourcePlan = getPlan(planInputStream);
-        var resolvedPlan = resolvePlan(sourcePlan);
+        var resolvedPlan = PlanResolver.of(runtimeArgs, sparkSession, log).map(sourcePlan);
         writeResolvedPlan(resolvedPlan);
         return ModelPipelineRunnersFactory.ofPlan(sparkSession, resolvedPlan);
     }
@@ -75,49 +75,18 @@ public class PlanRunner {
         return sourcePlan;
     }
 
-    private Plan resolvePlan(Plan sourcePlan) throws PlanMapperException {
-        if (runtimeArgs.isSkipResolution()) {
-            log.info("skipping resolution of the plan, resolved plan will be the same as the source plan");
-            return sourcePlan;
-        }
-
-        var resolvedPlan = PlanMappers
-                .ofMappers(
-                        getReferencePlanResolver(),
-                        getSqlResolver())
-                .map(sourcePlan);
-
-        if (log.isTraceEnabled()) {
-            log.trace(String.format("resolved plan [%s]", resolvedPlan));
-        }
-
-        return resolvedPlan;
-    }
-
     private void writeResolvedPlan(Plan resolvedPlan) throws IOException, ModelFormatException {
-        if (runtimeArgs.isWriteResolvedPlan()) {
+        if (runtimeArgs.isWriteResolvedPlanToFile()) {
             var resolvedFilePlan = File.createTempFile("resolvedPlan_", ".yaml");
             log.warn(String.format("writing resolved plan to [%s]", resolvedFilePlan));
             try (var out = new FileOutputStream(resolvedFilePlan)) {
                 ModelFactory.writePlanAsYaml(resolvedPlan, out);
             }
         }
-    }
 
-    private PlanMapper getReferencePlanResolver() {
-        var resourceLocationBuilder = new ResourceLocationBuilder(runtimeArgs.getPlanLocation(), "_", "yaml");
-        var resourceLocator = new AppResourceLocator();
-        return ReferencePlanMapper.of(resourceLocationBuilder, resourceLocator);
-    }
-
-    private PlanMapper getSqlResolver() {
-        return SqlPlanMapper.of(runtimeArgs.getSqlResolutionMode(), sql -> {
-            try {
-                return TableListExplorer.findTableListInSql(sparkSession, sql);
-            } catch (PlanExplorerException e) {
-                throw new PlanMapperException(String.format("error resolving sql tables in sql [%s]", sql));
-            }
-        });
+        if (runtimeArgs.isWriteResolvedPlan()) {
+            ModelFactory.writePlanAsYaml(resolvedPlan, System.out);
+        }
     }
 
     private void executePipelines(PipelineRunnersFactory pipelineRunnersFactory)

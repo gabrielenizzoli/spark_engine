@@ -48,8 +48,13 @@ public class RuntimeArgs {
     private boolean parallelPipelineExecution = false;
 
     @Getter
-    @Parameter(names = {"--writeResolvedPlan"}, description = "write the resolved plan (to a temporary location)")
+    @Parameter(names = {"--writeResolvedPlan"}, description = "write the resolved plan (to standard output)")
     @lombok.Builder.Default
     private boolean writeResolvedPlan = false;
+
+    @Getter
+    @Parameter(names = {"--writeResolvedPlanToFile"}, description = "write the resolved plan (to a temporary location)")
+    @lombok.Builder.Default
+    private boolean writeResolvedPlanToFile = false;
 
 }

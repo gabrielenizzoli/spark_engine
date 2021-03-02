@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>sparkengine</groupId>
+    <groupId>com.spark-engine</groupId>
     <artifactId>parent</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
@@ -41,7 +41,7 @@
     </developers>
 
     <properties>
-        <revision>0.7.7</revision>
+        <revision>0.8.0</revision>
 
         <!-- params -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -82,32 +82,32 @@
 
             <!-- modules -->
             <dependency>
-                <groupId>sparkengine</groupId>
+                <groupId>com.spark-engine</groupId>
                 <artifactId>spark-extensions</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>sparkengine</groupId>
+                <groupId>com.spark-engine</groupId>
                 <artifactId>plan-model</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>sparkengine</groupId>
+                <groupId>com.spark-engine</groupId>
                 <artifactId>plan-model-builder</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>sparkengine</groupId>
+                <groupId>com.spark-engine</groupId>
                 <artifactId>plan-runtime</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>sparkengine</groupId>
+                <groupId>com.spark-engine</groupId>
                 <artifactId>plan-runtime-builder</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>sparkengine</groupId>
+                <groupId>com.spark-engine</groupId>
                 <artifactId>plan-app</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -155,7 +155,7 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>sparkengine</groupId>
+                <groupId>com.spark-engine</groupId>
                 <artifactId>spark-test</artifactId>
                 <version>${project.version}</version>
                 <scope>test</scope>

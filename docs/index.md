@@ -100,7 +100,7 @@ Notice how:
 Executing this plan is as easy as you might guess:
 ```shell
 cd spark/bin
-./spark-submit --master local --packages sparkengine:plan-app:x.x.x,com.yourname:yourpackage:x.x.x \
+./spark-submit --master local --packages com.spark-engine:plan-app:x.x.x,com.yourname:yourpackage:x.x.x \
   --class sparkengine.plan.app.Start spark-internal -p myPlan.yaml
 ```
 

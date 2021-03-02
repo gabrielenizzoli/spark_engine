@@ -51,7 +51,7 @@ Regarding Spark, in the `bin/` sub-folder there is the `spark-submit` command.
 Running our sample remote plan it is as easy as executing:
 ```shell
 cd spark/bin
-./spark-submit --master local --packages sparkengine:plan-app:x.x.x --class sparkengine.plan.app.Start spark-internal -p https://raw.githubusercontent.com/gabrielenizzoli/spark_engine/master/examples/plans/quickStartPlan.yaml
+./spark-submit --master local --packages com.spark-engine:plan-app:x.x.x --class sparkengine.plan.app.Start spark-internal -p https://raw.githubusercontent.com/gabrielenizzoli/spark_engine/master/examples/plans/quickStartPlan.yaml
 ```
 
 **That is it!** Note how this plan will execute both the batch operation and the stream.

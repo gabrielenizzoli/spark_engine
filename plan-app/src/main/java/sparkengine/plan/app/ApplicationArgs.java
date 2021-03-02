@@ -21,7 +21,7 @@ public class ApplicationArgs {
     private String logLevel = "INFO";
 
     @Getter
-    @Parameter(names = {"--skipStackTrace"}, description = "Skip full stackTrace")
+    @Parameter(names = {"--skipStackTrace"}, description = "Skip full stackTrace when printing application errors")
     @lombok.Builder.Default
     private boolean skipStackTrace = false;
 

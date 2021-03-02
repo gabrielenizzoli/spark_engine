@@ -7,7 +7,7 @@
     <artifactId>plan-model-builder</artifactId>
 
     <parent>
-        <groupId>sparkengine</groupId>
+        <groupId>com.spark-engine</groupId>
         <artifactId>parent</artifactId>
         <version>${revision}</version>
     </parent>
@@ -16,7 +16,7 @@
 
         <!-- packages -->
         <dependency>
-            <groupId>sparkengine</groupId>
+            <groupId>com.spark-engine</groupId>
             <artifactId>plan-model</artifactId>
         </dependency>
         <dependency>
