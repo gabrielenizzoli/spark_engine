@@ -1,10 +1,10 @@
 package sparkengine.plan.runtime.builder.datasetconsumer;
 
-import sparkengine.plan.runtime.datasetconsumer.DatasetConsumer;
-import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 import lombok.Builder;
 import lombok.Value;
 import org.apache.spark.sql.Dataset;
+import sparkengine.plan.runtime.datasetconsumer.DatasetConsumer;
+import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 
 import javax.annotation.Nonnull;
 import java.util.Map;

@@ -2,21 +2,21 @@ package sparkengine.plan.model.mapper.reference;
 
 import lombok.Value;
 import lombok.With;
+import sparkengine.plan.model.builder.ModelFactory;
+import sparkengine.plan.model.builder.ResourceLocationBuilder;
+import sparkengine.plan.model.builder.input.InputStreamResourceLocator;
 import sparkengine.plan.model.common.Location;
 import sparkengine.plan.model.common.Reference;
-import sparkengine.plan.model.builder.ModelFactory;
-import sparkengine.plan.model.builder.input.InputStreamResourceLocator;
 import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.impl.ReferenceComponent;
 import sparkengine.plan.model.component.mapper.ComponentMapper;
 import sparkengine.plan.model.component.mapper.ComponentsMapper;
-import sparkengine.plan.model.builder.ResourceLocationBuilder;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
 
 @Value(staticConstructor = "of")
-public class ReferenceComponentMapper implements ComponentMapper {
+public class ComponentMapperThatReplacesReferences implements ComponentMapper {
 
     @Nonnull
     @With

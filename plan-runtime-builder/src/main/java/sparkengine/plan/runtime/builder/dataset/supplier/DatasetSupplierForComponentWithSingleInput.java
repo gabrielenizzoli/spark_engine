@@ -1,5 +1,10 @@
 package sparkengine.plan.runtime.builder.dataset.supplier;
 
+import lombok.Builder;
+import lombok.Value;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Encoder;
+import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
 import sparkengine.plan.model.component.ComponentWithSingleInput;
 import sparkengine.plan.model.component.impl.EncodeComponent;
@@ -9,11 +14,6 @@ import sparkengine.plan.runtime.builder.dataset.utils.EncoderUtils;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.transformation.DataTransformation;
 import sparkengine.spark.transformation.Transformations;
-import lombok.Builder;
-import lombok.Value;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Encoder;
-import org.apache.spark.sql.SparkSession;
 
 import javax.annotation.Nonnull;
 

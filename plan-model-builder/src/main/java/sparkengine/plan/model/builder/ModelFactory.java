@@ -4,10 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.builder.input.InputStreamFactory;
 import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.catalog.ComponentCatalog;
+import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.sink.Sink;
 import sparkengine.plan.model.sink.catalog.SinkCatalog;
 

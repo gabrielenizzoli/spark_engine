@@ -6,6 +6,8 @@ import sparkengine.plan.model.component.impl.*;
 
 public interface ComponentMapper {
 
+    String WRAPPER = "wrapper";
+
     default Component mapEmptyComponent(Location location,
                                         EmptyComponent component) throws Exception {
         return component;
@@ -58,11 +60,16 @@ public interface ComponentMapper {
 
     default Component mapFragmentComponent(Location location,
                                            FragmentComponent component) throws Exception {
-        return component;
+        return component.withComponents(ComponentsMapper.mapComponents(location, this, component.getComponents()));
     }
 
     default Component mapWrapperComponent(Location location,
                                           WrapperComponent component) throws Exception {
+        return component.withComponent(ComponentsMapper.mapComponent(location.push(WRAPPER), this, component.getComponent()));
+    }
+
+    default Component mapMapComponent(Location location,
+                                          MapComponent component) throws Exception {
         return component;
     }
 

@@ -2,15 +2,14 @@ package sparkengine.plan.model.component.mapper;
 
 import sparkengine.plan.model.common.Location;
 import sparkengine.plan.model.component.Component;
-import sparkengine.plan.model.component.impl.*;
+import sparkengine.plan.model.sink.mapper.SinksMapper;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ComponentsMapper {
-
-    public static final String WRAPPER = "wrapper";
 
     private ComponentsMapper() {
     }
@@ -37,43 +36,15 @@ public class ComponentsMapper {
                                          @Nonnull Component component) throws Exception {
 
         try {
-            if (component instanceof EmptyComponent)
-                return componentMapper.mapEmptyComponent(location, (EmptyComponent) component);
-            if (component instanceof InlineComponent)
-                return componentMapper.mapInlineComponent(location, (InlineComponent) component);
-            if (component instanceof BatchComponent)
-                return componentMapper.mapBatchComponent(location, (BatchComponent) component);
-            if (component instanceof StreamComponent)
-                return componentMapper.mapStreamComponent(location, (StreamComponent) component);
-            if (component instanceof SchemaValidationComponent)
-                return componentMapper.mapSchemaValidationComponent(location, (SchemaValidationComponent) component);
-            if (component instanceof EncodeComponent)
-                return componentMapper.mapEncodeComponent(location, (EncodeComponent) component);
-            if (component instanceof TransformComponent)
-                return componentMapper.mapTransformComponent(location, (TransformComponent) component);
-            if (component instanceof UnionComponent)
-                return componentMapper.mapUnionComponent(location, (UnionComponent) component);
-            if (component instanceof FragmentComponent) {
-                FragmentComponent fragmentComponent = (FragmentComponent) component;
-                fragmentComponent = fragmentComponent.withComponents(mapComponents(location, componentMapper, fragmentComponent.getComponents()));
-                return componentMapper.mapFragmentComponent(location, fragmentComponent);
-            }
-            if (component instanceof WrapperComponent) {
-                WrapperComponent wrapperComponent = (WrapperComponent) component;
-                wrapperComponent = wrapperComponent.withComponent(mapComponent(location.push(WRAPPER), componentMapper, wrapperComponent.getComponent()));
-                return componentMapper.mapWrapperComponent(location, wrapperComponent);
-            }
-            if (component instanceof SqlComponent) {
-                return componentMapper.mapSqlComponent(location, (SqlComponent) component);
-            }
-            if (component instanceof ReferenceComponent) {
-                return componentMapper.mapReferenceComponent(location, (ReferenceComponent) component);
-            }
+            String name = String.format("map%s", component.getClass().getSimpleName());
+            Method mapper = componentMapper.getClass().getMethod(name, Location.class, component.getClass());
+            Object returnedComponent = mapper.invoke(componentMapper, location, component);
+            return (Component) returnedComponent;
+        } catch (SecurityException | NoSuchMethodException t) {
+            throw new SinksMapper.InternalMapperError("unmanaged " + component.componentTypeName() + " component", t);
         } catch (Exception t) {
             throw new InternalMapperError("issue resolving " + component.componentTypeName() + " component in location " + location, t);
         }
-
-        throw new InternalMapperError("unmanaged " + component.componentTypeName() + " component in location " + location);
     }
 
     public static class InternalMapperError extends Error {

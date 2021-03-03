@@ -3,10 +3,10 @@ package sparkengine.plan.model.plan.mapper;
 import lombok.Builder;
 import lombok.Value;
 import sparkengine.plan.model.common.Location;
-import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.mapper.ComponentMapper;
 import sparkengine.plan.model.component.mapper.ComponentsMapper;
+import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.sink.Sink;
 import sparkengine.plan.model.sink.mapper.SinkMapper;
 import sparkengine.plan.model.sink.mapper.SinksMapper;
@@ -50,7 +50,7 @@ public class DefaultPlanMapper implements PlanMapper {
         try {
             return ComponentsMapper.mapComponents(location.push(COMPONENTS), componentMapper, components);
         } catch (Exception | ComponentsMapper.InternalMapperError e) {
-            throw new PlanMapperException("exception resolving pan with resolver " + this.getClass().getName(), e);
+            throw new PlanMapperException("exception resolving plan with resolver " + this.getClass().getName(), e);
         }
     }
 
@@ -63,7 +63,7 @@ public class DefaultPlanMapper implements PlanMapper {
         try {
             return SinksMapper.mapSinks(location.push(SINKS), sinkMapper, sinks);
         } catch (Exception | SinksMapper.InternalMapperError e) {
-            throw new PlanMapperException("exception resolving pan with resolver " + this.getClass().getName(), e);
+            throw new PlanMapperException("exception resolving plan with resolver " + this.getClass().getName(), e);
         }
     }
 

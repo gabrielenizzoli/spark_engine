@@ -1,9 +1,9 @@
 package sparkengine.spark.sql.logicalplan;
 
-import sparkengine.scala.compat.JavaToScalaFunction1;
 import lombok.SneakyThrows;
 import org.apache.spark.sql.catalyst.expressions.Expression;
 import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
+import sparkengine.scala.compat.JavaToScalaFunction1;
 
 import java.util.function.Function;
 

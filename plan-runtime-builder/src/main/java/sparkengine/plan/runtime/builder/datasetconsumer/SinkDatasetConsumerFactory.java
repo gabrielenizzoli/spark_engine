@@ -1,17 +1,15 @@
 package sparkengine.plan.runtime.builder.datasetconsumer;
 
-import sparkengine.plan.model.component.ComponentWithNoRuntime;
+import lombok.Builder;
+import lombok.Value;
 import sparkengine.plan.model.sink.Sink;
 import sparkengine.plan.model.sink.SinkWithNoRuntime;
 import sparkengine.plan.model.sink.catalog.SinkCatalog;
 import sparkengine.plan.model.sink.catalog.SinkCatalogException;
+import sparkengine.plan.model.sink.impl.*;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumer;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactory;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactoryException;
-import lombok.Builder;
-import lombok.Value;
-import sparkengine.plan.model.sink.impl.*;
-import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 
 import javax.annotation.Nonnull;
 

@@ -31,6 +31,7 @@ public class ForeachSink implements SinkForStream {
     Trigger trigger;
     @Nullable
     StreamSink.OutputMode mode;
+
     @Nonnull
     String batchComponentName;
     @Nonnull

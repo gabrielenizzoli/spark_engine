@@ -1,12 +1,12 @@
 package sparkengine.plan.runtime.builder.datasetconsumer;
 
+import org.apache.spark.sql.Encoders;
+import org.junit.jupiter.api.Test;
 import sparkengine.plan.model.sink.catalog.SinkCatalog;
 import sparkengine.plan.model.sink.impl.ViewSink;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactoryException;
 import sparkengine.spark.test.SparkSessionBase;
-import org.apache.spark.sql.Encoders;
-import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;

@@ -1,15 +1,14 @@
 package sparkengine.plan.runtime.builder.datasetconsumer;
 
-import sparkengine.plan.model.sink.SinkForStream;
-import sparkengine.plan.model.sink.impl.BatchSink;
-import sparkengine.plan.model.sink.impl.ForeachSink;
-import sparkengine.plan.model.sink.impl.StreamSink;
-import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 import org.apache.spark.sql.DataFrameWriter;
 import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.streaming.DataStreamWriter;
 import org.apache.spark.sql.streaming.OutputMode;
 import org.apache.spark.sql.streaming.Trigger;
+import sparkengine.plan.model.sink.SinkForStream;
+import sparkengine.plan.model.sink.impl.BatchSink;
+import sparkengine.plan.model.sink.impl.StreamSink;
+import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 
 public class WriterFormatter {
 

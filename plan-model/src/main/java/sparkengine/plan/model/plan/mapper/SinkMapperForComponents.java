@@ -18,7 +18,7 @@ public class SinkMapperForComponents implements SinkMapper {
     protected final ComponentMapper componentMapper;
 
     @Override
-    public Sink mapForeachSink(Location location, ForeachSink sink) throws Exception {
+    public final Sink mapForeachSink(Location location, ForeachSink sink) throws Exception {
 
         var plan = sink.getPlan();
 

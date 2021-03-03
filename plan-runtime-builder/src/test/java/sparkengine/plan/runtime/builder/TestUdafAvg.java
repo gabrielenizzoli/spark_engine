@@ -1,9 +1,9 @@
 package sparkengine.plan.runtime.builder;
 
-import sparkengine.spark.sql.udf.Udaf;
 import org.apache.spark.sql.Encoder;
 import org.apache.spark.sql.Encoders;
 import scala.Tuple2;
+import sparkengine.spark.sql.udf.Udaf;
 
 import javax.annotation.Nonnull;
 
