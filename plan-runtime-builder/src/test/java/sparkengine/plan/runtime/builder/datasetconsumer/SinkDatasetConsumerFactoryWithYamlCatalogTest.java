@@ -28,6 +28,7 @@ class SinkDatasetConsumerFactoryWithYamlCatalogTest extends SparkSessionBase {
         // then
         assertTrue(GlobalCounterConsumer.COUNTER.get("testForeachStreamWithCatalog").get() > 0);
 
+        
     }
 
 
