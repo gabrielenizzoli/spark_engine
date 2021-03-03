@@ -2,10 +2,10 @@ package sparkengine.plan.model.plan.mapper;
 
 import lombok.Value;
 import sparkengine.plan.model.common.Location;
-import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.mapper.ComponentMapper;
 import sparkengine.plan.model.component.mapper.ComponentsMapper;
+import sparkengine.plan.model.plan.Plan;
 
 import javax.annotation.Nonnull;
 import java.util.Map;

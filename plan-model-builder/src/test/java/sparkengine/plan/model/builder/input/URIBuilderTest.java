@@ -6,7 +6,7 @@ import sparkengine.plan.model.builder.URIBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class URIBuilderTest {
 

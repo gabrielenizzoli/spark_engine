@@ -13,7 +13,6 @@ import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 import sparkengine.spark.sql.logicalplan.ExpressionExplorer;
 import sparkengine.spark.sql.logicalplan.LogicalPlanExplorer;
 import sparkengine.spark.sql.logicalplan.PlanExplorerException;
-import sparkengine.spark.sql.logicalplan.PlanMapperException;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;

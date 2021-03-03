@@ -1,11 +1,11 @@
 package sparkengine.plan.runtime.builder.dataset.utils;
 
+import org.apache.spark.sql.Encoder;
+import org.apache.spark.sql.Encoders;
 import sparkengine.plan.model.encoder.DataEncoder;
 import sparkengine.plan.model.encoder.TupleEncoder;
 import sparkengine.plan.model.encoder.ValueEncoder;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
-import org.apache.spark.sql.Encoder;
-import org.apache.spark.sql.Encoders;
 
 import javax.annotation.Nullable;
 

@@ -1,13 +1,12 @@
 package sparkengine.spark.sql.logicalplan.tablelist;
 
-import org.apache.spark.sql.catalyst.parser.ParseException;
 import org.junit.jupiter.api.Test;
 import sparkengine.spark.sql.logicalplan.PlanExplorerException;
 import sparkengine.spark.test.SparkSessionBase;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TableListExplorerTest extends SparkSessionBase {
 

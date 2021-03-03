@@ -1,6 +1,5 @@
 package sparkengine.spark.sql.logicalplan.functionresolver;
 
-import sparkengine.spark.sql.udf.Udaf;
 import lombok.Value;
 import org.apache.spark.sql.catalyst.analysis.UnresolvedFunction;
 import org.apache.spark.sql.catalyst.encoders.ExpressionEncoder;
@@ -10,6 +9,7 @@ import org.apache.spark.sql.catalyst.expressions.aggregate.AggregateExpression;
 import org.apache.spark.sql.catalyst.expressions.aggregate.Complete$;
 import org.apache.spark.sql.execution.aggregate.ScalaAggregator;
 import scala.Option;
+import sparkengine.spark.sql.udf.Udaf;
 
 import javax.annotation.Nonnull;
 

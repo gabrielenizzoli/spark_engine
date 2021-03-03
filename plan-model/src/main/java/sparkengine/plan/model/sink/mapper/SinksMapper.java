@@ -2,7 +2,6 @@ package sparkengine.plan.model.sink.mapper;
 
 import sparkengine.plan.model.common.Location;
 import sparkengine.plan.model.sink.Sink;
-import sparkengine.plan.model.sink.impl.*;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Method;

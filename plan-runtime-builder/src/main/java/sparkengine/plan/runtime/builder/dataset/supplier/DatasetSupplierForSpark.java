@@ -1,11 +1,11 @@
 package sparkengine.plan.runtime.builder.dataset.supplier;
 
-import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
 import org.apache.spark.sql.*;
 import org.apache.spark.sql.types.StructType;
+import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

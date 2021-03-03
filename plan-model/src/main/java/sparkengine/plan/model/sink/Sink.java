@@ -2,7 +2,6 @@ package sparkengine.plan.model.sink;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.sink.impl.*;
 
 import java.util.Arrays;

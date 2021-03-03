@@ -3,13 +3,11 @@ package sparkengine.plan.model.component.mapper;
 import org.junit.jupiter.api.Test;
 import sparkengine.plan.model.common.Location;
 import sparkengine.plan.model.component.Component;
-import sparkengine.plan.model.sink.Sink;
-import sparkengine.plan.model.sink.mapper.SinkMapper;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ComponentMapperTest {
 

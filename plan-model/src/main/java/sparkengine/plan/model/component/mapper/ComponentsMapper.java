@@ -2,8 +2,6 @@ package sparkengine.plan.model.component.mapper;
 
 import sparkengine.plan.model.common.Location;
 import sparkengine.plan.model.component.Component;
-import sparkengine.plan.model.component.impl.*;
-import sparkengine.plan.model.sink.Sink;
 import sparkengine.plan.model.sink.mapper.SinksMapper;
 
 import javax.annotation.Nonnull;

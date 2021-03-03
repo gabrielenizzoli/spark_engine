@@ -1,8 +1,8 @@
 package sparkengine.spark.utils;
 
-import sparkengine.spark.sql.udf.Udaf;
 import org.apache.spark.sql.Encoder;
 import org.apache.spark.sql.Encoders;
+import sparkengine.spark.sql.udf.Udaf;
 
 import javax.annotation.Nonnull;
 

@@ -1,7 +1,5 @@
 package sparkengine.plan.model.sink;
 
-import sparkengine.plan.model.sink.Sink;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;

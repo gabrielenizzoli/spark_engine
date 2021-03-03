@@ -1,12 +1,12 @@
 package sparkengine.plan.model.mapper.reference;
 
 import org.junit.jupiter.api.Test;
+import sparkengine.plan.model.builder.ResourceLocationBuilder;
+import sparkengine.plan.model.builder.input.FileResourceLocator;
 import sparkengine.plan.model.common.Location;
 import sparkengine.plan.model.common.Reference;
-import sparkengine.plan.model.builder.input.FileResourceLocator;
 import sparkengine.plan.model.component.impl.ReferenceComponent;
 import sparkengine.plan.model.component.impl.SqlComponent;
-import sparkengine.plan.model.builder.ResourceLocationBuilder;
 
 import java.io.IOException;
 

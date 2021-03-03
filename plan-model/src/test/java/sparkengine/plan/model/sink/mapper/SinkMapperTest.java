@@ -1,15 +1,13 @@
 package sparkengine.plan.model.sink.mapper;
 
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import sparkengine.plan.model.common.Location;
 import sparkengine.plan.model.sink.Sink;
-import sparkengine.plan.model.sink.impl.ForeachRefSink;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SinkMapperTest {
 

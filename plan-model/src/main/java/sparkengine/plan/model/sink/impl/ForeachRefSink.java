@@ -3,8 +3,6 @@ package sparkengine.plan.model.sink.impl;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Value;
-import lombok.With;
-import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.sink.SinkForStream;
 
 import javax.annotation.Nonnull;

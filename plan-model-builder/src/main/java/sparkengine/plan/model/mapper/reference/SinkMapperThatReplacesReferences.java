@@ -1,11 +1,11 @@
 package sparkengine.plan.model.mapper.reference;
 
+import sparkengine.plan.model.builder.ModelFactory;
+import sparkengine.plan.model.builder.ResourceLocationBuilder;
+import sparkengine.plan.model.builder.input.InputStreamResourceLocator;
 import sparkengine.plan.model.common.Location;
 import sparkengine.plan.model.common.Reference;
-import sparkengine.plan.model.builder.ModelFactory;
-import sparkengine.plan.model.builder.input.InputStreamResourceLocator;
 import sparkengine.plan.model.component.mapper.ComponentMapper;
-import sparkengine.plan.model.builder.ResourceLocationBuilder;
 import sparkengine.plan.model.plan.mapper.SinkMapperForComponents;
 import sparkengine.plan.model.sink.Sink;
 import sparkengine.plan.model.sink.impl.ReferenceSink;

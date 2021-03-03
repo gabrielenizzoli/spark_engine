@@ -1,25 +1,19 @@
 package sparkengine.plan.runtime.builder.dataset;
 
+import org.apache.spark.sql.Encoders;
+import org.apache.spark.sql.types.DataTypes;
+import org.junit.jupiter.api.Test;
 import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.catalog.ComponentCatalog;
 import sparkengine.plan.model.component.impl.FragmentComponent;
 import sparkengine.plan.model.component.impl.InlineComponent;
 import sparkengine.plan.model.component.impl.SqlComponent;
 import sparkengine.plan.model.component.impl.WrapperComponent;
-import sparkengine.plan.runtime.builder.TestCatalog;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.test.SparkSessionBase;
-import org.apache.spark.sql.Encoders;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.types.DataTypes;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
