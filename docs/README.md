@@ -1,6 +1,6 @@
 # Welcome to spark_engine project
 
-*Build a complex spark execution plan by composing many different spark operations*.
+*Build a complex spark execution plan using composition, and yaml :D *.
 
 ## Table of contents
 
