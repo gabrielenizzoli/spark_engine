@@ -13,10 +13,10 @@ import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = ForeachSink.Builder.class)
-public class ForeachSink implements SinkForStream {
+@JsonDeserialize(builder = ForeachRefSink.Builder.class)
+public class ForeachRefSink implements SinkForStream {
 
-    public static final String TYPE_NAME = "foreach";
+    public static final String TYPE_NAME = "foreachRef";
 
     @Nonnull
     String name;
@@ -30,12 +30,11 @@ public class ForeachSink implements SinkForStream {
     @Nullable
     Trigger trigger;
     @Nullable
-    StreamSink.OutputMode mode;
+    OutputMode mode;
 
     @Nonnull
     String batchComponentName;
     @Nonnull
-    @With
-    Plan plan;
+    String ref;
 
 }

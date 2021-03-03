@@ -28,7 +28,7 @@ public class PlanMapperForComponents implements PlanMapper {
         try {
             return ComponentsMapper.mapComponents(Location.empty(), componentMapper, components);
         } catch (Exception | ComponentsMapper.InternalMapperError e) {
-            throw new PlanMapperException("exception resolving pan with resolver " + this.getClass().getName(), e);
+            throw new PlanMapperException("exception resolving plan with resolver " + this.getClass().getName(), e);
         }
     }
 

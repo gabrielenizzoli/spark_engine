@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 import java.util.Optional;
 
 @Value(staticConstructor = "of")
-public class ReferenceComponentMapper implements ComponentMapper {
+public class ComponentMapperThatReplacesReferences implements ComponentMapper {
 
     @Nonnull
     @With

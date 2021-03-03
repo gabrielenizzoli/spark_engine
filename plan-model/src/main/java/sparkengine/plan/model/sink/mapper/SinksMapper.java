@@ -5,6 +5,7 @@ import sparkengine.plan.model.sink.Sink;
 import sparkengine.plan.model.sink.impl.*;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -37,25 +38,16 @@ public class SinksMapper {
             @Nonnull Sink sink) throws Exception {
 
         try {
-            if (sink instanceof ShowSink)
-                return sinkMapper.mapShowSink(location, (ShowSink) sink);
-            if (sink instanceof ViewSink)
-                return sinkMapper.mapViewSink(location, (ViewSink) sink);
-            if (sink instanceof CounterSink)
-                return sinkMapper.mapCounterSink(location, (CounterSink) sink);
-            if (sink instanceof BatchSink)
-                return sinkMapper.mapBatchSink(location, (BatchSink) sink);
-            if (sink instanceof StreamSink)
-                return sinkMapper.mapStreamSink(location, (StreamSink) sink);
-            if (sink instanceof ForeachSink)
-                return sinkMapper.mapForeachSink(location, (ForeachSink) sink);
-            if (sink instanceof ReferenceSink)
-                return sinkMapper.mapReferenceSink(location, (ReferenceSink) sink);
+            String name = "map" + sink.getClass().getSimpleName();
+            Method mapper = sinkMapper.getClass().getMethod(name, Location.class, sink.getClass());
+            Object returnedSink = mapper.invoke(sinkMapper, location, sink);
+            return (Sink)returnedSink;
+        } catch (SecurityException | NoSuchMethodException t) {
+            throw new InternalMapperError("unmanaged " + sink.sinkTypeName() + " sink", t);
         } catch (Exception t) {
             throw new InternalMapperError("issue resolving " + sink.sinkTypeName() + " sink", t);
         }
 
-        throw new InternalMapperError("unmanaged " + sink.sinkTypeName() + " sink");
     }
 
     public static class InternalMapperError extends Error {

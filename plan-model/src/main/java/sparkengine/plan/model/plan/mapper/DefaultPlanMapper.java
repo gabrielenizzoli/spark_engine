@@ -50,7 +50,7 @@ public class DefaultPlanMapper implements PlanMapper {
         try {
             return ComponentsMapper.mapComponents(location.push(COMPONENTS), componentMapper, components);
         } catch (Exception | ComponentsMapper.InternalMapperError e) {
-            throw new PlanMapperException("exception resolving pan with resolver " + this.getClass().getName(), e);
+            throw new PlanMapperException("exception resolving plan with resolver " + this.getClass().getName(), e);
         }
     }
 
@@ -63,7 +63,7 @@ public class DefaultPlanMapper implements PlanMapper {
         try {
             return SinksMapper.mapSinks(location.push(SINKS), sinkMapper, sinks);
         } catch (Exception | SinksMapper.InternalMapperError e) {
-            throw new PlanMapperException("exception resolving pan with resolver " + this.getClass().getName(), e);
+            throw new PlanMapperException("exception resolving plan with resolver " + this.getClass().getName(), e);
         }
     }
 

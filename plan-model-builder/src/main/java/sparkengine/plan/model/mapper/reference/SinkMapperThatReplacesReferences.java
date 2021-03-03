@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.Optional;
 
-public class ReferenceSinkMapper extends SinkMapperForComponents {
+public class SinkMapperThatReplacesReferences extends SinkMapperForComponents {
 
     public static final String PLAN = "plan";
 
@@ -24,9 +24,15 @@ public class ReferenceSinkMapper extends SinkMapperForComponents {
     @Nonnull
     private final InputStreamResourceLocator resourceLocator;
 
-    public ReferenceSinkMapper(@Nonnull ComponentMapper componentMapper,
-                               @Nonnull ResourceLocationBuilder resourceLocationBuilder,
-                               @Nonnull InputStreamResourceLocator resourceLocator) {
+    public static SinkMapperThatReplacesReferences of(@Nonnull ComponentMapper componentMapper,
+                                                      @Nonnull ResourceLocationBuilder resourceLocationBuilder,
+                                                      @Nonnull InputStreamResourceLocator resourceLocator) {
+        return new SinkMapperThatReplacesReferences(componentMapper, resourceLocationBuilder, resourceLocator);
+    }
+
+    private SinkMapperThatReplacesReferences(@Nonnull ComponentMapper componentMapper,
+                                             @Nonnull ResourceLocationBuilder resourceLocationBuilder,
+                                             @Nonnull InputStreamResourceLocator resourceLocator) {
         super(componentMapper);
         this.resourceLocationBuilder = Objects.requireNonNull(resourceLocationBuilder);
         this.resourceLocator = Objects.requireNonNull(resourceLocator);
@@ -39,7 +45,7 @@ public class ReferenceSinkMapper extends SinkMapperForComponents {
             String uri = sink.getRef();
             var inputStream = resourceLocator.getInputStreamFactory(uri);
             var newSink = ModelFactory.readSinkFromYaml(inputStream);
-            var sinkMapper = new ReferenceSinkMapper(componentMapper, resourceLocationBuilder.withRoot(uri), resourceLocator);
+            var sinkMapper = SinkMapperThatReplacesReferences.of(componentMapper, resourceLocationBuilder.withRoot(uri), resourceLocator);
             return SinksMapper.mapSink(Location.empty(), sinkMapper, newSink);
         } else if (sink.getMode() == Reference.ReferenceMode.RELATIVE) {
             var effectiveLocation = Optional
