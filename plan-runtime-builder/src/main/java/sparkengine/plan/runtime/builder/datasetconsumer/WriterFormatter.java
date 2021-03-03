@@ -1,5 +1,6 @@
 package sparkengine.plan.runtime.builder.datasetconsumer;
 
+import sparkengine.plan.model.sink.SinkForStream;
 import sparkengine.plan.model.sink.impl.BatchSink;
 import sparkengine.plan.model.sink.impl.ForeachSink;
 import sparkengine.plan.model.sink.impl.StreamSink;
@@ -12,9 +13,9 @@ import org.apache.spark.sql.streaming.Trigger;
 
 public class WriterFormatter {
 
-    public static <T> Stream<T> getStreamFormatter(StreamSink sink) {
+    public static <T> Stream<T> getStreamFormatter(SinkForStream sink) {
         return writer -> {
-            writer = writer.format(sink.getFormat()).queryName(sink.getName());
+            writer = writer.queryName(sink.getName()).format(sink.getFormat());
             if (sink.getOptions() != null && !sink.getOptions().isEmpty())
                 writer = writer.options(sink.getOptions());
             if (sink.getCheckpointLocation() != null)
@@ -24,18 +25,6 @@ public class WriterFormatter {
             if (sink.getMode() != null)
                 writer = writer.outputMode(getStreamOutputMode(sink.getMode()));
 
-            return writer;
-        };
-    }
-
-    public static <T> Stream<T> getForeachFormatter(ForeachSink sink) {
-        return writer -> {
-            writer = writer
-                    .queryName(sink.getName())
-                    .trigger(getStreamTrigger(sink.getTrigger()))
-                    .outputMode(getStreamOutputMode(sink.getMode()));
-            if (sink.getOptions() != null && !sink.getOptions().isEmpty())
-                writer = writer.options(sink.getOptions());
             return writer;
         };
     }

@@ -83,7 +83,7 @@ public class SinkDatasetConsumerFactory implements DatasetConsumerFactory {
             var foreach = (ForeachSink)sink;
             return ForeachConsumer.<T>builder()
                     .batchComponentName(foreach.getBatchComponentName())
-                    .formatter(WriterFormatter.getForeachFormatter(foreach))
+                    .formatter(WriterFormatter.getStreamFormatter(foreach))
                     .plan(foreach.getPlan()).build();
         }
 

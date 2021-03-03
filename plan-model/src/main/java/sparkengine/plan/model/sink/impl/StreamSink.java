@@ -3,7 +3,7 @@ package sparkengine.plan.model.sink.impl;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Value;
-import sparkengine.plan.model.sink.SinkWithFormat;
+import sparkengine.plan.model.sink.SinkForStream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -12,7 +12,7 @@ import java.util.Map;
 @Value
 @Builder(setterPrefix = "with")
 @JsonDeserialize(builder = StreamSink.Builder.class)
-public class StreamSink implements SinkWithFormat {
+public class StreamSink implements SinkForStream {
 
     public static final String TYPE_NAME = "stream";
 
@@ -28,11 +28,5 @@ public class StreamSink implements SinkWithFormat {
     Trigger trigger;
     @Nullable
     OutputMode mode;
-
-    public enum OutputMode {
-        APPEND,
-        COMPLETE,
-        UPDATE
-    }
 
 }
