@@ -36,7 +36,7 @@ public class ComponentsMapper {
                                          @Nonnull Component component) throws Exception {
 
         try {
-            String name = "map" + component.getClass().getSimpleName();
+            String name = String.format("map%s", component.getClass().getSimpleName());
             Method mapper = componentMapper.getClass().getMethod(name, Location.class, component.getClass());
             Object returnedComponent = mapper.invoke(componentMapper, location, component);
             return (Component) returnedComponent;

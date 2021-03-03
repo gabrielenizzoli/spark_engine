@@ -30,10 +30,6 @@ public interface SinkMapper {
         return sink;
     }
 
-    default Sink mapForeachRefSink(Location location, ForeachRefSink sink) throws Exception {
-        return sink;
-    }
-
     default Sink mapReferenceSink(Location location, ReferenceSink sink) throws Exception {
         return sink;
     }

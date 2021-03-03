@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
         @JsonSubTypes.Type(value = BatchSink.class, name = BatchSink.TYPE_NAME),
         @JsonSubTypes.Type(value = StreamSink.class, name = StreamSink.TYPE_NAME),
         @JsonSubTypes.Type(value = ForeachSink.class, name = ForeachSink.TYPE_NAME),
-        @JsonSubTypes.Type(value = ForeachRefSink.class, name = ForeachRefSink.TYPE_NAME),
         @JsonSubTypes.Type(value = ShowSink.class, name = ShowSink.TYPE_NAME),
         @JsonSubTypes.Type(value = ViewSink.class, name = ViewSink.TYPE_NAME),
         @JsonSubTypes.Type(value = CounterSink.class, name = CounterSink.TYPE_NAME),

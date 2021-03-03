@@ -37,7 +37,7 @@ public class SinksMapper {
             @Nonnull Sink sink) throws Exception {
 
         try {
-            String name = "map" + sink.getClass().getSimpleName();
+            String name = String.format("map%s", sink.getClass().getSimpleName());
             Method mapper = sinkMapper.getClass().getMethod(name, Location.class, sink.getClass());
             Object returnedSink = mapper.invoke(sinkMapper, location, sink);
             return (Sink)returnedSink;
