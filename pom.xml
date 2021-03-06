@@ -218,9 +218,6 @@
                     <groupId>org.projectlombok</groupId>
                     <artifactId>lombok-maven-plugin</artifactId>
                     <version>1.18.18.0</version>
-                    <configuration>
-                        <detail>true</detail>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -299,7 +296,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <detail>false</detail>
+                    <failOnError>true</failOnError>
+                    <failOnWarnings>true</failOnWarnings>
                     <sourcepath>${project.build.directory}/${generated.package.folder}</sourcepath>
                 </configuration>
             </plugin>

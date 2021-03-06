@@ -39,11 +39,11 @@ public interface Udaf<IN, BUF, OUT> extends SqlFunction {
      *
      *    public Integer finish(Integer buffer) { return buffer; }
      *
-     *    public Encoder&lt;Integer> inputEncoder() { return Encoders.INT(); }
+     *    public Encoder&lt;Integer&gt; inputEncoder() { return Encoders.INT(); }
      *
-     *    public Encoder&lt;Integer> bufferEncoder() { return Encoders.INT(); }
+     *    public Encoder&lt;Integer&gt; bufferEncoder() { return Encoders.INT(); }
      *
-     *    public Encoder&lt;Integer> outputEncoder() { return Encoders.INT(); }
+     *    public Encoder&lt;Integer&gt; outputEncoder() { return Encoders.INT(); }
      *
      * }
      * </pre>
