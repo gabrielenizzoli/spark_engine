@@ -297,7 +297,7 @@
                 </executions>
                 <configuration>
                     <failOnError>true</failOnError>
-                    <failOnWarnings>true</failOnWarnings>
+                    <failOnWarnings>false</failOnWarnings>
                     <sourcepath>${project.build.directory}/${generated.package.folder}</sourcepath>
                 </configuration>
             </plugin>
