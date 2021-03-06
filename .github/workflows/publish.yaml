@@ -29,7 +29,7 @@ jobs:
       - name: Publish to The Central Repository
         run: mvn deploy
         env:
-          MAVEN_USERNAME: maven_username123
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
         
