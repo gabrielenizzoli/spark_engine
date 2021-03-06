@@ -56,10 +56,12 @@ public class SqlCompiler {
     /**
      * Utility method that creates a sql compiler and compiles a sql statement into a dataset
      *
-     * @param tables       tables to be resolved during compilation
-     * @param sqlFunctions function s to be resolved during compilation
-     * @param sql          sql statement
-     * @return dataset
+     * @param sparkSession  sparkSession to use for compilation
+     * @param tables        tables to be resolved during compilation
+     * @param sqlFunctions  function s to be resolved during compilation, can be null or empty
+     * @param sql           sql to compile
+     * @return              Compile sql as a dataset
+     * @throws PlanMapperException  for any error during compilation
      */
     public static Dataset<Row> sql(@Nonnull SparkSession sparkSession,
                                    @Nullable Collection<Table> tables,

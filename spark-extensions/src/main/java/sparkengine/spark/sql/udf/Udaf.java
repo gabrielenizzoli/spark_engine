@@ -24,7 +24,7 @@ public interface Udaf<IN, BUF, OUT> extends SqlFunction {
      * A UDAF must return an Aggregator using the getAggregator method.
      * It is obviously possible to have the UDAF class also implements the Aggregator abstract class.
      * This class makes it easier to implement an aggregator this way, by simply extending the Aggregator base class.
-     * <br/>
+     * <br><br>
      * Example:
      * <pre>
      * class IntegerSummer extends UdafAggregator&lt;Integer, Integer, Integer&gt; {
@@ -39,11 +39,11 @@ public interface Udaf<IN, BUF, OUT> extends SqlFunction {
      *
      *    public Integer finish(Integer buffer) { return buffer; }
      *
-     *    public Encoder<Integer> inputEncoder() { return Encoders.INT(); }
+     *    public Encoder&lt;Integer> inputEncoder() { return Encoders.INT(); }
      *
-     *    public Encoder<Integer> bufferEncoder() { return Encoders.INT(); }
+     *    public Encoder&lt;Integer> bufferEncoder() { return Encoders.INT(); }
      *
-     *    public Encoder<Integer> outputEncoder() { return Encoders.INT(); }
+     *    public Encoder&lt;Integer> outputEncoder() { return Encoders.INT(); }
      *
      * }
      * </pre>

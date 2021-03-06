@@ -87,8 +87,9 @@ public class Transformations {
     /**
      * Applies a sql transformation to all the input datasets of rows.
      *
-     * @param sourceNames name of the input datasets
-     * @param sql         sql statement
+     * @param sparkSession  sparkSession to use
+     * @param sourceNames   name of the input datasets
+     * @param sql           sql statement
      * @return outcome of the transformation operation
      */
     public static DataTransformationN<Row, Row> sql(@Nonnull SparkSession sparkSession,
