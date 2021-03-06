@@ -8,12 +8,14 @@
 
     <parent>
         <groupId>com.spark-engine</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>spark-engine-parent</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <dependencies>
+    <name>Spark Engine Runtime Module</name>
+    <url>https://www.spark-engine.com</url>
 
+    <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -23,7 +25,6 @@
             <artifactId>spark-sql_${scala.major.version}</artifactId>
             <scope>provided</scope>
         </dependency>
-
     </dependencies>
 
 </project>

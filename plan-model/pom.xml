@@ -8,12 +8,14 @@
 
     <parent>
         <groupId>com.spark-engine</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>spark-engine-parent</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <dependencies>
+    <name>Spark Engine Model Module</name>
+    <url>https://www.spark-engine.com</url>
 
+    <dependencies>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
@@ -26,7 +28,6 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
-
         <!-- test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -37,7 +38,6 @@
             <artifactId>jackson-dataformat-yaml</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
 </project>

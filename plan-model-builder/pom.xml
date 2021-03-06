@@ -8,12 +8,14 @@
 
     <parent>
         <groupId>com.spark-engine</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>spark-engine-parent</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <dependencies>
+    <name>Spark Engine Model Builder Module</name>
+    <url>https://www.spark-engine.com</url>
 
+    <dependencies>
         <!-- packages -->
         <dependency>
             <groupId>com.spark-engine</groupId>
@@ -27,14 +29,11 @@
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
         </dependency>
-
         <!-- test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
         </dependency>
-
-
     </dependencies>
 
 </project>
