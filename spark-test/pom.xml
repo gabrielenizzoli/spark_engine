@@ -8,9 +8,12 @@
 
     <parent>
         <groupId>com.spark-engine</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>spark-engine-parent</artifactId>
         <version>${revision}</version>
     </parent>
+
+    <name>Spark Engine Test Module</name>
+    <url>https://www.spark-engine.com</url>
 
     <dependencies>
         <dependency>
