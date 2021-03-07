@@ -1,5 +1,8 @@
 ---
-sort: 1
+layout: default
+title: What is a Component
+parent: Components
+nav_order: 1
 ---
 
 # What is a Component

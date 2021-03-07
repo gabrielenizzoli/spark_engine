@@ -1,5 +1,7 @@
 ---
-sort: 2
+layout: default
+parent: Components
+nav_order: 2
 ---
 
 # Encoder Field

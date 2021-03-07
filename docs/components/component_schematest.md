@@ -1,5 +1,7 @@
 ---
-sort: 10
+layout: default
+parent: Components
+nav_order: 10
 ---
 
 # Schema test Component

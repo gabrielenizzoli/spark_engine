@@ -1,5 +1,7 @@
 ---
-sort: 5
+layout: default
+parent: Components
+nav_order: 5
 ---
 
 # Batch and Stream Component

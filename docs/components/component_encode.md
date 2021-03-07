@@ -1,5 +1,7 @@
 ---
-sort: 4
+layout: default
+parent: Components
+nav_order: 4
 ---
 
 # Encode Component

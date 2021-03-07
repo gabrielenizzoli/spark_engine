@@ -1,5 +1,7 @@
 ---
-sort: 7
+layout: default
+parent: Components
+nav_order: 7
 ---
 
 # Sql Component

@@ -1,5 +1,7 @@
 ---
-sort: 3
+layout: default
+parent: Components
+nav_order: 3
 ---
 
 # Empty Component
