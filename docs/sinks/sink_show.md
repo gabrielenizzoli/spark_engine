@@ -1,5 +1,7 @@
 ---
-sort: 3
+layout: default
+parent: Sinks
+nav_order: 3
 ---
 
 # Show Sink

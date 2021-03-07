@@ -1,5 +1,7 @@
 ---
-sort: 2
+layout: default
+parent: Sinks
+nav_order: 2
 ---
 
 # Trigger Field

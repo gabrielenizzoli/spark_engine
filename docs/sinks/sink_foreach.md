@@ -1,5 +1,7 @@
 ---
-sort: 7
+layout: default
+parent: Sinks
+nav_order: 7
 ---
 
 # Foreach Sink

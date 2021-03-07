@@ -1,5 +1,7 @@
 ---
-sort: 5
+layout: default
+parent: Sinks
+nav_order: 5
 ---
 
 # Batch Sink

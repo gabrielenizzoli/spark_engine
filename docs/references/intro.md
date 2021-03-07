@@ -1,5 +1,7 @@
 ---
-sort: 1
+layout: default
+parent: References
+nav_order: 1
 ---
 
 # The Reference Component/Sink
@@ -21,6 +23,7 @@ If the resolution mode is set to `ABSOLUTE`, then the `ref` field must be specif
 The value in this case is usually a fully qualified url.
 
 Example:
+
 ```yaml
 components:
   input: { type: ref, mode: ABSOLUTE, ref: http://server/component.yaml }
@@ -36,6 +39,7 @@ If resolution mode is set to `RELATIVE` and the `ref` field is _NOT_ specified, 
 Note that the `RELATIVE` resolution mode is the default, and does not need to be specified in the model description
 
 For instance, assuming a plan is located at `http://server/path/planName.yaml`:
+
 ```yaml
 components:
   input: { type: ref }
@@ -46,10 +50,12 @@ pipelines:
 ```
 
 The 2 external resources are located at:
+
 * `http://server/path/planName_components_input.yaml`
 * `http://server/path/planName_sinks_output.yaml`
 
 In the first case (the component called `input`) the path is composed by:
+
 * `planName`: the name of the plan in the original url
 * `components`: the components group
 * `input`: the name of the component
@@ -57,6 +63,7 @@ In the first case (the component called `input`) the path is composed by:
 More in general, given a plan located at url `urlRoot/planName.yaml`, a relative resource will be located at a url `urlRoot/planName_<parts>.yaml`, where parts area list of strings joined by the `_` character.
 
 The list of parts is composed such that:
+
 * it starts with the `components` string if the part is a reference to a component
 * it starts with the `sinks` string if the part is a reference to a sink
 * it has the list of all the components or sinks names required to reach the resource
@@ -66,6 +73,7 @@ The list of parts is composed such that:
 When the resolution mode is `RELATIVE` and the `ref` field is specified, the location of the resources is simply the name of the plan and the value of the ref field.
 
 For instance, assuming a plan is located at `http://server/path/planName.yaml`:
+
 ```yaml
 components:
   input: { type: ref, ref: component1 }
@@ -76,5 +84,6 @@ pipelines:
 ```
 
 The 2 external resources are located at:
+
 * `http://server/path/planName_component1.yaml`
 * `http://server/path/planName_sink2.yaml`

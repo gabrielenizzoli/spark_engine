@@ -19,9 +19,10 @@ Usually an execution plan is hosted in hdfs and witten in yaml.
 The plan we will use is available directly from the GitHub repository here: [quickStartPlan.yaml](https://raw.githubusercontent.com/gabrielenizzoli/spark_engine/master/examples/plans/quickStartPlan.yaml).
 This sample plan has 2 pipelines, one is a batch pipeline, the other is a stream:
 
-### quickStartPLan.yaml
+### The sample plan is quickStartPlan.yaml
 
 The plan looks like this:
+
 ```yaml
 components:
   sqlSource: { type: ref }
@@ -43,6 +44,7 @@ pipelines:
 ```
 
 And the referenced component:
+
 ```yaml
 sql: >
   select 'value' as column
@@ -52,6 +54,7 @@ sql: >
 
 Regarding Spark, in the `bin/` sub-folder there is the `spark-submit` command.
 Running our sample remote plan it is as easy as executing:
+
 ```shell
 cd spark/bin
 ./spark-submit --master local --packages com.spark-engine:plan-app:x.x.x --class sparkengine.plan.app.Start spark-internal -p https://raw.githubusercontent.com/gabrielenizzoli/spark_engine/master/examples/plans/quickStartPlan.yaml
@@ -63,5 +66,5 @@ Since the stream is open-ended, the application will not stop, but it will run f
 ## What's next
 
 This is all the basic stuff that you need to know on how to run an execution plan.
-Notice how this library does not interfere at all with the spark configuration, which can be passed, as usual, to the `spark-submit` command. 
+Notice how this library does not interfere at all with the spark configuration, which can be passed, as usual, to the `spark-submit` command.
 Also note that this plan can run locally (as in this quick example) and also in kubernetes / mesos / yarn / spark standalone / _etc etc_.
