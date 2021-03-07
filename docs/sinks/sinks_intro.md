@@ -6,7 +6,7 @@ nav_order: 1
 
 # What is a Sink
 
-As [we said before](/components/intro.html), a dataset is defined by one or more components.
+As [we said before](/components), a dataset is defined by one or more components.
 Once a dataset is created, it needs to be consumed for something to happen.
 A **consumer** describes an action on a dataset (ie: save to disk, show to terminal, etc etc).
 For this reason, a **sink** model abstraction is also provided to describe dataset consumers.

@@ -115,7 +115,7 @@ Notice how:
 * ... components (and sinks) can be declared as external (they are referenced as external resources in http, hdfs, or jar files)
 * ... each component can generate a dataset, and with mock inputs, can be tested in isolation
 
-Executing this plan is as easy as you might guess:
+Executing this plan is [as easy as you might guess](/app/command_line):
 
 ```shell
 cd spark/bin
@@ -123,6 +123,7 @@ cd spark/bin
   --class sparkengine.plan.app.Start spark-internal -p myPlan.yaml
 ```
 
+[An embedded option is also available](/app/embedded), so you can just jump start a plan everywhere in your code.
 Without coding any `main` code you can start your plan by using a pre-defined startup facility that is responsible for:
 
 * ... find all external references
@@ -136,4 +137,4 @@ The final goal? reduce complexity, have better development workflow, simplify an
 
 ## What's next?
 
-* Go to [quick start](/quick_start/up-and-running-in-5-minutes.html) to test the tires. (_Almost_) no software required.
+* Go to [quick start](/quickstart) to test the tires. (_Almost_) no software required.

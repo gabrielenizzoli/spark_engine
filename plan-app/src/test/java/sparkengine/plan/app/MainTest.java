@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sparkengine.plan.runtime.builder.datasetconsumer.GlobalCounterConsumer;
 
-class StartTest {
+class MainTest {
 
     @Test
     void testMain() throws Throwable {

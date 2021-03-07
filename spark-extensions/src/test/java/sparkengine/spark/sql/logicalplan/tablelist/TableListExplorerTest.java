@@ -2,13 +2,13 @@ package sparkengine.spark.sql.logicalplan.tablelist;
 
 import org.junit.jupiter.api.Test;
 import sparkengine.spark.sql.logicalplan.PlanExplorerException;
-import sparkengine.spark.test.SparkSessionBase;
+import sparkengine.spark.test.SparkSessionManager;
 
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class TableListExplorerTest extends SparkSessionBase {
+class TableListExplorerTest extends SparkSessionManager {
 
     @Test
     void exploreLogicalPlan() throws PlanExplorerException {

@@ -7,11 +7,11 @@ import sparkengine.plan.runtime.builder.TestCatalog;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactoryException;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
-import sparkengine.spark.test.SparkSessionBase;
+import sparkengine.spark.test.SparkSessionManager;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SinkDatasetConsumerFactoryWithYamlCatalogTest extends SparkSessionBase {
+class SinkDatasetConsumerFactoryWithYamlCatalogTest extends SparkSessionManager {
 
     @Test
     void testFactoryWithForeachStreamAndYamlCatalog() throws DatasetConsumerException, DatasetConsumerFactoryException, DatasetFactoryException, StreamingQueryException {

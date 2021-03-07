@@ -7,12 +7,12 @@ import sparkengine.plan.runtime.builder.TestCatalog;
 import sparkengine.plan.runtime.builder.runner.ModelPipelineRunnersFactory;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 import sparkengine.plan.runtime.runner.PipelineRunnersFactoryException;
-import sparkengine.spark.test.SparkSessionBase;
+import sparkengine.spark.test.SparkSessionManager;
 
 import java.io.IOException;
 import java.util.List;
 
-class ModelPipelineRunnersFactoryTest extends SparkSessionBase {
+class ModelPipelineRunnersFactoryTest extends SparkSessionManager {
 
     @Test
     void runWithYamlCatalogs() throws IOException, DatasetConsumerException, PipelineRunnersFactoryException {

@@ -11,7 +11,7 @@ exclude:
 
 heading_anchors: true
 
-search_enabled: false
+search_enabled: true
 
 aux_links:
   "GitHub":

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import java.io.File;
 import java.io.IOException;
 
-public class SparkSessionBase {
+public class SparkSessionManager {
 
     protected static SparkSession sparkSession;
 
