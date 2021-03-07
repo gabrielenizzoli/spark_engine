@@ -30,6 +30,7 @@ public class SparkSessionManager {
     @AfterAll
     static void close() {
         sparkSession.close();
+        SparkSession.clearActiveSession();
     }
 
     @BeforeEach

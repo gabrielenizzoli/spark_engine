@@ -7,10 +7,15 @@ import sparkengine.plan.app.runner.RuntimeArgs;
 import sparkengine.plan.runtime.builder.datasetconsumer.GlobalCounterConsumer;
 import sparkengine.spark.test.SparkSessionManager;
 
-class ProgrammaticStarterTest extends SparkSessionManager {
+import java.util.Optional;
+
+class EmbeddedStarterTest extends SparkSessionManager {
 
     @Test
     void testPlanRunner() throws Throwable {
+
+        // given
+        Optional.ofNullable(GlobalCounterConsumer.COUNTER.get("app")).ifPresent(c -> c.set(0));
 
         // when
         var args = RuntimeArgs.builder().planLocation("./src/test/resources/testPlan.yaml").build();
