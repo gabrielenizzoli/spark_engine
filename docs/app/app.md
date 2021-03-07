@@ -1,8 +1,7 @@
 ---
 layout: default
 title: Application
-nav_order: 6
-has_children: false
+nav_order: 7
 permalink: /app
 ---
 
