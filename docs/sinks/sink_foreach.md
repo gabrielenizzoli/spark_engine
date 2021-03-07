@@ -25,6 +25,7 @@ Note that the execution plan will be fully reevaluated on every new micro batch 
 ## Examples
 
 Yaml Examples:
+
 ```yaml
 foreachSink:
   type: foreach

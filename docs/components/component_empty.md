@@ -1,5 +1,6 @@
 ---
 layout: default
+title: Empty Component
 parent: Components
 nav_order: 3
 ---

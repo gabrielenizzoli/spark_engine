@@ -19,6 +19,7 @@ For debugging purposes, a show sink can be used to print on the output terminal 
 ## Examples
 
 Yaml Example:
+
 ```yaml
 showSink:
   type: show
