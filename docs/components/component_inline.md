@@ -1,5 +1,7 @@
 ---
-sort: 6
+layout: default
+parent: Components
+nav_order: 6
 ---
 
 # Inline Component

@@ -1,8 +1,11 @@
 ---
-sort: 1
+layout: default
+title: Quick Start
+nav_order: 1
 ---
 
 # Get up and running in 5 minutes (or less)
+{: .no_toc }
 
 ## Get Java + Spark
 

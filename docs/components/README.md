@@ -1,7 +1,10 @@
 ---
-sort: 2
+layout: default
+title: Components
+nav_order: 2
+has_children: true
+permalink: /components
 ---
 
 # Components
 
-{% include list.liquid all=true %}

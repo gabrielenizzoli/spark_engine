@@ -1,14 +1,49 @@
 title: Spark Engine
-description: Compose Apache Spark Datasets with ease.
+description: Write a Spark execution plan using yaml
+remote_theme: pmarsceill/just-the-docs
+url: "https://www.spark-engine.com"
 
-remote_theme: rundocs/jekyll-rtd-theme
-
-readme_index:
-  with_frontmatter: true
-  show_sorted: false
-
+permalink: pretty
 exclude:
-  - Makefile
+  - "modules/"
+  - "app/"
+  - "plan/"
+  - "references/"
+  - "sinks/"
+  - README.md
   - CNAME
-  - Gemfile
-  - Gemfile.lock
+
+# Enable or disable heading anchors
+heading_anchors: true
+
+# Makes Aux links open in a new tab. Default is false
+aux_links_new_tab: false
+
+# Sort order for navigation links
+# nav_sort: case_insensitive # default, equivalent to nil
+nav_sort: case_sensitive # Capital letters sorted before lowercase
+
+# Footer content
+# appears at the bottom of every page's main content
+
+# Back to top link
+back_to_top: true
+back_to_top_text: "Back to top"
+
+footer_content: "Copyright &copy; 2020-21"
+
+
+#title: Spark Engine
+#description: Compose Apache Spark Datasets with ease.
+
+#remote_theme: rundocs/jekyll-rtd-theme
+
+#readme_index:
+#  with_frontmatter: true
+#  show_sorted: false
+
+#exclude:
+#  - Makefile
+#  - CNAME
+#  - Gemfile
+#  - Gemfile.lock

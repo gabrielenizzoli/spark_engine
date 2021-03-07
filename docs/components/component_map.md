@@ -1,5 +1,7 @@
 ---
-sort: 9
+layout: default
+parent: Components
+nav_order: 9
 ---
 
 # Map Component
