@@ -11,6 +11,8 @@ exclude:
 
 heading_anchors: true
 
+search_enabled: false
+
 aux_links:
   "on GitHub":
     - "https://github.com/gabrielenizzoli/spark_engine"
@@ -21,6 +23,4 @@ nav_sort: case_sensitive
 back_to_top: true
 back_to_top_text: "Back to top"
 
-footer_content: "Copyright &copy; 2020-21"
-
-color_scheme: dark
+footer_content: "Copyright &copy; 2020-2021 me"
