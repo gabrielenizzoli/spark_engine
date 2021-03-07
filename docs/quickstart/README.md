@@ -2,7 +2,7 @@
 layout: default
 title: Quick Start
 nav_order: 1
-permalink: up-and-running-in-5-minutes
+permalink: /up-and-running-in-5-minutes
 ---
 
 # Get up and running in 5 minutes (or less)
