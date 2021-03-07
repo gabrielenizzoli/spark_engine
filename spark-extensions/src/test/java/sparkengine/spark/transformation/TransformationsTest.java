@@ -10,7 +10,7 @@ import scala.Tuple2;
 import sparkengine.spark.sql.logicalplan.functionresolver.FunctionResolverException;
 import sparkengine.spark.sql.logicalplan.tableresolver.TableResolverException;
 import sparkengine.spark.sql.udf.Udf;
-import sparkengine.spark.test.SparkSessionBase;
+import sparkengine.spark.test.SparkSessionManager;
 import sparkengine.spark.utils.UdafIntegerSummer;
 
 import java.util.*;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class TransformationsTest extends SparkSessionBase {
+class TransformationsTest extends SparkSessionManager {
 
     @Test
     void sql() {

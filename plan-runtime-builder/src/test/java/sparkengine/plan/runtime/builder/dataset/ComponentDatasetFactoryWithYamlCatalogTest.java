@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sparkengine.plan.runtime.builder.TestCatalog;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
-import sparkengine.spark.test.SparkSessionBase;
+import sparkengine.spark.test.SparkSessionManager;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class ComponentDatasetFactoryWithYamlCatalogTest extends SparkSessionBase {
+class ComponentDatasetFactoryWithYamlCatalogTest extends SparkSessionManager {
 
     @Test
     void testFactoryWithBadYamlCatalog() throws DatasetFactoryException {

@@ -6,14 +6,14 @@ import sparkengine.plan.model.sink.catalog.SinkCatalog;
 import sparkengine.plan.model.sink.impl.ViewSink;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactoryException;
-import sparkengine.spark.test.SparkSessionBase;
+import sparkengine.spark.test.SparkSessionManager;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class SinkDatasetConsumerFactoryTest extends SparkSessionBase {
+class SinkDatasetConsumerFactoryTest extends SparkSessionManager {
 
     @Test
     void testFactory() throws DatasetConsumerException, DatasetConsumerFactoryException {

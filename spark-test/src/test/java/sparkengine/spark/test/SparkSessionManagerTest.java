@@ -3,7 +3,7 @@ package sparkengine.spark.test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class SparkSessionBaseTest extends SparkSessionBase {
+public class SparkSessionManagerTest extends SparkSessionManager {
 
     @Test
     public void testSession() {

@@ -10,7 +10,7 @@ import sparkengine.plan.model.component.impl.InlineComponent;
 import sparkengine.plan.model.component.impl.SqlComponent;
 import sparkengine.plan.model.component.impl.WrapperComponent;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
-import sparkengine.spark.test.SparkSessionBase;
+import sparkengine.spark.test.SparkSessionManager;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class ComponentDatasetFactoryTest extends SparkSessionBase {
+class ComponentDatasetFactoryTest extends SparkSessionManager {
 
     @Test
     void testFactory() throws DatasetFactoryException {

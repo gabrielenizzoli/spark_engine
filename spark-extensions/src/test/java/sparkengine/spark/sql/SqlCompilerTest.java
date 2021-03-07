@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import sparkengine.spark.sql.logicalplan.PlanMapperException;
 import sparkengine.spark.sql.logicalplan.SqlCompiler;
 import sparkengine.spark.sql.logicalplan.tableresolver.Table;
-import sparkengine.spark.test.SparkSessionBase;
+import sparkengine.spark.test.SparkSessionManager;
 import sparkengine.spark.utils.UdafIntegerSummer;
 import sparkengine.spark.utils.UdfPlusOne;
 
@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class SqlCompilerTest extends SparkSessionBase {
+public class SqlCompilerTest extends SparkSessionManager {
 
     @Test
     public void testSqlUdfsResolver() throws PlanMapperException {

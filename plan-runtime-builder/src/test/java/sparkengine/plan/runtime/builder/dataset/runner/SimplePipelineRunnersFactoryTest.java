@@ -15,12 +15,12 @@ import sparkengine.plan.runtime.builder.datasetconsumer.SinkDatasetConsumerFacto
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 import sparkengine.plan.runtime.runner.PipelineRunnersFactoryException;
 import sparkengine.plan.runtime.runner.impl.SimplePipelineRunnersFactory;
-import sparkengine.spark.test.SparkSessionBase;
+import sparkengine.spark.test.SparkSessionManager;
 
 import java.util.List;
 import java.util.Map;
 
-class SimplePipelineRunnersFactoryTest extends SparkSessionBase {
+class SimplePipelineRunnersFactoryTest extends SparkSessionManager {
 
     @Test
     void testPipelineFactory() throws DatasetConsumerException, PipelineRunnersFactoryException {
