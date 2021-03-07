@@ -16,6 +16,8 @@ search_enabled: false
 aux_links:
   "on GitHub":
     - "https://github.com/gabrielenizzoli/spark_engine"
+  "Maven Central":
+    - "https://search.maven.org/search?q=g:com.spark-engine"
 aux_links_new_tab: true
 
 nav_sort: case_sensitive
