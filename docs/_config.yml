@@ -6,6 +6,9 @@ url: "https://www.spark-engine.com"
 permalink: pretty
 exclude:
   - "modules/"
+  - "app/"
+  - "plan/"
+  - "references/"
   - README.md
   - CNAME
 
