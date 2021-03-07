@@ -21,6 +21,7 @@ Refer to spark documentation for details.
 ## Examples
 
 Yaml Examples:
+
 ```yaml
 # same
 { milliseconds: 60 }

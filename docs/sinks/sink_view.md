@@ -1,5 +1,6 @@
 ---
 layout: default
+title: View Sink
 parent: Sinks
 nav_order: 4
 ---
@@ -18,6 +19,7 @@ A view sink can be used to register the  in the dataset as a table in the catalo
 ## Examples
 
 Yaml Example:
+
 ```yaml
 collectSink:
   type: collect

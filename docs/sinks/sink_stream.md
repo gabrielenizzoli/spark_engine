@@ -24,6 +24,7 @@ Refer to spark documentation for details.
 ## Examples
 
 Yaml Example:
+
 ```yaml
 collectSink:
   type: stream
