@@ -6,43 +6,21 @@ url: "https://www.spark-engine.com"
 permalink: pretty
 exclude:
   - "modules/"
-  - "app/"
-  - "plan/"
-  - "references/"
   - README.md
   - CNAME
 
-# Enable or disable heading anchors
 heading_anchors: true
 
-# Makes Aux links open in a new tab. Default is false
-aux_links_new_tab: false
+aux_links:
+  "on GitHub":
+    - "https://github.com/gabrielenizzoli/spark_engine"
+aux_links_new_tab: true
 
-# Sort order for navigation links
-# nav_sort: case_insensitive # default, equivalent to nil
-nav_sort: case_sensitive # Capital letters sorted before lowercase
+nav_sort: case_sensitive
 
-# Footer content
-# appears at the bottom of every page's main content
-
-# Back to top link
 back_to_top: true
 back_to_top_text: "Back to top"
 
 footer_content: "Copyright &copy; 2020-21"
 
-
-#title: Spark Engine
-#description: Compose Apache Spark Datasets with ease.
-
-#remote_theme: rundocs/jekyll-rtd-theme
-
-#readme_index:
-#  with_frontmatter: true
-#  show_sorted: false
-
-#exclude:
-#  - Makefile
-#  - CNAME
-#  - Gemfile
-#  - Gemfile.lock
+color_scheme: dark
