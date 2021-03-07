@@ -16,10 +16,8 @@ If our execution plan is somewhere in a folder in a hdfs-compatible filesystem (
 ```yaml
 components:
   sql: { type: sql, sql: select 'value' as column }
-
 sinks:
   show: { type: show }
-
 pipelines:
   batch: { source: sql, sink: show }
 ```
@@ -31,6 +29,18 @@ cd spark/bin
 ./spark-submit --master local --packages com.spark-engine:spark-app:1.0 
     --class sparkengine.plan.app.Start spark-internal 
     -p file:///tmp/plan.yaml
+```
+
+## Run in docker
+
+This will also work in docker: just use a prebuilt spark image.
+If you have a standrad spark image, all you need to do is just run your `spark-sumbit` command. 
+Here is the a sample:
+
+```shell
+docker run spark:latest /opt/spark/bin/spark-submit --master local 
+  --packages com.spark-engine:plan-app:0.8.2 --conf spark.jars.ivy=/tmp/ivy2 --class sparkengine.plan.app.Start spark-internal 
+  -p https://raw.githubusercontent.com/gabrielenizzoli/spark_engine/master/examples/plans/quickStartPlan.yaml
 ```
 
 ## Command line help
