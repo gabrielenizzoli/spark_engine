@@ -1,5 +1,7 @@
 ---
-sort: 1
+layout: default
+parent: Sinks
+nav_order: 1
 ---
 
 # What is a Sink

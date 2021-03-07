@@ -1,5 +1,7 @@
 ---
-sort: 6
+layout: default
+parent: Sinks
+nav_order: 6
 ---
 
 # Stream Sink

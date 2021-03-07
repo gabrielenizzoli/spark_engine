@@ -1,14 +1,17 @@
 ---
-sort: 2
+layout: default
+parent: References
+nav_order: 2
 ---
 
-# Complex example
+# A complex example for references
 
 In the following a more complex example based on nested references inside a `foreach` sink.
 
 ## Plan
 
 Location: `http://server/plan.yaml`:
+
 ```yaml
 components:
   input: { type: ref }
@@ -22,6 +25,7 @@ pipelines:
 ## `input` Component
 
 Location: `http://server/plan_components_input.yaml`:
+
 ```yaml
 type: stream
   format: rate
@@ -30,6 +34,7 @@ type: stream
 ## `tx` Component
 
 Location: `http://server/plan_transformation.yaml`:
+
 ```yaml
 sql: >
   select *, value * 100 as bigValue from input
@@ -38,6 +43,7 @@ sql: >
 ## `output` Sink
 
 Location: `http://server/plan_sinks_output.yaml`:
+
 ```yaml
 type: foreach
   name: ouputQuery
@@ -53,6 +59,7 @@ type: foreach
 ## `out` Sink inside Foreach
 
 Location: `http://server/plan_sinks_output_plan_sinks_out.yaml`:
+
 ```yaml
 type: batch
   format: parquet

@@ -6,32 +6,39 @@ description: "Spark Engine is here"
 permalink: /
 ---
 
-# Welcome
+# Focus on the data, not the boring parts
+{: .fs-9 }
 
-## What is this?
+Spark Engine let you focus on writing effective data pipelines. Everything else (all the scaffolding, application wiring, metrics collection, validation, source and sink definitions, etc) is managed.
+{: .fs-6 .fw-300 }
 
-This project aim is at simplifying the writing, maintenance and testing of complex [Apache Spark](https://spark.apache.org) pipelines (both in batch and streaming mode). 
+---
+
+## What is Spark Engine?
+
+This project aim is at simplifying the writing, maintenance and testing of complex [Apache Spark](https://spark.apache.org) pipelines (both in batch and streaming mode).
 While Spark is an optimal platform to express and implement data transformation and integration, teams collaborating on it may find it difficult to divide and organize work on different part of the pipeline.
 Moreover, many times these pipelines are wired and declared in different way, adding complexity where none is needed.
 
 ## The Problem
 
 Did you ever find yourself writing many (too many) datasets operations (map, flatmap, filter, join, etc etc) and then
-making a big data pipeline with them? 
-How about joining different datasets? 
+making a big data pipeline with them?
+How about joining different datasets?
 How about maintaining datasets sources configurations?
 
-Some of your operations are sql statements, others are dataset operations. 
-Some are aggregations, some are joins or unions. 
+Some of your operations are sql statements, others are dataset operations.
+Some are aggregations, some are joins or unions.
 Many engineers and teams may need to change alter test and modify pieces of a pipeline.
 Multiple pipelines may even have different configurations.
 
 Your software may be looking something like:
+
 ```scala
 val df1 = spark.sql("select stuff from source1")
 df1.createOrReplaceTempView("table1")
 
-val df2 = sparl.sql("select even more stuff from source 2")
+val df2 = spark.sql("select even more stuff from source 2")
 df2.createOrReplaceTempView("table2")
 
 val df3 = spark.sql("select things from table1 join table2 on some id")
@@ -43,7 +50,7 @@ val df4 = df3.join(df1).on(some_condition)
 df10.write.save
 ```
 
-You find out that organizing your code like this add complexity, because it is:
+You find out that organizing your code like this adds to the complexity of the system, because it is:
 
 * ... hard to manage
 * ... difficult to compose
@@ -57,6 +64,7 @@ You find out that organizing your code like this add complexity, because it is:
 
 Having a **declarative way to describe the pieces of your pipeline** will provide an easier to manage structure, where every team or engineer can provide pieces for it, without interfering with other teams.
 With this organization the complexity of the system can be kept in check, because:
+
 * ... every pipeline is organized the same way
 * ... each pipeline pieces can be tested in isolation
 * ... each piece declares its inputs and has a deterministic outcome (same input will yield same output)
@@ -64,6 +72,7 @@ With this organization the complexity of the system can be kept in check, becaus
 * ... code extensions are possible, and they are isolated by providing an external piece of code that will be executed by a well-defined part of the pipeline
 
 So, for example, a pipeline might look like a yaml file like this:
+
 ```yaml
 components:
   source1:
@@ -100,12 +109,14 @@ pipelines:
 ```
 
 Notice how:
+
 * ... a pipeline is declared to be a combination between a component and a sink
 * ... a component is used to create a dataset
 * ... components (and sinks) can be declared as external (they are referenced as external resources in http, hdfs, or jar files)
 * ... each component can generate a dataset, and with mock inputs, can be tested in isolation
 
 Executing this plan is as easy as you might guess:
+
 ```shell
 cd spark/bin
 ./spark-submit --master local --packages com.spark-engine:plan-app:x.x.x,com.yourname:yourpackage:x.x.x \
@@ -113,8 +124,9 @@ cd spark/bin
 ```
 
 Without coding any `main` code you can start your plan by using a pre-defined startup facility that is responsible for:
+
 * ... find all external references
-* ... importing all external code (from a maven repository)   
+* ... importing all external code (from a maven repository)
 * ... validating your plan
 * ... monitor its execution
 * ... release resources
@@ -125,4 +137,3 @@ The final goal? reduce complexity, have better development workflow, simplify an
 ## What's next?
 
 * Go to [quick start](/quick_start/up-and-running-in-5-minutes.html) to test the tires. (_Almost_) no software required.
-
