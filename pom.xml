@@ -57,7 +57,7 @@
         <!-- packages -->
         <jsr305.version>3.0.2</jsr305.version>
         <spark.version>3.0.1</spark.version>
-        <scala.major.version>2.12</scala.major.version>
+        <scala.binary.version>2.12</scala.binary.version>
         <fasterxml.jackson.version>2.10.0</fasterxml.jackson.version>
         <junit.version>5.6.2</junit.version>
         <lombok.version>1.18.12</lombok.version>
@@ -129,7 +129,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-sql_${scala.major.version}</artifactId>
+                <artifactId>spark-sql_${scala.binary.version}</artifactId>
                 <version>${spark.version}</version>
             </dependency>
             <dependency>
@@ -218,6 +218,11 @@
                     <version>2.22.2</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.7</version>
+                </plugin>
+                <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
                     <version>1.6.7</version>
@@ -295,6 +300,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <verbose>false</verbose>
                     <detail>false</detail>
                     <failOnError>true</failOnError>
                     <failOnWarnings>false</failOnWarnings>
@@ -318,7 +324,7 @@
 
     <profiles>
         <profile>
-            <id>release</id>
+            <id>releaseCentral</id>
             <build>
                 <plugins>
                     <!-- packaging -->
