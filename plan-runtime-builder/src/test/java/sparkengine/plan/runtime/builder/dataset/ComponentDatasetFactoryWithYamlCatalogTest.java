@@ -4,8 +4,10 @@ import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.streaming.Trigger;
+import org.apache.spark.sql.types.DataTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import sparkengine.plan.model.encoder.DataType;
 import sparkengine.plan.runtime.builder.TestCatalog;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.test.SparkSessionManager;
@@ -111,6 +113,24 @@ class ComponentDatasetFactoryWithYamlCatalogTest extends SparkSessionManager {
 
         // then
         Assertions.assertEquals(10, rows.size());
+    }
+
+    @Test
+    void testFactoryWithTransformationAndParamsInYamlCatalog() throws DatasetFactoryException {
+
+        // given
+        var catalog = TestCatalog.getComponentCatalog("testTransformationComponentsCatalog");
+        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+
+        // when
+        var ds = factory.<Row>buildDataset("txWithParams");
+        var schema = ds.schema();
+        var rows = ds.collectAsList();
+
+        // then
+        Assertions.assertEquals(10, rows.size());
+        Assertions.assertEquals(1, Arrays.stream(schema.fields()).filter(field -> field.name().equalsIgnoreCase("newCol") && field.dataType().sameType(DataTypes.BooleanType)).count());
+        Assertions.assertEquals(10, rows.stream().map(row -> row.<Boolean>getAs("newCol")).filter(flag -> flag).count());
     }
 
     @Test

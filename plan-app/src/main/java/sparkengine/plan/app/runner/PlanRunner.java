@@ -53,18 +53,16 @@ public class PlanRunner {
     }
 
     private PipelineRunnersFactory getPipelineRunnersFactory() throws IOException, PlanMapperException, ModelFormatException {
-        var resourceLocator = new AppResourceLocator();
-        var planInputStream = resourceLocator.getInputStreamFactory(runtimeArgs.getPlanLocation());
-        var sourcePlan = getPlan(planInputStream);
+        var sourcePlan = getPlan(runtimeArgs.getPlanLocation());
         var resolvedPlan = PlanResolver.of(runtimeArgs, sparkSession, log).map(sourcePlan);
         writeResolvedPlan(resolvedPlan);
         return ModelPipelineRunnersFactory.ofPlan(sparkSession, resolvedPlan);
     }
 
-    private Plan getPlan(InputStreamFactory inputStreamFactory) throws IOException, ModelFormatException {
-        var sourcePlan = ModelFactory.readPlanFromYaml(inputStreamFactory);
+    private Plan getPlan(String planLocation) throws IOException, ModelFormatException {
+        var planInputStream = new AppResourceLocator().getInputStreamFactory(planLocation);
+        var sourcePlan = ModelFactory.readPlanFromYaml(planInputStream);
         log.trace(String.format("source plan [%s]", sourcePlan));
-
         return sourcePlan;
     }
 

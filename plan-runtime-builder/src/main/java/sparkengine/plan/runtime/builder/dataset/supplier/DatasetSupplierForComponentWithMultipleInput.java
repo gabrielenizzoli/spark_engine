@@ -5,6 +5,7 @@ import lombok.Value;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoder;
 import org.apache.spark.sql.SparkSession;
+import org.codehaus.jackson.map.ObjectMapper;
 import sparkengine.plan.model.component.ComponentWithMultipleInputs;
 import sparkengine.plan.model.component.ComponentWithSingleInput;
 import sparkengine.plan.model.component.catalog.ComponentCatalog;
@@ -14,6 +15,7 @@ import sparkengine.plan.runtime.builder.dataset.utils.EncoderUtils;
 import sparkengine.plan.runtime.builder.dataset.utils.UdfUtils;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.transformation.DataTransformationN;
+import sparkengine.spark.transformation.DataTransformationWithParameters;
 import sparkengine.spark.transformation.Transformations;
 
 import javax.annotation.Nonnull;
@@ -116,7 +118,32 @@ public class DatasetSupplierForComponentWithMultipleInput<T> implements DatasetS
         try {
             dxTransformation = (DataTransformationN<Object, T>) Class.forName(txComponent.getTransformWith()).getDeclaredConstructor().newInstance();
         } catch (Throwable e) {
-            throw new DatasetFactoryException("unable to instantiate transformation with class: [" + txComponent.getTransformWith() + "]");
+            throw new DatasetFactoryException(String.format("unable to instantiate transformation with class [%s]", txComponent.getTransformWith()), e);
+        }
+
+        if (dxTransformation instanceof DataTransformationWithParameters) {
+
+            var dxWithParameters = (DataTransformationWithParameters)dxTransformation;
+            var parameterType = dxWithParameters.getParametersType();
+            if (txComponent.getParams() == null || txComponent.getParams().isEmpty()) {
+                throw new DatasetFactoryException(String.format("transformation class [%s] expects a parameter class [%s], but no parameters provided",
+                        dxTransformation.getClass().getName(),
+                        parameterType.getName()));
+            }
+
+            try {
+                var params = new ObjectMapper().convertValue(txComponent.getParams(), parameterType);
+                dxWithParameters.setParameters(params);
+            } catch (Exception e) {
+                throw new DatasetFactoryException(String.format("parameters for transformation class [%s] do not fit parameter class [%s]",
+                        dxTransformation.getClass().getName(),
+                        parameterType.getName()),
+                        e);
+            }
+        } else if (txComponent.getParams() != null && !txComponent.getParams().isEmpty()) {
+            throw new DatasetFactoryException(String.format("transformation with class [%s] does not accepts parameters, but parameters provided [%s]",
+                    dxTransformation.getClass().getName(),
+                    txComponent.getParams()));
         }
 
         if (txComponent.getEncodedAs() != null) {
