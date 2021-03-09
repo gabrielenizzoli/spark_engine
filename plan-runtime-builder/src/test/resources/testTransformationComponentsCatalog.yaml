@@ -21,6 +21,12 @@ tx:
   using: [ source1, source2 ]
   transformWith: sparkengine.plan.runtime.builder.TestTransformation
 
+txWithParams:
+  type: transform
+  using: [ source1, source2 ]
+  params: { flag: true, value: "newCol" }
+  transformWith: sparkengine.plan.runtime.builder.TestTransformationWithParams
+
 map:
   type: map
   using: source1
