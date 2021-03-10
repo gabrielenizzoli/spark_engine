@@ -15,8 +15,8 @@
 
     <licenses>
         <license>
-            <name>GPL-3.0 License</name>
-            <url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
 
@@ -45,7 +45,7 @@
     </developers>
 
     <properties>
-        <revision>0.8.2</revision>
+        <revision>0.9.0</revision>
 
         <!-- params -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
