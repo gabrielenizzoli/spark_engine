@@ -23,6 +23,10 @@
         </dependency>
         <dependency>
             <groupId>com.spark-engine</groupId>
+            <artifactId>spark-extensions-scripting</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.spark-engine</groupId>
             <artifactId>plan-runtime</artifactId>
         </dependency>
         <dependency>

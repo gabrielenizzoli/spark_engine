@@ -32,8 +32,8 @@ sqlComponent:
   type: sql
   using: [ source1, source2 ]
   udfs:
-    ofClasses:
-      - sparkengine.plan.runtime.builder.dataset.TestUdf
+    list:
+      - { className: sparkengine.plan.runtime.builder.dataset.TestUdf }
   sql: >
     select 
       testUdf(t.value) as column 
@@ -58,20 +58,24 @@ sqlComponentThatGeneratesData:
 
 ## UDF/UDAF Functions
 
-The sql component can be extended by providing externally defined user defined function (UDF) or user defined aggregation functions (UDAF).
+The sql component can be extended by providing user defined function (UDF) or user defined aggregation functions (UDAF).
+
+A sql component has a section where udf can be defined.
+The access to the udf is scoped by component, so only sql in the component where the udfs are defined will have access to them.
+The udfs are defined in a function library definition. The most common library definition is the `list` type:
+```yaml
+sqlComponent:
+  sql: select testIntUdf(value) from source
+  udfs:
+    list:
+      - { className: sparkengine.plan.runtime.builder.dataset.TestIntUdf }
+```
+
+### Java UDF/UDAF
+
+In a library it is possible to define Java-coded udfs.
 These function should extend the `dataengine.spark.sql.udf.SqlFunction` interface.
 Utility classes are also available to help create udfs, they are `dataengine.spark.sql.udf.Udf` and `dataengine.spark.sql.udf.Udaf`.
-
-A sql component needs a function library definition to use the user provided functions:
-```yaml
-# fragment that defines a list of udfs/udafs
-sqlComponent:
-  ...
-  udfs:
-    ofClasses:
-      - sparkengine.plan.runtime.builder.dataset.TestStrUdf
-      - sparkengine.plan.runtime.builder.dataset.TestIntUdf
-```
 
 A udf in Java may look like this:
 ```java
@@ -104,3 +108,17 @@ public class TestIntUdf implements Udf {
     }
 }
 ```
+
+### Scala UDF
+
+A quicker way to provide a udf is to script it in java.
+An example is:
+```yaml
+sqlComponent:
+  sql: select testIntUdf(value) from source
+  udfs:
+    list:
+      - { type: scala, name: testIntUdf, scala: "(in:Int) => in*2" }
+```
+
+The scala criptlet may contain any kind of code, but note that the scala scriptlet must evaluate to a `Function*` for the script fragment to be valid.  

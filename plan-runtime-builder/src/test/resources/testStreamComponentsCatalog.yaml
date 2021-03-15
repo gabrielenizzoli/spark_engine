@@ -6,8 +6,8 @@ source:
 tx:
   using: [ source ]
   udfs:
-    ofClasses:
-      - sparkengine.plan.runtime.builder.TestLongUdf
+    list:
+      - { className: sparkengine.plan.runtime.builder.TestLongUdf }
   sql: >
     select
       *,

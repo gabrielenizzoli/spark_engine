@@ -3,8 +3,8 @@ source1:
 
 source2:
   udfs:
-    ofClasses:
-      - sparkengine.plan.runtime.builder.TestIntUdf
+    list:
+      - { className: sparkengine.plan.runtime.builder.TestIntUdf }
   sql: >
     select explode(array(
       named_struct("zum", testIntUdf(1, 1), "stuff", "xxx"),
@@ -18,9 +18,9 @@ source3:
 tx:
   using: [ source1, source2 ]
   udfs:
-    ofClasses:
-      - sparkengine.plan.runtime.builder.TestStrUdf
-      - sparkengine.plan.runtime.builder.TestIntUdf
+    list:
+      - { className: sparkengine.plan.runtime.builder.TestStrUdf }
+      - { type: scala, name: testIntUdf, scala: "(a:Int, b:Int) => a+b" }
   sql: >
     select
       testStrUdf(s1.abc.str, "p1") as str,

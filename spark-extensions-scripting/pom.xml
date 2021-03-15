@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>spark-extensions</artifactId>
+    <artifactId>spark-extensions-scripting</artifactId>
 
     <parent>
         <groupId>com.spark-engine</groupId>
@@ -12,13 +12,25 @@
         <version>${revision}</version>
     </parent>
 
-    <name>Spark Engine Extensions Module</name>
+    <name>Spark Engine Scripting Extensions Module</name>
     <url>https://www.spark-engine.com</url>
 
     <dependencies>
         <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-reflect</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.spark-engine</groupId>
+            <artifactId>spark-extensions</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
