@@ -9,6 +9,8 @@ import sparkengine.plan.model.component.impl.FragmentComponent;
 import sparkengine.plan.model.component.impl.InlineComponent;
 import sparkengine.plan.model.component.impl.SqlComponent;
 import sparkengine.plan.model.component.impl.WrapperComponent;
+import sparkengine.plan.model.udf.UdfList;
+import sparkengine.plan.model.udf.UdfWithScalaScript;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.test.SparkSessionManager;
 
@@ -68,7 +70,7 @@ class ComponentDatasetFactoryTest extends SparkSessionManager {
     void testFactoryWithFragment() throws DatasetFactoryException {
 
         // given
-        var componentFragmentMap =Map.of(
+        var componentFragmentMap = Map.of(
                 "inlineSrc", InlineComponent.builder()
                         .withData(List.of(Map.of("col1", "valueNotExpected", "col2", "value12"), Map.of("col1", "valueExpected", "col2", "value22")))
                         .withSchema(DataTypes.createStructType(List.of(DataTypes.createStructField("col1", DataTypes.StringType, true), DataTypes.createStructField("col2", DataTypes.StringType, true))).toDDL())
@@ -103,7 +105,7 @@ class ComponentDatasetFactoryTest extends SparkSessionManager {
     void testFactoryWithWrapperAndFragment() throws DatasetFactoryException {
 
         // given
-        var componentFragmentMap =Map.of(
+        var componentFragmentMap = Map.of(
                 "inlineSrc", InlineComponent.builder()
                         .withData(List.of(Map.of("col1", "valueNotExpected", "col2", "value12"), Map.of("col1", "valueExpected", "col2", "value22")))
                         .withSchema(DataTypes.createStructType(List.of(DataTypes.createStructField("col1", DataTypes.StringType, true), DataTypes.createStructField("col2", DataTypes.StringType, true))).toDDL())
@@ -136,6 +138,31 @@ class ComponentDatasetFactoryTest extends SparkSessionManager {
         // then
         assertEquals(List.of("valueExpected"), data);
 
+    }
+
+    @Test
+    void testScalaUdf() throws DatasetFactoryException {
+
+        // given
+        var componentMap = Map.<String, Component>of(
+                "sql", SqlComponent.builder()
+                        .withSql("select concatenateMe('value', '100')  as col")
+                        .withUdfs(UdfList.builder()
+                                .withList(List.of(UdfWithScalaScript.builder()
+                                        .withName("concatenateMe")
+                                        .withScala("(v1:String, v2:String) => v1+v2")
+                                        .build()))
+                                .build())
+                        .build()
+        );
+        var catalog = ComponentCatalog.ofMap(componentMap);
+        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+
+        // when
+        var data = factory.buildDataset("sql").as(Encoders.STRING()).collectAsList();
+
+        // then
+        assertEquals(List.of("value100"), data);
     }
 
     @Test

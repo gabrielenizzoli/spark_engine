@@ -73,7 +73,7 @@ public class ComponentDatasetFactory implements DatasetFactory {
         try {
             return componentCatalog.lookup(name).orElseThrow(() -> new DatasetFactoryException.DatasetNotFound(name));
         } catch (ComponentCatalogException e) {
-            throw new DatasetFactoryException(String.format("issues locating component with name %s", name), e);
+            throw new DatasetFactoryException(String.format("issues getting component with name [%s]", name), e);
         }
     }
 

@@ -15,7 +15,9 @@ public class SparkSessionManager {
     @BeforeAll
     static void init() throws IOException {
         windowsNoisyLogsWorkaround();
-        sparkSession = SparkSession.builder().master("local").config("spark.sql.streaming.forceDeleteTempCheckpointLocation", true).getOrCreate();
+        sparkSession = SparkSession.builder().master("local")
+                .config("spark.sql.streaming.forceDeleteTempCheckpointLocation", true)
+                .getOrCreate();
     }
 
     private static void windowsNoisyLogsWorkaround() {

@@ -21,9 +21,9 @@ source2:
 tx:
   using: [ source1, source2 ]
   udfs:
-    ofClasses:
-      - sparkengine.plan.runtime.builder.TestUdafAvg
-      - sparkengine.plan.runtime.builder.TestIntUdf
+    list:
+      - { className: sparkengine.plan.runtime.builder.TestUdafAvg }
+      - { className: sparkengine.plan.runtime.builder.TestIntUdf }
   sql: >
     select
       key,

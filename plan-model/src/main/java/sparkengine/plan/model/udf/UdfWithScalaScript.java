@@ -5,14 +5,15 @@ import lombok.Builder;
 import lombok.Value;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = UdfList.Builder.class)
-public class UdfList implements UdfLibrary {
+@JsonDeserialize(builder = UdfWithScalaScript.Builder.class)
+public class UdfWithScalaScript implements Udf {
 
     @Nonnull
-    List<Udf> list;
+    String name;
+    @Nonnull
+    String scala;
 
 }

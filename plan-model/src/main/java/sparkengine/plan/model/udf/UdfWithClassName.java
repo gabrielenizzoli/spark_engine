@@ -4,15 +4,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Value;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = UdfList.Builder.class)
-public class UdfList implements UdfLibrary {
+@JsonDeserialize(builder = UdfWithClassName.Builder.class)
+public class UdfWithClassName implements Udf {
 
-    @Nonnull
-    List<Udf> list;
+    String className;
 
 }
