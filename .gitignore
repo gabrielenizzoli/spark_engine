@@ -32,3 +32,9 @@ hs_err_pid*
 hadoop/*
 /*/.flattened-pom.xml
 .flattened-pom.xml
+
+.project
+.settings/*
+*/.settings/*
+*/.classpath
+*/.factorypath
