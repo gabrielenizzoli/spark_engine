@@ -2,8 +2,9 @@ package sparkengine.plan.runtime.builder.dataset.utils;
 
 import sparkengine.plan.model.udf.*;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
+import sparkengine.spark.sql.udf.ScalaUdfCompiler;
 import sparkengine.spark.sql.udf.SqlFunction;
-import sparkengine.spark.udf.ScalaUdfCompiler;
+import sparkengine.spark.sql.udf.UdfCompilationException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,15 +29,18 @@ public class UdfUtils {
                     sqlFunctions.add(getSqlFunction(((UdfWithClassName)udf).getClassName()));
                 } else if (udf instanceof UdfWithScalaScript) {
                     var udfWithScala = (UdfWithScalaScript)udf;
-                    var sqlFUnction = ScalaUdfCompiler.compile(udfWithScala.getName(), udfWithScala.getScala());
-                    sqlFunctions.add(sqlFUnction);
+                    try {
+                        sqlFunctions.add(ScalaUdfCompiler.compile(udfWithScala.getName(), udfWithScala.getScala()));
+                    } catch (UdfCompilationException e) {
+                        throw new DatasetFactoryException(String.format("scala udf [%s] can't be compiled", udf), e);
+                    }
                 } else {
-                    throw new DatasetFactoryException(String.format("[udf [%s] not managed", udf));
+                    throw new DatasetFactoryException(String.format("udf [%s] not managed", udf));
                 }
             }
             return Collections.unmodifiableList(sqlFunctions);
         }
-        throw new DatasetFactoryException(udfLibrary + " udf library not managed");
+        throw new DatasetFactoryException(String.format("udf library [%s] not managed", udfLibrary));
 
     }
 

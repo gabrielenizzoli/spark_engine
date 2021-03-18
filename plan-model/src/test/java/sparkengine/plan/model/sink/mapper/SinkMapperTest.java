@@ -2,7 +2,6 @@ package sparkengine.plan.model.sink.mapper;
 
 import org.junit.jupiter.api.Test;
 import sparkengine.plan.model.common.Location;
-import sparkengine.plan.model.component.mapper.ComponentMapper;
 import sparkengine.plan.model.sink.Sink;
 
 import java.lang.reflect.Method;
