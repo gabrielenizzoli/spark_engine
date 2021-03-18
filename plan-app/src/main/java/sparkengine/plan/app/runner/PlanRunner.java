@@ -9,7 +9,6 @@ import org.apache.spark.sql.streaming.StreamingQueryException;
 import sparkengine.plan.model.builder.ModelFactory;
 import sparkengine.plan.model.builder.ModelFormatException;
 import sparkengine.plan.model.builder.input.AppResourceLocator;
-import sparkengine.plan.model.builder.input.InputStreamFactory;
 import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.plan.mapper.PlanMapperException;
 import sparkengine.plan.runtime.builder.runner.ModelPipelineRunnersFactory;

@@ -1,6 +1,5 @@
 package sparkengine.plan.app;
 
-import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sparkengine.plan.runtime.builder.datasetconsumer.GlobalCounterConsumer;
