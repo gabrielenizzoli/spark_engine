@@ -51,6 +51,6 @@ public class RuntimeArgs {
     @Getter
     @Parameter(names = {"--writeResolvedPlanToFile"}, description = "Write the resolved plan to the specified plan")
     @lombok.Builder.Default
-    private String writeResolvedPlanToFile;
+    private String writeResolvedPlanToFile = null;
 
 }
