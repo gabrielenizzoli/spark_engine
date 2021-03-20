@@ -85,7 +85,7 @@ class ScriptUDF0<R> implements UDF0<R> {
     @Override
     public R call() throws Exception {
         try {
-            return (R) ((Function0<R>) ScriptEngine.compileToObject(code)).apply();
+            return (R) ((Function0<R>) ScriptEngine.evaluate(code, Option.empty())).apply();
         } catch (ToolBoxError e) {
             throw new Exception("compilation error in scala code", e);
         }
@@ -102,7 +102,7 @@ class ScriptUDF1<T1, R> implements UDF1<T1, R> {
     @Override
     public R call(T1 o) throws Exception {
         try {
-            return (R) ((Function1<T1, R>) ScriptEngine.compileToObject(code)).apply(o);
+            return (R) ((Function1<T1, R>) ScriptEngine.evaluate(code, Option.empty())).apply(o);
         } catch (ToolBoxError e) {
             throw new Exception(e);
         }
@@ -119,7 +119,7 @@ class ScriptUDF2<T1, T2, R> implements UDF2<T1, T2, R> {
     @Override
     public R call(T1 o1, T2 o2) throws Exception {
         try {
-            return (R) ((Function2<T1, T2, R>) ScriptEngine.compileToObject(code)).apply(o1, o2);
+            return (R) ((Function2<T1, T2, R>) ScriptEngine.evaluate(code, Option.empty())).apply(o1, o2);
         } catch (ToolBoxError e) {
             throw new Exception("compilation error in scala code", e);
         }
@@ -136,7 +136,7 @@ class ScriptUDF3<T1, T2, T3, R> implements UDF3<T1, T2, T3, R> {
     @Override
     public R call(T1 o1, T2 o2, T3 o3) throws Exception {
         try {
-            return (R) ((Function3<T1, T2, T3, R>) ScriptEngine.compileToObject(code)).apply(o1, o2, o3);
+            return (R) ((Function3<T1, T2, T3, R>) ScriptEngine.evaluate(code, Option.empty())).apply(o1, o2, o3);
         } catch (ToolBoxError e) {
             throw new Exception("compilation error in scala code", e);
         }
@@ -153,7 +153,7 @@ class ScriptUDF4<T1, T2, T3, T4, R> implements UDF4<T1, T2, T3, T4, R> {
     @Override
     public R call(T1 o1, T2 o2, T3 o3, T4 o4) throws Exception {
         try {
-            return (R) ((Function4<T1, T2, T3, T4, R>) ScriptEngine.compileToObject(code)).apply(o1, o2, o3, o4);
+            return (R) ((Function4<T1, T2, T3, T4, R>) ScriptEngine.evaluate(code, Option.empty())).apply(o1, o2, o3, o4);
         } catch (ToolBoxError e) {
             throw new Exception("compilation error in scala code", e);
         }
@@ -170,7 +170,7 @@ class ScriptUDF5<T1, T2, T3, T4, T5, R> implements UDF5<T1, T2, T3, T4, T5, R> {
     @Override
     public R call(T1 o1, T2 o2, T3 o3, T4 o4, T5 o5) throws Exception {
         try {
-            return (R) ((Function5<T1, T2, T3, T4, T5, R>) ScriptEngine.compileToObject(code)).apply(o1, o2, o3, o4, o5);
+            return (R) ((Function5<T1, T2, T3, T4, T5, R>) ScriptEngine.evaluate(code, Option.empty())).apply(o1, o2, o3, o4, o5);
         } catch (ToolBoxError e) {
             throw new Exception("compilation error in scala code", e);
         }
