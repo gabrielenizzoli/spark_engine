@@ -18,9 +18,10 @@ class EmbeddedStarterTest extends SparkSessionManager {
         Optional.ofNullable(GlobalCounterConsumer.COUNTER.get("app")).ifPresent(c -> c.set(0));
 
         // when
-        var args = RuntimeArgs.builder().planLocation("./src/test/resources/testPlan.yaml").build();
+        var args = RuntimeArgs.builder().build();
         PlanRunner.builder()
                 .sparkSession(sparkSession)
+                .planLocation("./src/test/resources/testPlan.yaml")
                 .runtimeArgs(args)
                 .build()
                 .run();

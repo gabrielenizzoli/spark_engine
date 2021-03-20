@@ -8,7 +8,6 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import sparkengine.plan.model.builder.ModelFactory;
 import sparkengine.plan.model.builder.ModelFormatException;
-import sparkengine.plan.model.builder.input.AppResourceLocator;
 import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.plan.mapper.PlanMapperException;
 import sparkengine.plan.runtime.builder.runner.ModelPipelineRunnersFactory;
@@ -17,9 +16,7 @@ import sparkengine.plan.runtime.runner.PipelineRunnersFactory;
 import sparkengine.plan.runtime.runner.PipelineRunnersFactoryException;
 
 import javax.annotation.Nonnull;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.LinkedList;
 import java.util.function.Consumer;
 
@@ -30,10 +27,21 @@ public class PlanRunner {
     @Nonnull
     SparkSession sparkSession;
     @Nonnull
-    RuntimeArgs runtimeArgs;
+    PlanInfo planInfo;
+    @Nonnull
+    @lombok.Builder.Default
+    RuntimeArgs runtimeArgs = RuntimeArgs.builder().build();
     @Nonnull
     @lombok.Builder.Default
     Logger log = Logger.getLogger(PlanRunner.class);
+
+    public static class Builder {
+
+        public Builder planLocation(String planLocation) {
+            return this.planInfo(PlanInfo.planLocation(planLocation));
+        }
+
+    }
 
     public void run() throws
             IOException, // can't read plan
@@ -42,7 +50,8 @@ public class PlanRunner {
             PipelineRunnersFactoryException, // error creating a pipeline
             DatasetConsumerException // error during a pipeline run
     {
-        PipelineRunnersFactory pipelineRunnersFactory = getPipelineRunnersFactory();
+        Plan plan = getPlan();
+        PipelineRunnersFactory pipelineRunnersFactory = getPipelineRunnersFactory(plan);
         if (runtimeArgs.isSkipRun()) {
             log.warn("skip run");
         } else {
@@ -51,23 +60,22 @@ public class PlanRunner {
         }
     }
 
-    private PipelineRunnersFactory getPipelineRunnersFactory() throws IOException, PlanMapperException, ModelFormatException {
-        var sourcePlan = getPlan(runtimeArgs.getPlanLocation());
-        var resolvedPlan = PlanResolver.of(runtimeArgs, sparkSession, log).map(sourcePlan);
+    @Nonnull
+    private Plan getPlan() throws IOException, ModelFormatException, PlanMapperException {
+        var sourcePlan = ModelFactory.readPlanFromYaml(planInfo.getPlanInputStreamFactory());
+        log.trace(String.format("source plan [%s]", sourcePlan));
+        var resolvedPlan = PlanResolver.of(planInfo.getPlanLocation(), runtimeArgs, sparkSession, log).map(sourcePlan);
         writeResolvedPlan(resolvedPlan);
-        return ModelPipelineRunnersFactory.ofPlan(sparkSession, resolvedPlan);
+        return resolvedPlan;
     }
 
-    private Plan getPlan(String planLocation) throws IOException, ModelFormatException {
-        var planInputStream = new AppResourceLocator().getInputStreamFactory(planLocation);
-        var sourcePlan = ModelFactory.readPlanFromYaml(planInputStream);
-        log.trace(String.format("source plan [%s]", sourcePlan));
-        return sourcePlan;
+    private PipelineRunnersFactory getPipelineRunnersFactory(@Nonnull Plan plan) throws IOException, PlanMapperException, ModelFormatException {
+        return ModelPipelineRunnersFactory.ofPlan(sparkSession, plan);
     }
 
     private void writeResolvedPlan(Plan resolvedPlan) throws IOException, ModelFormatException {
-        if (runtimeArgs.isWriteResolvedPlanToFile()) {
-            var resolvedFilePlan = File.createTempFile("resolvedPlan_", ".yaml");
+        if (runtimeArgs.getWriteResolvedPlanToFile() != null) {
+            var resolvedFilePlan = runtimeArgs.getWriteResolvedPlanToFile();
             log.warn(String.format("writing resolved plan to [%s]", resolvedFilePlan));
             try (var out = new FileOutputStream(resolvedFilePlan)) {
                 ModelFactory.writePlanAsYaml(resolvedPlan, out);
@@ -94,7 +102,7 @@ public class PlanRunner {
                 runtimeArgs.isParallelPipelineExecution()));
 
         var pipelines = runtimeArgs.isParallelPipelineExecution() ? pipelinesToExecute.parallelStream() : pipelinesToExecute.stream();
-        var runPipeline = (Consumer<String>)pipelineName -> runPipeline(pipelineRunnersFactory, pipelineName);
+        var runPipeline = (Consumer<String>) pipelineName -> runPipeline(pipelineRunnersFactory, pipelineName);
 
         pipelines.forEach(runPipeline);
     }

@@ -45,7 +45,7 @@
     </developers>
 
     <properties>
-        <revision>0.10.0</revision>
+        <revision>0.10.1</revision>
 
         <!-- params -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -61,7 +61,7 @@
         <scala.version>2.12.10</scala.version>
         <fasterxml.jackson.version>2.10.0</fasterxml.jackson.version>
         <junit.version>5.6.2</junit.version>
-        <lombok.version>1.18.12</lombok.version>
+        <lombok.version>1.18.18</lombok.version>
         <jcmd.version>1.78</jcmd.version>
     </properties>
 

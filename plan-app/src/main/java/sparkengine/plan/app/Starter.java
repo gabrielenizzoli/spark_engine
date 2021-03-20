@@ -4,12 +4,13 @@ import lombok.Builder;
 import lombok.Value;
 import org.apache.log4j.Logger;
 import org.apache.spark.sql.SparkSession;
+import sparkengine.plan.app.runner.PlanInfo;
 import sparkengine.plan.app.runner.PlanRunner;
 import sparkengine.plan.app.runner.RuntimeArgs;
 
 import javax.annotation.Nonnull;
-import java.io.Closeable;
-import java.io.IOException;
+import java.io.*;
+import java.util.Optional;
 
 @Value
 @Builder
@@ -27,13 +28,16 @@ public class Starter {
 
     public void start() throws Throwable {
 
-
         log.info("START ====================================================================");
 
         try (var sparkSessionHolder = initializeSpark()) {
+
+            PlanInfo planInfo = getPlanInfo();
+
             PlanRunner.builder()
                     .log(log)
                     .sparkSession(sparkSessionHolder.getSparkSession())
+                    .planInfo(planInfo)
                     .runtimeArgs(runtimeArgs)
                     .build()
                     .run();
@@ -49,7 +53,16 @@ public class Starter {
             log.info("STOP =====================================================================");
         }
 
+    }
 
+    @Nonnull
+    private PlanInfo getPlanInfo() {
+        var planLocationFallback = new File(new File(System.getProperty("user.dir")).getAbsolutePath(), "plan.yaml").getAbsolutePath();
+
+        return Optional
+                .ofNullable(applicationArgs.getPlanLocation())
+                .map(PlanInfo::planLocation)
+                .orElse(PlanInfo.of(System.in, planLocationFallback));
     }
 
     @Value
