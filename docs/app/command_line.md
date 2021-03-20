@@ -26,7 +26,7 @@ Then we can run it in a terminal:
 
 ```shell
 cd spark/bin
-./spark-submit --master local --packages com.spark-engine:spark-app:1.0 
+./spark-submit --master local --packages com.spark-engine:plan-app:x.x.x
     --class sparkengine.plan.app.Start spark-internal 
     -p file:///tmp/plan.yaml
 ```
@@ -34,12 +34,12 @@ cd spark/bin
 ## Run in docker
 
 This will also work in docker: just use a prebuilt spark image.
-If you have a standrad spark image, all you need to do is just run your `spark-sumbit` command. 
-Here is the a sample:
+If you have a standard spark image, all you need to do is just run your `spark-sumbit` command. 
+Here is a sample:
 
 ```shell
 docker run spark:latest /opt/spark/bin/spark-submit --master local 
-  --packages com.spark-engine:plan-app:0.8.2 --conf spark.jars.ivy=/tmp/ivy2 --class sparkengine.plan.app.Start spark-internal 
+  --packages com.spark-engine:plan-app:x.x.x --conf spark.jars.ivy=/tmp/ivy2 --class sparkengine.plan.app.Start spark-internal 
   -p https://raw.githubusercontent.com/gabrielenizzoli/spark_engine/master/examples/plans/quickStartPlan.yaml
 ```
 
@@ -50,20 +50,21 @@ Usage:
 ```text
 Usage: <main class> [options]
   Options:
+    -p, --plan
+      The location of the plan. If missing, the source will be the standard 
+      input. 
     -h, --help
       Help usage
-  * -p, --planLocation
-      Location of the execution plan (in yaml format)
     -s, --sqlResolution
       For sql components, provide validation and/or dependency discovery
       Default: VALIDATE
       Possible Values: [SKIP, VALIDATE, INFER]
-    --skipRun
-      Do everything, but do not run the pipelines
-      Default: false
     --pipelines
       Provide an list of pipelines to execute (if pipeline is not in plan, it 
       will be ignored)
+    --skipRun
+      Do everything, but do not run the pipelines
+      Default: false
     -l, --log
       Set main application log level (one of 
       OFF,FATAL,ERROR,WARN,INFO,DEBUG,TRACE,ALL) 
@@ -78,9 +79,15 @@ Usage: <main class> [options]
       Skip any resolution of the plan (plan will be executed as-is!)
       Default: false
     --skipStackTrace
-      Skip full stackTrace
+      Skip full stackTrace when printing application errors
+      Default: false
+    --sparkSessionReuse
+      Reuse spark session if already defined
       Default: false
     --writeResolvedPlan
+      write the resolved plan (to standard output)
+      Default: false
+    --writeResolvedPlanToFile
       write the resolved plan (to a temporary location)
       Default: false
 ```

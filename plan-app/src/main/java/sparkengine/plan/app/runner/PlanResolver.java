@@ -20,6 +20,8 @@ import javax.annotation.Nonnull;
 public class PlanResolver implements PlanMapper {
 
     @Nonnull
+    String planLocation;
+    @Nonnull
     RuntimeArgs runtimeArgs;
     @Nonnull
     SparkSession sparkSession;
@@ -44,10 +46,11 @@ public class PlanResolver implements PlanMapper {
             log.trace(String.format("resolved plan [%s]", resolvedPlan));
         }
 
-        return resolvedPlan;    }
+        return resolvedPlan;
+    }
 
     private PlanMapper getReferencePlanResolver() {
-        var resourceLocationBuilder = new ResourceLocationBuilder(runtimeArgs.getPlanLocation(), "_", "yaml");
+        var resourceLocationBuilder = new ResourceLocationBuilder(planLocation, "_", "yaml");
         var resourceLocator = new AppResourceLocator();
         return PlanMapperThatReplacesReferences.of(resourceLocationBuilder, resourceLocator);
     }

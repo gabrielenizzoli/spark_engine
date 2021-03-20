@@ -14,10 +14,6 @@ import java.util.List;
 public class RuntimeArgs {
 
     @Getter
-    @Parameter(names = {"-p", "--planLocation"}, required = true, order = 1, description = "Location of the execution plan (in yaml format)")
-    private String planLocation;
-
-    @Getter
     @Parameter(names = {"-s", "--sqlResolution"}, order = 2, description = "For sql components, provide validation and/or dependency discovery")
     @lombok.Builder.Default
     private ResolverMode sqlResolutionMode = ResolverMode.VALIDATE;
@@ -48,13 +44,13 @@ public class RuntimeArgs {
     private boolean parallelPipelineExecution = false;
 
     @Getter
-    @Parameter(names = {"--writeResolvedPlan"}, description = "write the resolved plan (to standard output)")
+    @Parameter(names = {"--writeResolvedPlan"}, description = "Write the resolved plan (to standard output)")
     @lombok.Builder.Default
     private boolean writeResolvedPlan = false;
 
     @Getter
-    @Parameter(names = {"--writeResolvedPlanToFile"}, description = "write the resolved plan (to a temporary location)")
+    @Parameter(names = {"--writeResolvedPlanToFile"}, description = "Write the resolved plan to the specified plan")
     @lombok.Builder.Default
-    private boolean writeResolvedPlanToFile = false;
+    private String writeResolvedPlanToFile;
 
 }
