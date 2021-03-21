@@ -6,14 +6,14 @@ import org.apache.spark.sql.expressions.Aggregator;
 import javax.annotation.Nonnull;
 
 /**
- * A utility factory class that returns an Aggregator (the base class used by spark to implement a Udaf).
+ * An interface that returns an Aggregator (the base class used by spark to implement a Udaf).
  * An aggregation is essentially a map-reduce job.
  *
  * @param <IN>  input type
  * @param <BUF> buffer that accumulates the input, according to some provided logic
  * @param <OUT> the output of the accumulation
  */
-public interface Udaf<IN, BUF, OUT> extends SqlFunction {
+public interface UdafDefinition<IN, BUF, OUT> extends SqlFunction {
 
     @Nonnull
     Aggregator<IN, BUF, OUT> getAggregator();
@@ -48,7 +48,7 @@ public interface Udaf<IN, BUF, OUT> extends SqlFunction {
      * }
      * </pre>
      */
-    abstract class UdafAggregator<IN, BUF, OUT> extends Aggregator<IN, BUF, OUT> implements Udaf<IN, BUF, OUT> {
+    abstract class UdafAggregator<IN, BUF, OUT> extends Aggregator<IN, BUF, OUT> implements UdafDefinition<IN, BUF, OUT> {
 
         @Nonnull
         @Override
@@ -57,4 +57,5 @@ public interface Udaf<IN, BUF, OUT> extends SqlFunction {
         }
 
     }
+
 }

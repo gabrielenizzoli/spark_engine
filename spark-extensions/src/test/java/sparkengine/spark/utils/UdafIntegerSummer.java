@@ -2,11 +2,11 @@ package sparkengine.spark.utils;
 
 import org.apache.spark.sql.Encoder;
 import org.apache.spark.sql.Encoders;
-import sparkengine.spark.sql.udf.Udaf;
+import sparkengine.spark.sql.udf.UdafDefinition;
 
 import javax.annotation.Nonnull;
 
-public class UdafIntegerSummer extends Udaf.UdafAggregator<Integer, Integer, Integer> {
+public class UdafIntegerSummer extends UdafDefinition.UdafAggregator<Integer, Integer, Integer> {
 
     @Nonnull
     @Override

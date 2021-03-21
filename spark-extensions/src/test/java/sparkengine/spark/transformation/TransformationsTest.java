@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import scala.Tuple2;
 import sparkengine.spark.sql.logicalplan.functionresolver.FunctionResolverException;
 import sparkengine.spark.sql.logicalplan.tableresolver.TableResolverException;
-import sparkengine.spark.sql.udf.Udf;
+import sparkengine.spark.sql.udf.UdfDefinition;
 import sparkengine.spark.test.SparkSessionManager;
 import sparkengine.spark.utils.UdafIntegerSummer;
 
@@ -28,7 +28,7 @@ class TransformationsTest extends SparkSessionManager {
         DataTransformation<Row, Row> sqlTranformation = Transformations.sql(
                 "table",
                 "select testFunction(value) from table limit 1",
-                List.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
+                List.of(UdfDefinition.<Integer, Integer>wrapUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
 
         Dataset<Row> dsInput = sparkSession.createDataFrame(
                 Collections.singletonList(RowFactory.create(1)),
@@ -50,12 +50,12 @@ class TransformationsTest extends SparkSessionManager {
         DataTransformation<Row, Row> sqlTranformation1 = Transformations.sql(
                 "table",
                 "select testFunction(value) as value from table",
-                List.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
+                List.of(UdfDefinition.<Integer, Integer>wrapUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
 
         DataTransformation<Row, Row> sqlTranformation2 = Transformations.sql(
                 "table",
                 "select testFunction(value) from table",
-                List.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i * 10)));
+                List.of(UdfDefinition.<Integer, Integer>wrapUdf1("testFunction", DataTypes.IntegerType, i -> i * 10)));
 
         Dataset<Row> dsInput = sparkSession.createDataFrame(
                 Collections.singletonList(RowFactory.create(1)),
@@ -86,7 +86,7 @@ class TransformationsTest extends SparkSessionManager {
                 "table",
                 "select key, addOne(summer(addOne(value))) from table group by key",
                 List.of(
-                        Udf.<Integer, Integer>ofUdf1("addOne", DataTypes.IntegerType, i -> i + 1),
+                        UdfDefinition.<Integer, Integer>wrapUdf1("addOne", DataTypes.IntegerType, i -> i + 1),
                         new UdafIntegerSummer())
         );
 
@@ -114,7 +114,7 @@ class TransformationsTest extends SparkSessionManager {
         DataTransformation<Row, Row> sqlTranformation1 = Transformations.sql(
                 "table",
                 "select testFunction(value) as value from table",
-                List.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
+                List.of(UdfDefinition.<Integer, Integer>wrapUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
 
         DataTransformation<Row, Row> sqlTranformation2 = Transformations.sql(
                 "table",
@@ -140,12 +140,12 @@ class TransformationsTest extends SparkSessionManager {
         DataTransformation<Row, Row> sqlTranformation1 = Transformations.sql(
                 "table",
                 "select testFunction(value) as value from table",
-                List.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
+                List.of(UdfDefinition.<Integer, Integer>wrapUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
 
         DataTransformation<Row, Row> sqlTranformation2 = Transformations.sql(
                 "table2",
                 "select testFunction(value) from table",
-                List.of(Udf.<Integer, Integer>ofUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
+                List.of(UdfDefinition.<Integer, Integer>wrapUdf1("testFunction", DataTypes.IntegerType, i -> i + 1)));
 
         Dataset<Row> dsInput = sparkSession.createDataFrame(
                 Collections.singletonList(RowFactory.create(1)),

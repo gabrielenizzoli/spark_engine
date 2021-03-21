@@ -9,7 +9,7 @@ import org.apache.spark.sql.catalyst.expressions.aggregate.AggregateExpression;
 import org.apache.spark.sql.catalyst.expressions.aggregate.Complete$;
 import org.apache.spark.sql.execution.aggregate.ScalaAggregator;
 import scala.Option;
-import sparkengine.spark.sql.udf.Udaf;
+import sparkengine.spark.sql.udf.UdafDefinition;
 
 import javax.annotation.Nonnull;
 
@@ -17,15 +17,15 @@ import javax.annotation.Nonnull;
 public class UnresolvedUdafReplacer implements UnresolvedFunctionReplacer {
 
     @Nonnull
-    Udaf udaf;
+    UdafDefinition udafDefinition;
 
     public Expression replace(@Nonnull UnresolvedFunction unresolvedFunction) throws FunctionResolverException {
 
         ScalaAggregator scalaAggregator = new ScalaAggregator(
                 unresolvedFunction.children(),
-                udaf.getAggregator(),
-                (ExpressionEncoder) udaf.inputEncoder(),
-                (ExpressionEncoder) udaf.getAggregator().bufferEncoder(),
+                udafDefinition.getAggregator(),
+                (ExpressionEncoder) udafDefinition.inputEncoder(),
+                (ExpressionEncoder) udafDefinition.getAggregator().bufferEncoder(),
                 true,
                 true,
                 0,

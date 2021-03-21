@@ -12,8 +12,8 @@ import sparkengine.spark.sql.logicalplan.ExpressionMapper;
 import sparkengine.spark.sql.logicalplan.LogicalPlanMapper;
 import sparkengine.spark.sql.logicalplan.PlanMapperException;
 import sparkengine.spark.sql.udf.SqlFunction;
-import sparkengine.spark.sql.udf.Udaf;
-import sparkengine.spark.sql.udf.Udf;
+import sparkengine.spark.sql.udf.UdafDefinition;
+import sparkengine.spark.sql.udf.UdfDefinition;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,25 +31,25 @@ public class FunctionResolver implements LogicalPlanMapper {
 
     public static class Builder {
 
-        public Builder udf(@Nullable Udf udf) {
-            if (udf == null)
+        public Builder udf(@Nullable UdfDefinition udfDefinition) {
+            if (udfDefinition == null)
                 return this;
-            return functionReplacer(udf.getName(), new UnresolvedUdfReplacer(udf));
+            return functionReplacer(udfDefinition.getName(), new UnresolvedUdfReplacer(udfDefinition));
         }
 
-        public Builder udaf(@Nullable Udaf udaf) {
-            if (udaf == null)
+        public Builder udaf(@Nullable UdafDefinition udafDefinition) {
+            if (udafDefinition == null)
                 return this;
-            return functionReplacer(udaf.getName(), new UnresolvedUdafReplacer(udaf));
+            return functionReplacer(udafDefinition.getName(), new UnresolvedUdafReplacer(udafDefinition));
         }
 
         public Builder sqlFunction(@Nullable SqlFunction sqlFunction) {
             if (sqlFunction == null)
                 return this;
-            if (sqlFunction instanceof Udf)
-                return udf((Udf) sqlFunction);
-            if (sqlFunction instanceof Udaf)
-                return udaf((Udaf) sqlFunction);
+            if (sqlFunction instanceof UdfDefinition)
+                return udf((UdfDefinition) sqlFunction);
+            if (sqlFunction instanceof UdafDefinition)
+                return udaf((UdafDefinition) sqlFunction);
             throw new IllegalArgumentException("Sql function provided in not a Udf or a Udaf function: " + sqlFunction.getClass().getName());
         }
 

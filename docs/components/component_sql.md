@@ -63,6 +63,7 @@ The sql component can be extended by providing user defined function (UDF) or us
 A sql component has a section where udf can be defined.
 The access to the udf is scoped by component, so only sql in the component where the udfs are defined will have access to them.
 The udfs are defined in a function library definition. The most common library definition is the `list` type:
+
 ```yaml
 sqlComponent:
   sql: select testIntUdf(value) from source
@@ -75,20 +76,20 @@ sqlComponent:
 
 In a library it is possible to define Java-coded udfs.
 These function should extend the `dataengine.spark.sql.udf.SqlFunction` interface.
-Utility classes are also available to help create udfs, they are `dataengine.spark.sql.udf.Udf` and `dataengine.spark.sql.udf.Udaf`.
+Utility interfaces are also available to help create udfs, they are `dataengine.spark.sql.udf.UdfDefinition` and `dataengine.spark.sql.udf.UdafDefinition`.
 
 A udf in Java may look like this:
 ```java
 package sparkengine.plan.runtime.builder.dataset;
 
-import dataengine.spark.sql.udf.Udf;
+import dataengine.spark.sql.udf.UdfDefinition;
 import org.apache.spark.sql.api.java.UDF2;
 import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
 
 import javax.annotation.Nonnull;
 
-public class TestIntUdf implements Udf {
+public class TestIntUdf implements UdfDefinition {
 
     @Nonnull
     @Override
@@ -103,7 +104,7 @@ public class TestIntUdf implements Udf {
     }
 
     @Override
-    public UDF2<Integer, Integer, Integer> getUdf2() {
+    public UDF2<Integer, Integer, Integer> asUdf2() {
         return Integer::sum;
     }
 }
@@ -111,7 +112,7 @@ public class TestIntUdf implements Udf {
 
 ### Scala UDF
 
-A quicker way to provide a udf is to script it in java.
+A quicker way to provide an udf is to script it in java.
 An example is:
 ```yaml
 sqlComponent:
@@ -121,4 +122,10 @@ sqlComponent:
       - { type: scala, name: testIntUdf, scala: "(in:Int) => in*2" }
 ```
 
-The scala criptlet may contain any kind of code, but note that the scala scriptlet must evaluate to a `Function*` for the script fragment to be valid.  
+The scala scriptlet may contain any kind of code, but note that the scala scriptlet must evaluate to a `Function*` for the script fragment to be valid.  
+
+### UDF Context
+
+The **udf context** is an object that can be injected in any udf to provide additional functionalities (like accumulators).
+The context is defined by `sparkengine.spark.sql.udf.UdfContext` and is injected before registering the udf in the logical plan.
+An udf that implements the `sparkengine.spark.sql.udf.UdfWithContext` can receive the udf context objet.
