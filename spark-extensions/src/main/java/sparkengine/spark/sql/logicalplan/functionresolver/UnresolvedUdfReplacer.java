@@ -7,7 +7,9 @@ import org.apache.spark.sql.catalyst.expressions.ScalaUDF;
 import scala.Option;
 import scala.collection.JavaConverters;
 import sparkengine.scala.compat.*;
-import sparkengine.spark.sql.udf.Udf;
+import sparkengine.spark.sql.udf.GlobalUdfContext;
+import sparkengine.spark.sql.udf.UdfDefinition;
+import sparkengine.spark.sql.udf.UdfWithContext;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -16,16 +18,16 @@ import java.util.Collections;
 public class UnresolvedUdfReplacer implements UnresolvedFunctionReplacer {
 
     @Nonnull
-    Udf udf;
+    UdfDefinition udfDefinition;
 
     public Expression replace(@Nonnull UnresolvedFunction unresolvedFunction) throws FunctionResolverException {
 
         if (unresolvedFunction.children().size() != getArgumentsCount()) {
-            throw new FunctionResolverException("arguments provided for function " + unresolvedFunction + " do not match udf expected number " + udf);
+            throw new FunctionResolverException("arguments provided for function " + unresolvedFunction + " do not match udf expected number " + udfDefinition);
         }
 
         return new ScalaUDF(getScalaFunction(),
-                udf.getReturnType(),
+                udfDefinition.getReturnType(),
                 unresolvedFunction.children(),
                 JavaConverters.asScalaBuffer(Collections.emptyList()),
                 Option.apply(unresolvedFunction.name().funcName()),
@@ -35,33 +37,39 @@ public class UnresolvedUdfReplacer implements UnresolvedFunctionReplacer {
     }
 
     private JavaUdfToScalaFunction getScalaFunction() throws FunctionResolverException {
-        if (udf.getUdf0() != null)
-            return new JavaUdf0ToScalaFunction0<>(udf.getUdf0());
-        if (udf.getUdf1() != null)
-            return new JavaUdf1ToScalaFunction1<>(udf.getUdf1());
-        if (udf.getUdf2() != null)
-            return new JavaUdf2ToScalaFunction2<>(udf.getUdf2());
-        if (udf.getUdf3() != null)
-            return new JavaUdf3ToScalaFunction3<>(udf.getUdf3());
-        if (udf.getUdf4() != null)
-            return new JavaUdf4ToScalaFunction4<>(udf.getUdf4());
-        if (udf.getUdf5() != null)
-            return new JavaUdf5ToScalaFunction5<>(udf.getUdf5());
+        if (udfDefinition.asUdf0() != null)
+            return new JavaUdf0ToScalaFunction0<>(injectUdfContext(udfDefinition.asUdf0()));
+        if (udfDefinition.asUdf1() != null)
+            return new JavaUdf1ToScalaFunction1<>(injectUdfContext(udfDefinition.asUdf1()));
+        if (udfDefinition.asUdf2() != null)
+            return new JavaUdf2ToScalaFunction2<>(injectUdfContext(udfDefinition.asUdf2()));
+        if (udfDefinition.asUdf3() != null)
+            return new JavaUdf3ToScalaFunction3<>(injectUdfContext(udfDefinition.asUdf3()));
+        if (udfDefinition.asUdf4() != null)
+            return new JavaUdf4ToScalaFunction4<>(injectUdfContext(udfDefinition.asUdf4()));
+        if (udfDefinition.asUdf5() != null)
+            return new JavaUdf5ToScalaFunction5<>(injectUdfContext(udfDefinition.asUdf5()));
         throw new FunctionResolverException("no udf defined " + this);
     }
 
+    private <T> T injectUdfContext(T udf) {
+        if (udf instanceof UdfWithContext)
+            ((UdfWithContext)udf).setUdfContext(GlobalUdfContext.get());
+        return udf;
+    }
+
     private int getArgumentsCount() throws FunctionResolverException {
-        if (udf.getUdf0() != null)
+        if (udfDefinition.asUdf0() != null)
             return 0;
-        if (udf.getUdf1() != null)
+        if (udfDefinition.asUdf1() != null)
             return 1;
-        if (udf.getUdf2() != null)
+        if (udfDefinition.asUdf2() != null)
             return 2;
-        if (udf.getUdf3() != null)
+        if (udfDefinition.asUdf3() != null)
             return 3;
-        if (udf.getUdf4() != null)
+        if (udfDefinition.asUdf4() != null)
             return 4;
-        if (udf.getUdf5() != null)
+        if (udfDefinition.asUdf5() != null)
             return 5;
         throw new FunctionResolverException("no udf defined " + this);
     }

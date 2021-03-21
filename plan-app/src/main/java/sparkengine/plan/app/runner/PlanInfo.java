@@ -3,7 +3,6 @@ package sparkengine.plan.app.runner;
 import lombok.Value;
 import sparkengine.plan.model.builder.input.AppResourceLocator;
 import sparkengine.plan.model.builder.input.InputStreamFactory;
-import sparkengine.plan.model.plan.Plan;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

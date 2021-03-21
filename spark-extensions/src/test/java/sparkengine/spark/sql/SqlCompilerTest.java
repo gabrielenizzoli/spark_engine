@@ -1,5 +1,6 @@
 package sparkengine.spark.sql;
 
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
@@ -9,13 +10,17 @@ import org.junit.jupiter.api.Test;
 import sparkengine.spark.sql.logicalplan.PlanMapperException;
 import sparkengine.spark.sql.logicalplan.SqlCompiler;
 import sparkengine.spark.sql.logicalplan.tableresolver.Table;
+import sparkengine.spark.sql.udf.GlobalUdfContext;
+import sparkengine.spark.sql.udf.UdfContext;
 import sparkengine.spark.test.SparkSessionManager;
 import sparkengine.spark.utils.UdafIntegerSummer;
 import sparkengine.spark.utils.UdfPlusOne;
+import sparkengine.spark.utils.UdfWithInjectedContext;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 
 public class SqlCompilerTest extends SparkSessionManager {
@@ -35,6 +40,24 @@ public class SqlCompilerTest extends SparkSessionManager {
         // then
         Assertions.assertEquals(Collections.singletonList(0), datasetResolved.select("value").as(Encoders.INT()).collectAsList());
         Assertions.assertEquals(Collections.singletonList(10), datasetResolved.select("ten").as(Encoders.INT()).collectAsList());
+
+    }
+
+    @Test
+    public void testSqlUdfWithContextResolver() throws PlanMapperException {
+
+        // given
+        GlobalUdfContext.set(new JavaSparkContext(sparkSession.sparkContext()).broadcast(GlobalUdfContext.EMPTY_UDF_CONTEXT));
+        var sqlCompiler = SqlCompiler.builder()
+                .sparkSession(sparkSession)
+                .functionResolver(new UdfWithInjectedContext())
+                .build();
+
+        // when
+        var datasetResolved = sqlCompiler.sql("select writeContext() as value");
+
+        // then
+        Assertions.assertEquals(Collections.singletonList("EMPTY"), datasetResolved.select("value").as(Encoders.STRING()).collectAsList());
 
     }
 

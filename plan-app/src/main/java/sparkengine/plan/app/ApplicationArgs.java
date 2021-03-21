@@ -1,13 +1,7 @@
 package sparkengine.plan.app;
 
-import com.beust.jcommander.IValueValidator;
 import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
 import lombok.*;
-
-import javax.annotation.Nonnull;
-import java.util.Optional;
-import java.util.regex.Pattern;
 
 @ToString
 @EqualsAndHashCode

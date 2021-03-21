@@ -3,11 +3,11 @@ package sparkengine.plan.runtime.builder;
 import org.apache.spark.sql.api.java.UDF2;
 import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
-import sparkengine.spark.sql.udf.Udf;
+import sparkengine.spark.sql.udf.UdfDefinition;
 
 import javax.annotation.Nonnull;
 
-public class TestStrUdf implements Udf {
+public class TestStrUdf implements UdfDefinition {
 
     @Nonnull
     @Override
@@ -22,7 +22,7 @@ public class TestStrUdf implements Udf {
     }
 
     @Override
-    public UDF2<String, String, String> getUdf2() {
+    public UDF2<String, String, String> asUdf2() {
         return (s, p) -> s == null ? s : s + "-" + p;
     }
 }

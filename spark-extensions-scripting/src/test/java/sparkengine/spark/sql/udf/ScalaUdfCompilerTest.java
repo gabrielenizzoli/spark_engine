@@ -27,7 +27,7 @@ class ScalaUdfCompilerTest extends SparkSessionManager {
 
         // given
         var udf = ScalaUdfCompiler.compile("test", "(i:Int) => i+1");
-        sparkSession.udf().register(udf.getName(), udf.getUdf1(), udf.getReturnType());
+        sparkSession.udf().register(udf.getName(), udf.asUdf1(), udf.getReturnType());
 
         // when
         var data = sparkSession.sql("select test(1)").as(Encoders.INT()).collectAsList();
@@ -43,8 +43,8 @@ class ScalaUdfCompilerTest extends SparkSessionManager {
         new TestUserDefinedType().register();
         var udf1 = ScalaUdfCompiler.compile("createBean", "import sparkengine.spark.sql.udf.TestBean; (i:Int) => { val t = new TestBean(); t.setValue(i); t }");
         var udf2 = ScalaUdfCompiler.compile("incrBean", "import sparkengine.spark.sql.udf.TestBean; (i:TestBean, j:Int) => { i.setValue(i.getValue()+j); i }");
-        sparkSession.udf().register(udf1.getName(), udf1.getUdf1(), udf1.getReturnType());
-        sparkSession.udf().register(udf2.getName(), udf2.getUdf2(), udf2.getReturnType());
+        sparkSession.udf().register(udf1.getName(), udf1.asUdf1(), udf1.getReturnType());
+        sparkSession.udf().register(udf2.getName(), udf2.asUdf2(), udf2.getReturnType());
 
         // when
         var rows = sparkSession.sql("select incrBean(createBean(1), 99) as xxx").collectAsList();

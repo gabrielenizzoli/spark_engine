@@ -17,21 +17,23 @@ object ScriptEngine {
     scriptCache.computeIfAbsent(src, code => {
 
       val envId = UUID.randomUUID().toString;
-      val parsedCode = env match {
-        case Some(envValue) => {
-          environments.put(envId, envValue)
-          toolBox.parse(
-            s"""
-            val env = sparkengine.scala.scripting.ScriptEngine.environments.get("$envId").asInstanceOf[${envValue.getClass.getName}]
-            $code
-          """)
+      try {
+        val parsedCode = env match {
+          case Some(envValue) => {
+            environments.put(envId, envValue)
+            toolBox.parse(
+              s"""
+                val env = sparkengine.scala.scripting.ScriptEngine.environments.get("$envId").asInstanceOf[${envValue.getClass.getName}]
+                $code
+              """)
+          }
+          case None => toolBox.parse(code)
         }
-        case None => toolBox.parse(code)
-      }
 
-      val outcome = toolBox.eval(parsedCode)
-      environments.remove(envId)
-      return outcome
+        toolBox.eval(parsedCode)
+      } finally {
+        environments.remove(envId)
+      }
     })
   }
 
