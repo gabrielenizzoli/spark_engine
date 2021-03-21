@@ -1,33 +1,38 @@
 package sparkengine.scala.scripting
 
-import org.apache.spark.sql.catalyst.encoders.ExpressionEncoder
-import org.apache.spark.sql.expressions.UserDefinedFunction
-
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import scala.reflect.runtime.universe
 import scala.tools.reflect.{ToolBox, ToolBoxError}
 
+
 object ScriptEngine {
 
-  val cache = new ConcurrentHashMap[String, Any]();
+  val scriptCache = new ConcurrentHashMap[String, Any]();
+  val environments = new ConcurrentHashMap[String, Any]();
 
   @throws[ToolBoxError]
-  @throws[ClassCastException]
-  def compileToUserDefinedFunction(code: String): UserDefinedFunction = {
-    val src =
-      s"""
-         | org.apache.spark.sql.functions.udf({
-         |   ${code}
-         | })
-         | """.stripMargin
-
-    compileToObject(src).asInstanceOf[UserDefinedFunction]
-  }
-
-  @throws[ToolBoxError]
-  def compileToObject(src: String): Any = {
+  def evaluate(src: String, env: Option[Any] = None): Any = {
     val toolBox = universe.runtimeMirror(getClass.getClassLoader).mkToolBox()
-    cache.computeIfAbsent(src, s => toolBox.eval(toolBox.parse(src)))
+    scriptCache.computeIfAbsent(src, code => {
+
+      val envId = UUID.randomUUID().toString;
+      val parsedCode = env match {
+        case Some(envValue) => {
+          environments.put(envId, envValue)
+          toolBox.parse(
+            s"""
+            val env = sparkengine.scala.scripting.ScriptEngine.environments.get("$envId").asInstanceOf[${envValue.getClass.getName}]
+            $code
+          """)
+        }
+        case None => toolBox.parse(code)
+      }
+
+      val outcome = toolBox.eval(parsedCode)
+      environments.remove(envId)
+      return outcome
+    })
   }
 
 }
