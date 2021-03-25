@@ -6,7 +6,7 @@ import org.apache.spark.sql.SparkSession;
 import sparkengine.plan.model.udf.*;
 import sparkengine.plan.model.udf.UdfWithScalaScript;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
-import sparkengine.spark.sql.logicalplan.functionresolver.UnresolvedFunctionReplacer;
+import sparkengine.spark.sql.logicalplan.functionresolver.Function;
 import sparkengine.spark.sql.udf.*;
 import sparkengine.spark.sql.udf.context.GlobalUdfContext;
 import sparkengine.spark.sql.udf.context.UdfContext;
@@ -18,22 +18,26 @@ import java.util.*;
 
 public class UdfUtils {
 
-    public static Collection<SqlFunction> buildSqlFunctionCollection(@Nullable UdfLibrary udfLibrary,
-                                                                     SparkSession sparkSession)
+    public static Collection<Function> buildSqlFunctionCollection(@Nullable UdfLibrary udfLibrary,
+                                                                  SparkSession sparkSession)
             throws DatasetFactoryException {
         if (udfLibrary == null) {
             return null;
         } else if (udfLibrary instanceof UdfList) {
             UdfList udfList = (UdfList) udfLibrary;
-            List<SqlFunction> sqlFunctions = new ArrayList<>(udfList.getList().size());
-
+            var functions = new LinkedList<Function>();
             for (Udf udf : udfList.getList()) {
                 if (udf instanceof UdfWithClassName) {
-                    sqlFunctions.add(getSqlFunction((UdfWithClassName)udf));
+                    var udfWithClassName = (UdfWithClassName)udf;
+                    var sqlFunction = getUdfWithClassNameFunction(udfWithClassName);
+                    var broadcastUdfContext = getUdfContextBroadcast(sparkSession, udfWithClassName.getAccumulators());
+                    functions.add(Function.of(sqlFunction, broadcastUdfContext));
                 } else if (udf instanceof UdfWithScalaScript) {
-                    var udfWithScala = (UdfWithScalaScript)udf;
                     try {
-                        sqlFunctions.add(ScalaUdfCompiler.compile(udfWithScala.getName(), udfWithScala.getScala()));
+                        var udfWithScala = (UdfWithScalaScript)udf;
+                        var sqlFunction = getUdfWithScalaFunction(udfWithScala);
+                        var broadcastUdfContext = getUdfContextBroadcast(sparkSession, udfWithScala.getAccumulators());
+                        functions.add(Function.of(sqlFunction, broadcastUdfContext));
                     } catch (UdfCompilationException e) {
                         throw new DatasetFactoryException(String.format("scala udf [%s] can't be compiled", udf), e);
                     }
@@ -41,41 +45,34 @@ public class UdfUtils {
                     throw new DatasetFactoryException(String.format("udf [%s] not managed", udf));
                 }
             }
-            return Collections.unmodifiableList(sqlFunctions);
+            return Collections.unmodifiableList(functions);
         }
         throw new DatasetFactoryException(String.format("udf library [%s] not managed", udfLibrary));
 
     }
 
+    @Nullable
+    private static Broadcast<UdfContext> getUdfContextBroadcast(SparkSession sparkSession, Map<String, String> accumulatorNames) {
+        var broadcastUdfContext = GlobalUdfContext.get()
+                .map(ctx -> ctx.withAccumulatorNameRemap(accumulatorNames))
+                .map(ctx -> new JavaSparkContext(sparkSession.sparkContext()).broadcast(ctx))
+                .orElse(null);
+        return broadcastUdfContext;
+    }
+
     @Nonnull
-    public static SqlFunction getSqlFunction(UdfWithClassName udfWithClassName) throws DatasetFactoryException {
+    private static SqlFunction getUdfWithScalaFunction(UdfWithScalaScript udfWithScala) throws UdfCompilationException {
+        return ScalaUdfCompiler.compile(udfWithScala.getName(), udfWithScala.getScala());
+    }
+
+    @Nonnull
+    public static SqlFunction getUdfWithClassNameFunction(UdfWithClassName udfWithClassName) throws DatasetFactoryException {
         try {
             Class<SqlFunction> c = (Class<SqlFunction>) Class.forName(udfWithClassName.getClassName());
-            SqlFunction sqlFunction = c.getDeclaredConstructor().newInstance();
-
-            Map<String, String> accumulatorNames = udfWithClassName.getAccumulators();
-            sqlFunction = bindUdfContextInSqlFunction(sqlFunction, accumulatorNames);
-
-            return sqlFunction;
+            return c.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
             throw new DatasetFactoryException(String.format("udf/udaf class [%s] has problems creating instance", udfWithClassName.getClassName()), e);
         }
-    }
-
-    private static SqlFunction bindUdfContextInSqlFunction(SqlFunction sqlFunction,
-                                                           Map<String, String> accumulatorNames) {
-        return new SqlFunctionWrapper(sqlFunction) {
-
-            @Nullable
-            @Override
-            public UdfContext initUdfContext(@Nullable UdfContext templateUdfContext) {
-                if (templateUdfContext == null)
-                    return null;
-                return templateUdfContext.withAccumulatorNameRemap(accumulatorNames);
-            }
-
-        };
-
     }
 
 }

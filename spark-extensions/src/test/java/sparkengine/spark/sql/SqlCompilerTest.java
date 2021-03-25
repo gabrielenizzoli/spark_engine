@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import sparkengine.spark.sql.logicalplan.PlanMapperException;
 import sparkengine.spark.sql.logicalplan.SqlCompiler;
+import sparkengine.spark.sql.logicalplan.functionresolver.Function;
 import sparkengine.spark.sql.logicalplan.tableresolver.Table;
 import sparkengine.spark.sql.udf.context.GlobalUdfContext;
 import sparkengine.spark.test.SparkSessionManager;
@@ -29,7 +30,7 @@ public class SqlCompilerTest extends SparkSessionManager {
         // given
         var sqlCompiler = SqlCompiler.builder()
                 .sparkSession(sparkSession)
-                .functionResolver(sparkSession, new UdfPlusOne())
+                .functions(Function.of(new UdfPlusOne()))
                 .build();
 
         // when
@@ -45,10 +46,10 @@ public class SqlCompilerTest extends SparkSessionManager {
     public void testSqlUdfWithContextResolver() throws PlanMapperException {
 
         // given
-        GlobalUdfContext.set(GlobalUdfContext.EMPTY_UDF_CONTEXT);
+        var udfContextBroadcast = new JavaSparkContext(sparkSession.sparkContext()).broadcast(GlobalUdfContext.EMPTY_UDF_CONTEXT);
         var sqlCompiler = SqlCompiler.builder()
                 .sparkSession(sparkSession)
-                .functionResolver(sparkSession, new UdfWithInjectedContext())
+                .functions(Function.of(new UdfWithInjectedContext(), udfContextBroadcast))
                 .build();
 
         // when
@@ -64,7 +65,7 @@ public class SqlCompilerTest extends SparkSessionManager {
         // given
         var sqlCompiler = SqlCompiler.builder()
                 .sparkSession(sparkSession)
-                .tableResolver(Table.ofDataset("table", sparkSession.sql("select 100 as value")))
+                .tables(Table.ofDataset("table", sparkSession.sql("select 100 as value")))
                 .build();
 
         // when
@@ -81,7 +82,7 @@ public class SqlCompilerTest extends SparkSessionManager {
         // given
         var sqlCompiler = SqlCompiler.builder()
                 .sparkSession(sparkSession)
-                .tableResolver(Table.ofDataset("table", sparkSession.sql("select 100 as value")), Table.ofDataset("table2", sparkSession.sql("select 200 as value")))
+                .tables(Table.ofDataset("table", sparkSession.sql("select 100 as value")), Table.ofDataset("table2", sparkSession.sql("select 200 as value")))
                 .build();
 
         // when
@@ -98,8 +99,8 @@ public class SqlCompilerTest extends SparkSessionManager {
         // given
         var sqlCompiler = SqlCompiler.builder()
                 .sparkSession(sparkSession)
-                .tableResolver(Table.ofDataset("table", sparkSession.sql("select 100 as value")))
-                .functionResolver(sparkSession, new UdfPlusOne())
+                .tables(Table.ofDataset("table", sparkSession.sql("select 100 as value")))
+                .functions(Function.of(new UdfPlusOne()))
                 .build();
 
         // when
@@ -117,8 +118,8 @@ public class SqlCompilerTest extends SparkSessionManager {
         // given
         var sqlCompiler = SqlCompiler.builder()
                 .sparkSession(sparkSession)
-                .tableResolver(Table.ofDataset("table", sparkSession.createDataset(List.of(1, 2, 3, 4), Encoders.INT())))
-                .functionResolver(sparkSession, new UdafIntegerSummer())
+                .tables(Table.ofDataset("table", sparkSession.createDataset(List.of(1, 2, 3, 4), Encoders.INT())))
+                .functions(Function.of(new UdafIntegerSummer()))
                 .build();
 
         // when
@@ -135,10 +136,10 @@ public class SqlCompilerTest extends SparkSessionManager {
         // given
         var sqlCompiler = SqlCompiler.builder()
                 .sparkSession(sparkSession)
-                .tableResolver(
+                .tables(
                         Table.ofDataset("source1", sparkSession.createDataset(Arrays.asList(1, 2, 3), Encoders.INT())),
                         Table.ofDataset("source2", sparkSession.createDataset(Arrays.asList(2, 3, 4), Encoders.INT())))
-                .functionResolver(sparkSession, new UdafIntegerSummer())
+                .functions(Function.of(new UdafIntegerSummer()))
                 .build();
 
         // when

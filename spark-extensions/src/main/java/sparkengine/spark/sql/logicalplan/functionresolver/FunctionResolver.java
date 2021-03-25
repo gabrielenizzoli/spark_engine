@@ -20,42 +20,28 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 @Value
-@Builder
 public class FunctionResolver implements LogicalPlanMapper {
 
     @Nonnull
     @Singular
     Map<String, UnresolvedFunctionReplacer> functionReplacers;
 
-    public static class Builder {
-
-        public Builder sqlFunction(@Nonnull SparkSession sparkSession, @Nullable SqlFunction sqlFunction) {
-            if (sqlFunction == null)
-                return this;
-            var udfContext = GlobalUdfContext.get().map(sqlFunction::initUdfContext);
-            var broadcastUdfContext = udfContext.map(ctx -> new JavaSparkContext(sparkSession.sparkContext()).broadcast(ctx)).orElse(null);
-            return functionReplacer(sqlFunction.getName(), sqlFunction.asFunctionReplacer(broadcastUdfContext));
-        }
-
-        public Builder sqlFunctions(@Nonnull SparkSession sparkSession, SqlFunction... sqlFunctions) {
-            if (sqlFunctions != null)
-                Arrays.stream(sqlFunctions).forEach(sqlFunction -> this.sqlFunction(sparkSession, sqlFunction));
-            return this;
-        }
-
-        public Builder sqlFunctions(@Nonnull SparkSession sparkSession, @Nullable Collection<SqlFunction> sqlFunctionCollection) {
-            if (sqlFunctionCollection != null)
-                sqlFunctionCollection.forEach(sqlFunction -> this.sqlFunction(sparkSession, sqlFunction));
-            return this;
-        }
-
+    public static FunctionResolver of(@Nullable Function... functions) {
+        Map<String, UnresolvedFunctionReplacer> functionReplacers = new HashMap<>();
+        if (functions != null)
+            Arrays.stream(functions).forEach(f -> f.addToMap(functionReplacers));
+        return new FunctionResolver(functionReplacers);
     }
 
-    public static FunctionResolver with(SparkSession sparkSession, SqlFunction... sqlFunctions) {
-        return builder().sqlFunctions(sparkSession, sqlFunctions).build();
+    public static FunctionResolver of(@Nullable Collection<Function> functions) {
+        Map<String, UnresolvedFunctionReplacer> functionReplacers = new HashMap<>();
+        if (functions != null)
+            functions.forEach(f -> f.addToMap(functionReplacers));
+        return new FunctionResolver(functionReplacers);
     }
 
     @Override

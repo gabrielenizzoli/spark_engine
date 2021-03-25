@@ -8,11 +8,10 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.catalyst.parser.ParseException;
 import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
+import sparkengine.spark.sql.logicalplan.functionresolver.Function;
 import sparkengine.spark.sql.logicalplan.functionresolver.FunctionResolver;
-import sparkengine.spark.sql.logicalplan.functionresolver.UnresolvedFunctionReplacer;
 import sparkengine.spark.sql.logicalplan.tableresolver.Table;
 import sparkengine.spark.sql.logicalplan.tableresolver.TableResolver;
-import sparkengine.spark.sql.udf.SqlFunction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,20 +31,20 @@ public class SqlCompiler {
 
     public static class Builder {
 
-        public Builder tableResolver(Table... tables) {
+        public Builder tables(Table... tables) {
             return planMapper(TableResolver.builder().tables(tables).build());
         }
 
-        public Builder tableResolver(@Nullable Collection<Table> tables) {
+        public Builder tables(@Nullable Collection<Table> tables) {
             return planMapper(TableResolver.builder().tables(tables).build());
         }
 
-        public Builder functionResolver(SparkSession sparkSession, SqlFunction... sqlFunctions) {
-            return planMapper(FunctionResolver.builder().sqlFunctions(sparkSession, sqlFunctions).build());
+        public Builder functions(Function... functions) {
+            return planMapper(FunctionResolver.of(functions));
         }
 
-        public Builder functionResolver(SparkSession sparkSession, Collection<SqlFunction> sqlFunctions) {
-            return planMapper(FunctionResolver.builder().sqlFunctions(sparkSession, sqlFunctions).build());
+        public Builder functions(@Nullable Collection<Function> functions) {
+            return planMapper(FunctionResolver.of(functions));
         }
 
     }
@@ -59,28 +58,28 @@ public class SqlCompiler {
      *
      * @param sparkSession  sparkSession to use for compilation
      * @param tables        tables to be resolved during compilation
-     * @param sqlFunctions  function s to be resolved during compilation, can be null or empty
+     * @param functions     functions to be resolved during compilation, can be null or empty
      * @param sql           sql to compile
      * @return              Compile sql as a dataset
      * @throws PlanMapperException  for any error during compilation
      */
     public static Dataset<Row> sql(@Nonnull SparkSession sparkSession,
                                    @Nullable Collection<Table> tables,
-                                   @Nullable Collection<SqlFunction> sqlFunctions,
+                                   @Nullable Collection<Function> functions,
                                    @Nonnull String sql) throws PlanMapperException {
         var sqlCompiler = SqlCompiler.builder()
                 .sparkSession(sparkSession)
-                .tableResolver(tables)
-                .functionResolver(sparkSession, sqlFunctions)
+                .tables(tables)
+                .functions(functions)
                 .build();
 
         return sqlCompiler.sql(sql);
     }
 
     public static Dataset<Row> sql(@Nonnull SparkSession sparkSession,
-                                   @Nullable Collection<SqlFunction> sqlFunctions,
+                                   @Nullable Collection<Function> functions,
                                    @Nonnull String sql) throws PlanMapperException {
-        return sql(sparkSession, Collections.emptyList(), sqlFunctions, sql);
+        return sql(sparkSession, Collections.emptyList(), functions, sql);
     }
 
     public Dataset<Row> sql(@Nonnull String sql) throws PlanMapperException {

@@ -13,11 +13,6 @@ public interface SqlFunction extends Serializable {
     @Nonnull
     String getName();
 
-    @Nullable
-    default UdfContext initUdfContext(@Nullable UdfContext templateUdfContext) {
-        return templateUdfContext;
-    }
-
     @Nonnull
     UnresolvedFunctionReplacer asFunctionReplacer(@Nullable Broadcast<UdfContext> udfContextBroadcast);
 

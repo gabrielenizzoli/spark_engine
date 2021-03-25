@@ -10,6 +10,7 @@ import org.apache.spark.sql.types.StructType;
 import org.apache.spark.storage.StorageLevel;
 import sparkengine.spark.sql.logicalplan.PlanMapperException;
 import sparkengine.spark.sql.logicalplan.SqlCompiler;
+import sparkengine.spark.sql.logicalplan.functionresolver.Function;
 import sparkengine.spark.sql.logicalplan.tableresolver.Table;
 import sparkengine.spark.sql.udf.SqlFunction;
 
@@ -72,12 +73,12 @@ public class Transformations {
 
     public static <S> DataTransformation<S, Row> sql(@Nonnull String sourceName,
                                                      @Nonnull String sql,
-                                                     @Nullable Collection<SqlFunction> sqlFunctions) {
+                                                     @Nullable Collection<Function> functions) {
         return (dataset) -> {
             var sparkSession = dataset.sparkSession();
             var tables = List.of(Table.ofDataset(sourceName, dataset));
             try {
-                return SqlCompiler.sql(sparkSession, tables, sqlFunctions, sql);
+                return SqlCompiler.sql(sparkSession, tables, functions, sql);
             } catch (PlanMapperException e) {
                 throw new TransformationException("issues compiling sql: " + sql, e);
             }
@@ -103,13 +104,13 @@ public class Transformations {
      *
      * @param nullableSourceNames name of the input datasets
      * @param sql                 sql statement
-     * @param sqlFunctions        a list of sql functions to be resolved in the sql statement
+     * @param functions           a list of sql functions to be resolved in the sql statement
      * @return outcome of the transformation operation
      */
     public static DataTransformationN<Row, Row> sql(@Nonnull SparkSession sparkSession,
                                                     @Nullable List<String> nullableSourceNames,
                                                     @Nonnull String sql,
-                                                    @Nullable Collection<SqlFunction> sqlFunctions) {
+                                                    @Nullable Collection<Function> functions) {
 
         // cleanup names
         var sourceNames = nullableSourceNames == null ?
@@ -130,7 +131,7 @@ public class Transformations {
                             .collect(Collectors.toList());
 
             try {
-                return SqlCompiler.sql(sparkSession, tables, sqlFunctions, sql);
+                return SqlCompiler.sql(sparkSession, tables, functions, sql);
             } catch (PlanMapperException e) {
                 throw new TransformationException("issues compiling sql: " + sql, e);
             }
