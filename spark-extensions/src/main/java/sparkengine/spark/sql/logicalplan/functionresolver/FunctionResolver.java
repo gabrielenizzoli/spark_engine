@@ -1,6 +1,5 @@
 package sparkengine.spark.sql.logicalplan.functionresolver;
 
-import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
 import org.apache.spark.sql.catalyst.analysis.FunctionRegistry;
@@ -11,64 +10,33 @@ import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 import sparkengine.spark.sql.logicalplan.ExpressionMapper;
 import sparkengine.spark.sql.logicalplan.LogicalPlanMapper;
 import sparkengine.spark.sql.logicalplan.PlanMapperException;
-import sparkengine.spark.sql.udf.SqlFunction;
-import sparkengine.spark.sql.udf.UdafDefinition;
-import sparkengine.spark.sql.udf.UdfDefinition;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 @Value
-@Builder
 public class FunctionResolver implements LogicalPlanMapper {
 
     @Nonnull
     @Singular
     Map<String, UnresolvedFunctionReplacer> functionReplacers;
 
-    public static class Builder {
-
-        public Builder udf(@Nullable UdfDefinition udfDefinition) {
-            if (udfDefinition == null)
-                return this;
-            return functionReplacer(udfDefinition.getName(), new UnresolvedUdfReplacer(udfDefinition));
-        }
-
-        public Builder udaf(@Nullable UdafDefinition udafDefinition) {
-            if (udafDefinition == null)
-                return this;
-            return functionReplacer(udafDefinition.getName(), new UnresolvedUdafReplacer(udafDefinition));
-        }
-
-        public Builder sqlFunction(@Nullable SqlFunction sqlFunction) {
-            if (sqlFunction == null)
-                return this;
-            if (sqlFunction instanceof UdfDefinition)
-                return udf((UdfDefinition) sqlFunction);
-            if (sqlFunction instanceof UdafDefinition)
-                return udaf((UdafDefinition) sqlFunction);
-            throw new IllegalArgumentException("Sql function provided in not a Udf or a Udaf function: " + sqlFunction.getClass().getName());
-        }
-
-        public Builder sqlFunctions(SqlFunction... sqlFunctions) {
-            if (sqlFunctions != null)
-                Arrays.stream(sqlFunctions).forEach(this::sqlFunction);
-            return this;
-        }
-
-        public Builder sqlFunctions(@Nullable Collection<SqlFunction> sqlFunctionCollection) {
-            if (sqlFunctionCollection != null)
-                sqlFunctionCollection.forEach(this::sqlFunction);
-            return this;
-        }
-
+    public static FunctionResolver of(@Nullable Function... functions) {
+        Map<String, UnresolvedFunctionReplacer> functionReplacers = new HashMap<>();
+        if (functions != null)
+            Arrays.stream(functions).forEach(f -> f.addToMap(functionReplacers));
+        return new FunctionResolver(functionReplacers);
     }
 
-    public static FunctionResolver with(SqlFunction... sqlFunctions) {
-        return builder().sqlFunctions(sqlFunctions).build();
+    public static FunctionResolver of(@Nullable Collection<Function> functions) {
+        Map<String, UnresolvedFunctionReplacer> functionReplacers = new HashMap<>();
+        if (functions != null)
+            functions.forEach(f -> f.addToMap(functionReplacers));
+        return new FunctionResolver(functionReplacers);
     }
 
     @Override

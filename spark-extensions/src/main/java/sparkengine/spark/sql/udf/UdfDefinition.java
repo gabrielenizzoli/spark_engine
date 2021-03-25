@@ -1,9 +1,14 @@
 package sparkengine.spark.sql.udf;
 
+import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.api.java.*;
 import org.apache.spark.sql.types.DataType;
+import sparkengine.spark.sql.logicalplan.functionresolver.UnresolvedFunctionReplacer;
+import sparkengine.spark.sql.logicalplan.functionresolver.UnresolvedUdfReplacer;
+import sparkengine.spark.sql.udf.context.UdfContext;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * An interface that provides a Java Udf.
@@ -72,6 +77,12 @@ public interface UdfDefinition extends SqlFunction {
             }
 
         };
+
+    }
+
+    @Override
+    default UnresolvedFunctionReplacer asFunctionReplacer(@Nullable Broadcast<UdfContext> udfContextBroadcast) {
+        return new UnresolvedUdfReplacer(this, udfContextBroadcast);
     }
 
 }

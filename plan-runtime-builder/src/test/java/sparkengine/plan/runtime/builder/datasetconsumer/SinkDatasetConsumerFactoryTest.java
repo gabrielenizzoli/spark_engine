@@ -4,6 +4,7 @@ import org.apache.spark.sql.Encoders;
 import org.junit.jupiter.api.Test;
 import sparkengine.plan.model.sink.catalog.SinkCatalog;
 import sparkengine.plan.model.sink.impl.ViewSink;
+import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactoryException;
 import sparkengine.spark.test.SparkSessionManager;
@@ -21,7 +22,7 @@ class SinkDatasetConsumerFactoryTest extends SparkSessionManager {
         // given
         var ds = sparkSession.createDataset(List.of(1, 2, 3), Encoders.INT());
         var catalog = SinkCatalog.ofMap(Map.of("get", ViewSink.builder().withName("tempTable").build()));
-        var factory = SinkDatasetConsumerFactory.builder().sinkCatalog(catalog).build();
+        var factory = SinkDatasetConsumerFactory.builder().runtimeContext(RuntimeContext.init(sparkSession)).sinkCatalog(catalog).build();
 
         // when
         factory.<Integer>buildConsumer("get").readFrom(ds);

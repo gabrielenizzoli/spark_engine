@@ -10,6 +10,7 @@ import sparkengine.plan.model.encoder.DataType;
 import sparkengine.plan.model.encoder.ValueEncoder;
 import sparkengine.plan.model.sink.catalog.SinkCatalog;
 import sparkengine.plan.model.sink.impl.ViewSink;
+import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.builder.dataset.ComponentDatasetFactory;
 import sparkengine.plan.runtime.builder.datasetconsumer.SinkDatasetConsumerFactory;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
@@ -26,8 +27,9 @@ class SimplePipelineRunnersFactoryTest extends SparkSessionManager {
     void testPipelineFactory() throws DatasetConsumerException, PipelineRunnersFactoryException {
 
         // given
+        var runtimeContext = RuntimeContext.init(sparkSession);
         var datasetFactory = ComponentDatasetFactory.builder()
-                .sparkSession(sparkSession)
+                .runtimeContext(runtimeContext)
                 .componentCatalog(ComponentCatalog.ofMap(
                         Map.<String, Component>of(
                                 "sql",
@@ -39,6 +41,7 @@ class SimplePipelineRunnersFactoryTest extends SparkSessionManager {
                 ))
                 .build();
         var datasetConsumerFactory = SinkDatasetConsumerFactory.builder()
+                .runtimeContext(runtimeContext)
                 .sinkCatalog(SinkCatalog.ofMap(Map.of("get", ViewSink.builder().withName("view").build())))
                 .build();
 

@@ -1,9 +1,14 @@
 package sparkengine.spark.sql.udf;
 
+import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.Encoder;
 import org.apache.spark.sql.expressions.Aggregator;
+import sparkengine.spark.sql.logicalplan.functionresolver.UnresolvedFunctionReplacer;
+import sparkengine.spark.sql.logicalplan.functionresolver.UnresolvedUdafReplacer;
+import sparkengine.spark.sql.udf.context.UdfContext;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * An interface that returns an Aggregator (the base class used by spark to implement a Udaf).
@@ -56,6 +61,11 @@ public interface UdafDefinition<IN, BUF, OUT> extends SqlFunction {
             return this;
         }
 
+    }
+
+    @Override
+    default UnresolvedFunctionReplacer asFunctionReplacer(@Nullable Broadcast<UdfContext> udfContextBroadcast) {
+        return new UnresolvedUdafReplacer(this);
     }
 
 }

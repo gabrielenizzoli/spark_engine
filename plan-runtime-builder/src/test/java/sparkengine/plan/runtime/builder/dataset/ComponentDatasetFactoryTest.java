@@ -11,6 +11,8 @@ import sparkengine.plan.model.component.impl.SqlComponent;
 import sparkengine.plan.model.component.impl.WrapperComponent;
 import sparkengine.plan.model.udf.UdfList;
 import sparkengine.plan.model.udf.UdfWithScalaScript;
+import sparkengine.plan.runtime.builder.RuntimeContext;
+import sparkengine.plan.runtime.builder.dataset.utils.UdfContextFactory;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.test.SparkSessionManager;
 
@@ -33,7 +35,7 @@ class ComponentDatasetFactoryTest extends SparkSessionManager {
                         .build(),
                 "sql", SqlComponent.builder().withUsing(List.of("inlineSrc")).withSql("select col1 from inlineSrc where col2 like 'value22'").build()
         );
-        var factory = ComponentDatasetFactory.of(sparkSession, ComponentCatalog.ofMap(componentMap));
+        var factory = ComponentDatasetFactory.of(RuntimeContext.init(sparkSession), ComponentCatalog.ofMap(componentMap));
 
         // when
         var data = factory.buildDataset("sql").as(Encoders.STRING()).collectAsList();
@@ -56,7 +58,7 @@ class ComponentDatasetFactoryTest extends SparkSessionManager {
                 "sql", SqlComponent.builder().withUsing(List.of("inlineSrc", "sqlSrc")).withSql("select inlineSrc.col1 from inlineSrc join sqlSrc on inlineSrc.col2 = sqlSrc.col2").build()
         );
         var catalog = ComponentCatalog.ofMap(componentMap);
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+        var factory = ComponentDatasetFactory.of(RuntimeContext.init(sparkSession), catalog);
 
         // when
         var data = factory.buildDataset("sql").as(Encoders.STRING()).collectAsList();
@@ -91,7 +93,7 @@ class ComponentDatasetFactoryTest extends SparkSessionManager {
                         .build()
         );
         var catalog = ComponentCatalog.ofMap(componentMap);
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+        var factory = ComponentDatasetFactory.of(RuntimeContext.init(sparkSession), catalog);
 
         // when
         var data = factory.buildDataset("fragment").as(Encoders.STRING()).collectAsList();
@@ -130,7 +132,7 @@ class ComponentDatasetFactoryTest extends SparkSessionManager {
                         .build()
         );
         var catalog = ComponentCatalog.ofMap(componentMap);
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+        var factory = ComponentDatasetFactory.of(RuntimeContext.init(sparkSession), catalog);
 
         // when
         var data = factory.buildDataset("wrapper").as(Encoders.STRING()).collectAsList();
@@ -156,7 +158,7 @@ class ComponentDatasetFactoryTest extends SparkSessionManager {
                         .build()
         );
         var catalog = ComponentCatalog.ofMap(componentMap);
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+        var factory = ComponentDatasetFactory.of(RuntimeContext.init(sparkSession), catalog);
 
         // when
         var data = factory.buildDataset("sql").as(Encoders.STRING()).collectAsList();
@@ -176,7 +178,7 @@ class ComponentDatasetFactoryTest extends SparkSessionManager {
                         .build(),
                 "sql", SqlComponent.builder().withUsing(List.of("wrongSrcName")).withSql("select col1 from inlineSrc where col2 like 'value22'").build()
         );
-        var factory = ComponentDatasetFactory.of(sparkSession, ComponentCatalog.ofMap(componentMap));
+        var factory = ComponentDatasetFactory.of(RuntimeContext.init(sparkSession), ComponentCatalog.ofMap(componentMap));
 
         // then
         assertThrows(DatasetFactoryException.class, () -> factory.buildDataset("sql").as(Encoders.STRING()).collectAsList());

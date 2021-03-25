@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 import org.apache.spark.sql.Dataset;
 import sparkengine.plan.model.plan.Plan;
+import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.builder.runner.ModelPipelineRunnersFactory;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumer;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
@@ -16,6 +17,8 @@ import java.util.concurrent.TimeoutException;
 @Builder
 public class ForeachConsumer<T> implements DatasetConsumer<T> {
 
+    @Nonnull
+    RuntimeContext runtimeContext;
     @Nonnull
     WriterFormatter.Stream<T> formatter;
     @Nonnull
@@ -36,7 +39,7 @@ public class ForeachConsumer<T> implements DatasetConsumer<T> {
             var batchDataset = plan.getPipelines().size() > 1 ? ds.persist() : ds;
 
             try {
-                var planFactory = ModelPipelineRunnersFactory.ofPlan(batchDataset.sparkSession(), plan, Map.of(batchComponentName, (Dataset<Object>)ds));
+                var planFactory = ModelPipelineRunnersFactory.ofPlan(runtimeContext, plan, Map.of(batchComponentName, (Dataset<Object>)ds));
                 for (var pipelineName : planFactory.getPipelineNames()) {
                     planFactory.buildPipelineRunner(pipelineName).run();
                 }

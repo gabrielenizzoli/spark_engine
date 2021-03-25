@@ -1,10 +1,10 @@
 package sparkengine.plan.runtime.builder.runner;
 
 import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.SparkSession;
 import sparkengine.plan.model.component.catalog.ComponentCatalog;
 import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.sink.catalog.SinkCatalogFromMap;
+import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.builder.dataset.ComponentDatasetFactory;
 import sparkengine.plan.runtime.builder.datasetconsumer.SinkDatasetConsumerFactory;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactory;
@@ -21,17 +21,18 @@ import java.util.stream.Collectors;
 
 public class ModelPipelineRunnersFactory {
 
-    public static PipelineRunnersFactory ofPlan(SparkSession sparkSession, Plan plan) {
-        return ofPlan(sparkSession, plan, null);
+    public static PipelineRunnersFactory ofPlan(RuntimeContext runtimeContext, Plan plan) {
+        return ofPlan(runtimeContext, plan, null);
     }
 
-    public static PipelineRunnersFactory ofPlan(@Nonnull SparkSession sparkSession,
+    public static PipelineRunnersFactory ofPlan(@Nonnull RuntimeContext runtimeContext,
                                                 @Nonnull Plan plan,
                                                 @Nullable Map<String, Dataset> predefinedDatasets) {
+
         return SimplePipelineRunnersFactory.builder()
                 .pipelineDefinitions(getPipelineDefinitions(plan))
-                .datasetFactory(getDatasetFactory(sparkSession, plan, predefinedDatasets))
-                .datasetConsumerFactory(getConsumerFactory(plan))
+                .datasetFactory(getDatasetFactory(runtimeContext, plan, predefinedDatasets))
+                .datasetConsumerFactory(getConsumerFactory(runtimeContext, plan))
                 .build();
     }
 
@@ -45,11 +46,11 @@ public class ModelPipelineRunnersFactory {
                         e -> SimplePipelineRunnersFactory.PipelineDefinition.of(e.getValue().getComponent(), e.getValue().getSink())));
     }
 
-    private static DatasetFactory getDatasetFactory(@Nonnull SparkSession sparkSession,
+    private static DatasetFactory getDatasetFactory(@Nonnull RuntimeContext runtimeContext,
                                                     @Nonnull Plan plan,
                                                     @Nullable Map<String, Dataset> predefinedDatasets) {
         var componentCatalog = ComponentCatalog.ofMap(plan.getComponents());
-        var datasetFactory = ComponentDatasetFactory.of(sparkSession, componentCatalog);
+        var datasetFactory = ComponentDatasetFactory.of(runtimeContext, componentCatalog);
 
         return Optional.ofNullable(predefinedDatasets)
                 .filter(newCache -> !newCache.isEmpty())
@@ -57,9 +58,9 @@ public class ModelPipelineRunnersFactory {
                 .orElse(datasetFactory);
     }
 
-    private static DatasetConsumerFactory getConsumerFactory(@Nonnull Plan plan) {
+    private static DatasetConsumerFactory getConsumerFactory(RuntimeContext runtimeContext, @Nonnull Plan plan) {
         var sinkCatalog = SinkCatalogFromMap.of(plan.getSinks());
-        return SinkDatasetConsumerFactory.of(sinkCatalog);
+        return SinkDatasetConsumerFactory.of(runtimeContext, sinkCatalog);
     }
 
 

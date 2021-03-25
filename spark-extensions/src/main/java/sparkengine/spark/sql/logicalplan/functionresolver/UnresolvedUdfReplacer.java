@@ -1,17 +1,19 @@
 package sparkengine.spark.sql.logicalplan.functionresolver;
 
 import lombok.Value;
+import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.catalyst.analysis.UnresolvedFunction;
 import org.apache.spark.sql.catalyst.expressions.Expression;
 import org.apache.spark.sql.catalyst.expressions.ScalaUDF;
 import scala.Option;
 import scala.collection.JavaConverters;
 import sparkengine.scala.compat.*;
-import sparkengine.spark.sql.udf.GlobalUdfContext;
 import sparkengine.spark.sql.udf.UdfDefinition;
-import sparkengine.spark.sql.udf.UdfWithContext;
+import sparkengine.spark.sql.udf.context.UdfContext;
+import sparkengine.spark.sql.udf.context.UdfWithContext;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collections;
 
 @Value
@@ -19,6 +21,8 @@ public class UnresolvedUdfReplacer implements UnresolvedFunctionReplacer {
 
     @Nonnull
     UdfDefinition udfDefinition;
+    @Nullable
+    Broadcast<UdfContext> udfContext;
 
     public Expression replace(@Nonnull UnresolvedFunction unresolvedFunction) throws FunctionResolverException {
 
@@ -52,9 +56,9 @@ public class UnresolvedUdfReplacer implements UnresolvedFunctionReplacer {
         throw new FunctionResolverException("no udf defined " + this);
     }
 
-    private <T> T injectUdfContext(T udf) {
-        if (udf instanceof UdfWithContext)
-            ((UdfWithContext)udf).setUdfContext(GlobalUdfContext.get());
+    protected <T> T injectUdfContext(T udf) {
+        if (udfContext != null && udf instanceof UdfWithContext)
+            ((UdfWithContext)udf).setUdfContext(udfContext);
         return udf;
     }
 

@@ -12,6 +12,7 @@ import sparkengine.plan.model.component.ComponentWithNoInput;
 import sparkengine.plan.model.component.impl.BatchComponent;
 import sparkengine.plan.model.component.impl.InlineComponent;
 import sparkengine.plan.model.component.impl.StreamComponent;
+import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.builder.dataset.utils.EncoderUtils;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 public class DatasetSupplierForComponentWithNoInput<T> implements DatasetSupplier<T> {
 
     @Nonnull
-    SparkSession sparkSession;
+    RuntimeContext runtimeContext;
     @Nonnull
     ComponentWithNoInput componentWithNoInput;
 
@@ -51,7 +52,7 @@ public class DatasetSupplierForComponentWithNoInput<T> implements DatasetSupplie
 
     private DatasetSupplier<T> getBatchDataset(BatchComponent batchComponent) throws DatasetFactoryException {
         return DatasetSupplierForSpark.<T>builder()
-                .sparkSession(sparkSession)
+                .sparkSession(runtimeContext.getSparkSession())
                 .format(batchComponent.getFormat())
                 .options(Optional.ofNullable(batchComponent.getOptions()).orElse(Map.of()))
                 .encoder(EncoderUtils.buildEncoder(batchComponent.getEncodedAs()))
@@ -61,7 +62,7 @@ public class DatasetSupplierForComponentWithNoInput<T> implements DatasetSupplie
 
     private DatasetSupplier<T> getStreamDataset(StreamComponent streamComponent) throws DatasetFactoryException {
         return DatasetSupplierForSpark.<T>builder()
-                .sparkSession(sparkSession)
+                .sparkSession(runtimeContext.getSparkSession())
                 .format(streamComponent.getFormat())
                 .options(Optional.ofNullable(streamComponent.getOptions()).orElse(Map.of()))
                 .encoder(EncoderUtils.buildEncoder(streamComponent.getEncodedAs()))
@@ -72,9 +73,9 @@ public class DatasetSupplierForComponentWithNoInput<T> implements DatasetSupplie
     @Nullable
     private Dataset<T> getInlineDataframeSourceDataset(InlineComponent inlineComponent) throws DatasetFactoryException {
         List<String> json = parseJson(inlineComponent);
-        var jsonDs = sparkSession.createDataset(json, Encoders.STRING());
+        var jsonDs = runtimeContext.getSparkSession().createDataset(json, Encoders.STRING());
 
-        var reader = sparkSession.read();
+        var reader = runtimeContext.getSparkSession().read();
         if (inlineComponent.getSchema() != null && !inlineComponent.getSchema().isBlank()) {
             var schema = StructType.fromDDL(inlineComponent.getSchema());
             reader = reader.schema(schema);

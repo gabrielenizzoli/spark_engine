@@ -10,6 +10,7 @@ import sparkengine.plan.model.component.ComponentWithSingleInput;
 import sparkengine.plan.model.component.impl.EncodeComponent;
 import sparkengine.plan.model.component.impl.MapComponent;
 import sparkengine.plan.model.component.impl.SchemaValidationComponent;
+import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.builder.dataset.utils.EncoderUtils;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.transformation.DataTransformation;
@@ -22,7 +23,7 @@ import javax.annotation.Nonnull;
 public class DatasetSupplierForComponentWithSingleInput<T> implements DatasetSupplier<T> {
 
     @Nonnull
-    SparkSession sparkSession;
+    RuntimeContext runtimeContext;
     @Nonnull
     ComponentWithSingleInput componentWithSingleInput;
     @Nonnull
