@@ -6,6 +6,7 @@ import sparkengine.plan.model.component.catalog.ComponentCatalog;
 import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.sink.catalog.SinkCatalogFromMap;
 import sparkengine.plan.runtime.builder.dataset.ComponentDatasetFactory;
+import sparkengine.plan.runtime.builder.dataset.utils.GlobalUdfContextFactory;
 import sparkengine.plan.runtime.builder.datasetconsumer.SinkDatasetConsumerFactory;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactory;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactory;
@@ -29,9 +30,7 @@ public class ModelPipelineRunnersFactory {
                                                 @Nonnull Plan plan,
                                                 @Nullable Map<String, Dataset> predefinedDatasets) {
 
-        // find all accumulators
-        // create udf context
-        // store udfcontext in global place
+        GlobalUdfContextFactory.get().orElseGet(() -> GlobalUdfContextFactory.init(sparkSession));
 
         return SimplePipelineRunnersFactory.builder()
                 .pipelineDefinitions(getPipelineDefinitions(plan))

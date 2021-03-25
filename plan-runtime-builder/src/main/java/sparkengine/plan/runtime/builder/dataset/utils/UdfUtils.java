@@ -1,14 +1,11 @@
 package sparkengine.plan.runtime.builder.dataset.utils;
 
-import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.broadcast.Broadcast;
-import org.apache.spark.sql.SparkSession;
 import sparkengine.plan.model.udf.*;
 import sparkengine.plan.model.udf.UdfWithScalaScript;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.sql.logicalplan.functionresolver.Function;
 import sparkengine.spark.sql.udf.*;
-import sparkengine.spark.sql.udf.context.GlobalUdfContext;
 import sparkengine.spark.sql.udf.context.UdfContext;
 
 import javax.annotation.Nonnull;
@@ -18,8 +15,7 @@ import java.util.*;
 
 public class UdfUtils {
 
-    public static Collection<Function> buildSqlFunctionCollection(@Nullable UdfLibrary udfLibrary,
-                                                                  SparkSession sparkSession)
+    public static Collection<Function> buildSqlFunctionCollection(@Nullable UdfLibrary udfLibrary)
             throws DatasetFactoryException {
         if (udfLibrary == null) {
             return null;
@@ -30,13 +26,13 @@ public class UdfUtils {
                 if (udf instanceof UdfWithClassName) {
                     var udfWithClassName = (UdfWithClassName)udf;
                     var sqlFunction = getUdfWithClassNameFunction(udfWithClassName);
-                    var broadcastUdfContext = getUdfContextBroadcast(sparkSession, udfWithClassName.getAccumulators());
+                    var broadcastUdfContext = getUdfContextBroadcast(udfWithClassName.getAccumulators());
                     functions.add(Function.of(sqlFunction, broadcastUdfContext));
                 } else if (udf instanceof UdfWithScalaScript) {
                     try {
                         var udfWithScala = (UdfWithScalaScript)udf;
                         var sqlFunction = getUdfWithScalaFunction(udfWithScala);
-                        var broadcastUdfContext = getUdfContextBroadcast(sparkSession, udfWithScala.getAccumulators());
+                        var broadcastUdfContext = getUdfContextBroadcast(udfWithScala.getAccumulators());
                         functions.add(Function.of(sqlFunction, broadcastUdfContext));
                     } catch (UdfCompilationException e) {
                         throw new DatasetFactoryException(String.format("scala udf [%s] can't be compiled", udf), e);
@@ -52,12 +48,10 @@ public class UdfUtils {
     }
 
     @Nullable
-    private static Broadcast<UdfContext> getUdfContextBroadcast(SparkSession sparkSession, Map<String, String> accumulatorNames) {
-        var broadcastUdfContext = GlobalUdfContext.get()
-                .map(ctx -> ctx.withAccumulatorNameRemap(accumulatorNames))
-                .map(ctx -> new JavaSparkContext(sparkSession.sparkContext()).broadcast(ctx))
+    private static Broadcast<UdfContext> getUdfContextBroadcast(Map<String, String> accumulatorNamesRemap) {
+        return GlobalUdfContextFactory.get()
+                .map(fct -> fct.buildBroadcastUdfContext(accumulatorNamesRemap))
                 .orElse(null);
-        return broadcastUdfContext;
     }
 
     @Nonnull

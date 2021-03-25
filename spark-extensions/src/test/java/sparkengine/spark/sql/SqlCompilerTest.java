@@ -11,7 +11,7 @@ import sparkengine.spark.sql.logicalplan.PlanMapperException;
 import sparkengine.spark.sql.logicalplan.SqlCompiler;
 import sparkengine.spark.sql.logicalplan.functionresolver.Function;
 import sparkengine.spark.sql.logicalplan.tableresolver.Table;
-import sparkengine.spark.sql.udf.context.GlobalUdfContext;
+import sparkengine.spark.sql.udf.context.UdfContext;
 import sparkengine.spark.test.SparkSessionManager;
 import sparkengine.spark.utils.UdafIntegerSummer;
 import sparkengine.spark.utils.UdfPlusOne;
@@ -46,7 +46,7 @@ public class SqlCompilerTest extends SparkSessionManager {
     public void testSqlUdfWithContextResolver() throws PlanMapperException {
 
         // given
-        var udfContextBroadcast = new JavaSparkContext(sparkSession.sparkContext()).broadcast(GlobalUdfContext.EMPTY_UDF_CONTEXT);
+        var udfContextBroadcast = new JavaSparkContext(sparkSession.sparkContext()).broadcast(UdfContext.EMPTY_UDF_CONTEXT);
         var sqlCompiler = SqlCompiler.builder()
                 .sparkSession(sparkSession)
                 .functions(Function.of(new UdfWithInjectedContext(), udfContextBroadcast))

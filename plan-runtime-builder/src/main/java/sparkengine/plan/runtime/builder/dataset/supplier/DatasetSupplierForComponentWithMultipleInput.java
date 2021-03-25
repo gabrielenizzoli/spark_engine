@@ -99,7 +99,7 @@ public class DatasetSupplierForComponentWithMultipleInput<T> implements DatasetS
     }
 
     private Dataset<T> getSqlDataset(SqlComponent sqlComponent) throws DatasetFactoryException {
-        var sqlFunctions = UdfUtils.buildSqlFunctionCollection(sqlComponent.getUdfs(), sparkSession);
+        var sqlFunctions = UdfUtils.buildSqlFunctionCollection(sqlComponent.getUdfs());
         var rowEncoder = Transformations.encodeAsRow();
         var parentDf = inputDatasets.stream().map(ds -> (Dataset<Object>) ds).map(rowEncoder::apply).collect(Collectors.toList());
 

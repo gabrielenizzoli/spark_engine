@@ -8,7 +8,6 @@ import org.apache.spark.sql.catalyst.expressions.ScalaUDF;
 import scala.Option;
 import scala.collection.JavaConverters;
 import sparkengine.scala.compat.*;
-import sparkengine.spark.sql.udf.context.GlobalUdfContext;
 import sparkengine.spark.sql.udf.UdfDefinition;
 import sparkengine.spark.sql.udf.context.UdfContext;
 import sparkengine.spark.sql.udf.context.UdfWithContext;
