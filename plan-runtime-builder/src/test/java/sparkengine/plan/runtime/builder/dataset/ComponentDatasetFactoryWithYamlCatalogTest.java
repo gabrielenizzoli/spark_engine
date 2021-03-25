@@ -7,7 +7,9 @@ import org.apache.spark.sql.streaming.Trigger;
 import org.apache.spark.sql.types.DataTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.builder.TestCatalog;
+import sparkengine.plan.runtime.builder.dataset.utils.UdfContextFactory;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.test.SparkSessionManager;
 
@@ -28,7 +30,7 @@ class ComponentDatasetFactoryWithYamlCatalogTest extends SparkSessionManager {
 
         // given
         var catalog = TestCatalog.getComponentCatalog("testBadComponentsCatalog");
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+        var factory = ComponentDatasetFactory.of(RuntimeContext.init(sparkSession), catalog);
 
         // then
         assertThrows(DatasetFactoryException.DatasetCircularReference.class, () -> factory.buildDataset("source2"));
@@ -40,7 +42,7 @@ class ComponentDatasetFactoryWithYamlCatalogTest extends SparkSessionManager {
 
         // given
         var catalog = TestCatalog.getComponentCatalog("testComponentsCatalog");
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+        var factory = ComponentDatasetFactory.of(RuntimeContext.init(sparkSession), catalog);
 
         // when
         var ds = factory.<Row>buildDataset("tx");
@@ -61,7 +63,7 @@ class ComponentDatasetFactoryWithYamlCatalogTest extends SparkSessionManager {
 
         // given
         var catalog = TestCatalog.getComponentCatalog("testWrapperAndFragmentCatalog");
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+        var factory = ComponentDatasetFactory.of(RuntimeContext.init(sparkSession), catalog);
 
         // when
         var data = factory.buildDataset("wrapper").as(Encoders.STRING()).collectAsList();
@@ -75,7 +77,7 @@ class ComponentDatasetFactoryWithYamlCatalogTest extends SparkSessionManager {
 
         // given
         var catalog = TestCatalog.getComponentCatalog("testAggregationComponentsCatalog");
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+        var factory = ComponentDatasetFactory.of(RuntimeContext.init(sparkSession), catalog);
 
         // when
         var ds = factory.<Row>buildDataset("tx");
@@ -104,7 +106,7 @@ class ComponentDatasetFactoryWithYamlCatalogTest extends SparkSessionManager {
 
         // given
         var catalog = TestCatalog.getComponentCatalog("testTransformationComponentsCatalog");
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+        var factory = ComponentDatasetFactory.of(RuntimeContext.init(sparkSession), catalog);
 
         // when
         var ds = factory.<Row>buildDataset("tx");
@@ -119,7 +121,7 @@ class ComponentDatasetFactoryWithYamlCatalogTest extends SparkSessionManager {
 
         // given
         var catalog = TestCatalog.getComponentCatalog("testTransformationComponentsCatalog");
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+        var factory = ComponentDatasetFactory.of(RuntimeContext.init(sparkSession), catalog);
 
         // when
         var ds = factory.<Row>buildDataset("txWithParams");
@@ -137,7 +139,7 @@ class ComponentDatasetFactoryWithYamlCatalogTest extends SparkSessionManager {
 
         // given
         var catalog = TestCatalog.getComponentCatalog("testTransformationComponentsCatalog");
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+        var factory = ComponentDatasetFactory.of(RuntimeContext.init(sparkSession), catalog);
 
         // when
         var ds = factory.<Row>buildDataset("map");
@@ -153,7 +155,7 @@ class ComponentDatasetFactoryWithYamlCatalogTest extends SparkSessionManager {
 
         // given
         var catalog = TestCatalog.getComponentCatalog("testStreamComponentsCatalog");
-        var factory = ComponentDatasetFactory.of(sparkSession, catalog);
+        var factory = ComponentDatasetFactory.of(RuntimeContext.init(sparkSession), catalog);
 
         // when
         var ds = factory.<Row>buildDataset("tx");

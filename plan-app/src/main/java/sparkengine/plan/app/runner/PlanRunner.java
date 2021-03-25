@@ -10,6 +10,7 @@ import sparkengine.plan.model.builder.ModelFactory;
 import sparkengine.plan.model.builder.ModelFormatException;
 import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.plan.mapper.PlanMapperException;
+import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.builder.runner.ModelPipelineRunnersFactory;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 import sparkengine.plan.runtime.runner.PipelineRunnersFactory;
@@ -71,7 +72,7 @@ public class PlanRunner {
     }
 
     private PipelineRunnersFactory getPipelineRunnersFactory(@Nonnull Plan plan) throws IOException, PlanMapperException, ModelFormatException {
-        return ModelPipelineRunnersFactory.ofPlan(sparkSession, plan);
+        return ModelPipelineRunnersFactory.ofPlan(RuntimeContext.init(sparkSession), plan);
     }
 
     private void writeResolvedPlan(Plan resolvedPlan) throws IOException, ModelFormatException {

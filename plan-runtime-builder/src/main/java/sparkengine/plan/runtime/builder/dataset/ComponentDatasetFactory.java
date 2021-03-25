@@ -8,10 +8,12 @@ import org.apache.spark.sql.SparkSession;
 import sparkengine.plan.model.component.*;
 import sparkengine.plan.model.component.catalog.ComponentCatalog;
 import sparkengine.plan.model.component.catalog.ComponentCatalogException;
+import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.builder.dataset.supplier.DatasetSupplier;
 import sparkengine.plan.runtime.builder.dataset.supplier.DatasetSupplierForComponentWithMultipleInput;
 import sparkengine.plan.runtime.builder.dataset.supplier.DatasetSupplierForComponentWithNoInput;
 import sparkengine.plan.runtime.builder.dataset.supplier.DatasetSupplierForComponentWithSingleInput;
+import sparkengine.plan.runtime.builder.dataset.utils.UdfContextFactory;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactory;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 
@@ -29,15 +31,19 @@ import java.util.stream.Stream;
 public class ComponentDatasetFactory implements DatasetFactory {
 
     @Nonnull
-    SparkSession sparkSession;
+    RuntimeContext runtimeContext;
     @Nonnull
     ComponentCatalog componentCatalog;
     @lombok.Builder.Default
     @With
     Map<String, Dataset> datasetCache = new HashMap<>();
 
-    public static ComponentDatasetFactory of(SparkSession sparkSession, ComponentCatalog catalog) {
-        return ComponentDatasetFactory.builder().sparkSession(sparkSession).componentCatalog(catalog).build();
+    public static ComponentDatasetFactory of(RuntimeContext runtimeContext,
+                                             ComponentCatalog catalog) {
+        return ComponentDatasetFactory.builder()
+                .runtimeContext(runtimeContext)
+                .componentCatalog(catalog)
+                .build();
     }
 
 
@@ -87,14 +93,14 @@ public class ComponentDatasetFactory implements DatasetFactory {
         DatasetSupplier<T> datasetSupplier = null;
         if (component instanceof ComponentWithNoInput) {
             datasetSupplier = DatasetSupplierForComponentWithNoInput.<T>builder()
-                    .sparkSession(sparkSession)
+                    .runtimeContext(runtimeContext)
                     .componentWithNoInput((ComponentWithNoInput) component)
                     .build();
         } else if (component instanceof ComponentWithSingleInput) {
             var componentWithSingleInput = (ComponentWithSingleInput) component;
             var inputDataset = getParentDataset(componentWithSingleInput.getUsing(), appendToPath(name, childrenPath));
             datasetSupplier = DatasetSupplierForComponentWithSingleInput.<T>builder()
-                    .sparkSession(sparkSession)
+                    .runtimeContext(runtimeContext)
                     .componentWithSingleInput(componentWithSingleInput)
                     .inputDataset(inputDataset)
                     .build();
@@ -102,7 +108,7 @@ public class ComponentDatasetFactory implements DatasetFactory {
             var multiInputComponent = (ComponentWithMultipleInputs) component;
             var inputDatasets = getParentDatasets(multiInputComponent.getUsing(), appendToPath(name, childrenPath));
             datasetSupplier = DatasetSupplierForComponentWithMultipleInput.<T>builder()
-                    .sparkSession(sparkSession)
+                    .runtimeContext(runtimeContext)
                     .componentWithMultipleInputs(multiInputComponent)
                     .inputDatasets(inputDatasets)
                     .build();

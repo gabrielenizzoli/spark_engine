@@ -12,9 +12,7 @@ import javax.annotation.Nullable;
 @Builder
 public class ShowConsumer<T> implements DatasetConsumer<T> {
 
-    @Nonnull
     int count;
-    @Nullable
     int truncate;
 
     @Override

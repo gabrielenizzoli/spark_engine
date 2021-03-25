@@ -151,7 +151,7 @@ class ScriptUDF2<T1, T2, R> implements UDF2<T1, T2, R>, UdfWithContext {
     @Override
     public R call(T1 o1, T2 o2) throws Exception {
         try {
-            return (R) ((Function2<T1, T2, R>) ScriptEngine.evaluate(code, udfContext == null ? Option.empty() : Option.apply(udfContext))).apply(o1, o2);
+            return (R) ((Function2<T1, T2, R>) ScriptEngine.evaluate(code, udfContext == null ? Option.empty() : Option.apply(udfContext.getValue()))).apply(o1, o2);
         } catch (ToolBoxError e) {
             throw new Exception("compilation error in scala code", e);
         }

@@ -3,6 +3,7 @@ package sparkengine.plan.runtime.builder.datasetconsumer;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.junit.jupiter.api.Test;
+import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.builder.TestCatalog;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactoryException;
@@ -18,7 +19,7 @@ class SinkDatasetConsumerFactoryWithYamlCatalogTest extends SparkSessionManager 
 
         // given
         var ds = (Dataset) sparkSession.readStream().format("rate").load();
-        var factory = SinkDatasetConsumerFactory.of(TestCatalog.getSinkCatalog("testStreamForeachCatalog"));
+        var factory = SinkDatasetConsumerFactory.of(RuntimeContext.init(sparkSession), TestCatalog.getSinkCatalog("testStreamForeachCatalog"));
 
         // when
         GlobalCounterConsumer.COUNTER.clear();

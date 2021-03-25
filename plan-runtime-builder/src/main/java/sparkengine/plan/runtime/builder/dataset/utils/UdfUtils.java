@@ -3,10 +3,12 @@ package sparkengine.plan.runtime.builder.dataset.utils;
 import org.apache.spark.broadcast.Broadcast;
 import sparkengine.plan.model.udf.*;
 import sparkengine.plan.model.udf.UdfWithScalaScript;
+import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.sql.logicalplan.functionresolver.Function;
 import sparkengine.spark.sql.udf.*;
 import sparkengine.spark.sql.udf.context.UdfContext;
+import sparkengine.spark.utils.SparkUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -15,7 +17,7 @@ import java.util.*;
 
 public class UdfUtils {
 
-    public static Collection<Function> buildSqlFunctionCollection(@Nullable UdfLibrary udfLibrary)
+    public static Collection<Function> buildSqlFunctionCollection(@Nullable UdfLibrary udfLibrary, @Nonnull RuntimeContext runtimeContext)
             throws DatasetFactoryException {
         if (udfLibrary == null) {
             return null;
@@ -26,13 +28,13 @@ public class UdfUtils {
                 if (udf instanceof UdfWithClassName) {
                     var udfWithClassName = (UdfWithClassName)udf;
                     var sqlFunction = getUdfWithClassNameFunction(udfWithClassName);
-                    var broadcastUdfContext = getUdfContextBroadcast(udfWithClassName.getAccumulators());
+                    var broadcastUdfContext = runtimeContext.buildBroadcastUdfContext(udfWithClassName.getAccumulators());
                     functions.add(Function.of(sqlFunction, broadcastUdfContext));
                 } else if (udf instanceof UdfWithScalaScript) {
                     try {
                         var udfWithScala = (UdfWithScalaScript)udf;
                         var sqlFunction = getUdfWithScalaFunction(udfWithScala);
-                        var broadcastUdfContext = getUdfContextBroadcast(udfWithScala.getAccumulators());
+                        var broadcastUdfContext = runtimeContext.buildBroadcastUdfContext(udfWithScala.getAccumulators());
                         functions.add(Function.of(sqlFunction, broadcastUdfContext));
                     } catch (UdfCompilationException e) {
                         throw new DatasetFactoryException(String.format("scala udf [%s] can't be compiled", udf), e);
@@ -45,13 +47,6 @@ public class UdfUtils {
         }
         throw new DatasetFactoryException(String.format("udf library [%s] not managed", udfLibrary));
 
-    }
-
-    @Nullable
-    private static Broadcast<UdfContext> getUdfContextBroadcast(Map<String, String> accumulatorNamesRemap) {
-        return GlobalUdfContextFactory.get()
-                .map(fct -> fct.buildBroadcastUdfContext(accumulatorNamesRemap))
-                .orElse(null);
     }
 
     @Nonnull

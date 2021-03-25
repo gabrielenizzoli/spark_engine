@@ -10,8 +10,10 @@ import sparkengine.plan.model.component.ComponentWithMultipleInputs;
 import sparkengine.plan.model.component.ComponentWithSingleInput;
 import sparkengine.plan.model.component.catalog.ComponentCatalog;
 import sparkengine.plan.model.component.impl.*;
+import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.builder.dataset.ComponentDatasetFactory;
 import sparkengine.plan.runtime.builder.dataset.utils.EncoderUtils;
+import sparkengine.plan.runtime.builder.dataset.utils.UdfContextFactory;
 import sparkengine.plan.runtime.builder.dataset.utils.UdfUtils;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.transformation.DataTransformationN;
@@ -30,7 +32,7 @@ import java.util.stream.IntStream;
 public class DatasetSupplierForComponentWithMultipleInput<T> implements DatasetSupplier<T> {
 
     @Nonnull
-    SparkSession sparkSession;
+    RuntimeContext runtimeContext;
     @Nonnull
     ComponentWithMultipleInputs componentWithMultipleInputs;
     @Nonnull
@@ -68,7 +70,7 @@ public class DatasetSupplierForComponentWithMultipleInput<T> implements DatasetS
         var datasetCache = Optional.ofNullable(fragmentComponent.getUsing())
                 .map(names -> IntStream.range(0, names.size()).boxed().collect(Collectors.toMap(names::get, inputDatasets::get)))
                 .orElse(Map.of());
-        var factory = ComponentDatasetFactory.of(sparkSession, componentCatalog).withDatasetCache(datasetCache);
+        var factory = ComponentDatasetFactory.of(runtimeContext, componentCatalog).withDatasetCache(datasetCache);
         return factory.buildDataset(fragmentComponent.getProviding());
     }
 
@@ -94,16 +96,16 @@ public class DatasetSupplierForComponentWithMultipleInput<T> implements DatasetS
                 .orElse(Map.of());
 
         var componentCatalog = ComponentCatalog.ofMap(Map.of("wrappedComponent", innerComponent));
-        var factory = ComponentDatasetFactory.of(sparkSession, componentCatalog).withDatasetCache(datasetCache);
+        var factory = ComponentDatasetFactory.of(runtimeContext, componentCatalog).withDatasetCache(datasetCache);
         return factory.<T>buildDataset("wrappedComponent");
     }
 
     private Dataset<T> getSqlDataset(SqlComponent sqlComponent) throws DatasetFactoryException {
-        var sqlFunctions = UdfUtils.buildSqlFunctionCollection(sqlComponent.getUdfs());
+        var sqlFunctions = UdfUtils.buildSqlFunctionCollection(sqlComponent.getUdfs(), runtimeContext);
         var rowEncoder = Transformations.encodeAsRow();
         var parentDf = inputDatasets.stream().map(ds -> (Dataset<Object>) ds).map(rowEncoder::apply).collect(Collectors.toList());
 
-        var tx = Transformations.sql(sparkSession, sqlComponent.getUsing(), sqlComponent.getSql(), sqlFunctions);
+        var tx = Transformations.sql(runtimeContext.getSparkSession(), sqlComponent.getUsing(), sqlComponent.getSql(), sqlFunctions);
         if (sqlComponent.getEncodedAs() != null) {
             var encode = EncoderUtils.buildEncoder(sqlComponent.getEncodedAs());
             tx = tx.andThenEncode(encode);

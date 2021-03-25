@@ -7,6 +7,7 @@ import sparkengine.plan.model.sink.SinkWithNoRuntime;
 import sparkengine.plan.model.sink.catalog.SinkCatalog;
 import sparkengine.plan.model.sink.catalog.SinkCatalogException;
 import sparkengine.plan.model.sink.impl.*;
+import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumer;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactory;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerFactoryException;
@@ -18,10 +19,12 @@ import javax.annotation.Nonnull;
 public class SinkDatasetConsumerFactory implements DatasetConsumerFactory {
 
     @Nonnull
+    RuntimeContext runtimeContext;
+    @Nonnull
     SinkCatalog sinkCatalog;
 
-    public static SinkDatasetConsumerFactory of(SinkCatalog catalog) {
-        return SinkDatasetConsumerFactory.builder().sinkCatalog(catalog).build();
+    public static SinkDatasetConsumerFactory of(RuntimeContext runtimeContext, SinkCatalog catalog) {
+        return SinkDatasetConsumerFactory.builder().runtimeContext(runtimeContext).sinkCatalog(catalog).build();
     }
 
     @Override
@@ -80,6 +83,7 @@ public class SinkDatasetConsumerFactory implements DatasetConsumerFactory {
         if (sink instanceof ForeachSink) {
             var foreach = (ForeachSink)sink;
             return ForeachConsumer.<T>builder()
+                    .runtimeContext(runtimeContext)
                     .batchComponentName(foreach.getBatchComponentName())
                     .formatter(WriterFormatter.getStreamFormatter(foreach))
                     .plan(foreach.getPlan()).build();
