@@ -52,7 +52,7 @@
         <java.version>11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <generated.package.folder>javadoc-sources</generated.package.folder>
+        <generated.javadocsources.folder>javadoc-sources</generated.javadocsources.folder>
 
         <!-- packages -->
         <jsr305.version>3.0.2</jsr305.version>
@@ -192,7 +192,7 @@
                     <version>4.4.0</version>
                     <configuration>
                         <args>
-                            <arg>-P:genjavadoc:out=${project.build.directory}/${generated.package.folder}</arg>
+                            <arg>-P:genjavadoc:out=${project.build.directory}/${generated.javadocsources.folder}</arg>
                         </args>
                         <compilerPlugins>
                             <compilerPlugin>
@@ -304,7 +304,7 @@
                 <configuration>
                     <detail>false</detail>
                     <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
-                    <outputDirectory>${project.build.directory}/${generated.package.folder}</outputDirectory>
+                    <outputDirectory>${project.build.directory}/${generated.javadocsources.folder}</outputDirectory>
                 </configuration>
             </plugin>
             <plugin>
@@ -323,7 +323,7 @@
                     <detail>false</detail>
                     <failOnError>true</failOnError>
                     <failOnWarnings>false</failOnWarnings>
-                    <sourcepath>${project.build.directory}/${generated.package.folder}</sourcepath>
+                    <sourcepath>${project.build.directory}/${generated.javadocsources.folder}</sourcepath>
                 </configuration>
             </plugin>
             <plugin>

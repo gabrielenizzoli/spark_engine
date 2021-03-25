@@ -41,7 +41,7 @@ public class ComponentsMapper {
             Object returnedComponent = mapper.invoke(componentMapper, location, component);
             return (Component) returnedComponent;
         } catch (SecurityException | NoSuchMethodException t) {
-            throw new SinksMapper.InternalMapperError("unmanaged " + component.componentTypeName() + " component", t);
+            throw new InternalMapperError("unmanaged " + component.componentTypeName() + " component", t);
         } catch (Exception t) {
             throw new InternalMapperError("issue resolving " + component.componentTypeName() + " component in location " + location, t);
         }

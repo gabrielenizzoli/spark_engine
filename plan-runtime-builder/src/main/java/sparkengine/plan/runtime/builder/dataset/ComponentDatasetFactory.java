@@ -117,15 +117,12 @@ public class ComponentDatasetFactory implements DatasetFactory {
         return ds;
     }
 
-    private Dataset getParentDataset(@Nonnull String parentName, @Nonnull List<String> childrenPath) throws DatasetFactoryException {
-        return buildDataset(parentName, childrenPath);
-    }
-
     @Nonnull
     private List<Dataset> getParentDatasets(@Nullable List<String> parentNames, List<String> childrenPath) throws DatasetFactoryException {
         if (parentNames == null) {
             parentNames = List.of();
         }
+
         // TODO: fail if name repeated twice
         // TODO: validate names (non empty, not trimmable)
         var parentDs = new ArrayList<Dataset>(parentNames.size());
@@ -133,6 +130,10 @@ public class ComponentDatasetFactory implements DatasetFactory {
             parentDs.add(getParentDataset(parentName, childrenPath));
         }
         return parentDs;
+    }
+
+    private Dataset getParentDataset(@Nonnull String parentName, @Nonnull List<String> childrenPath) throws DatasetFactoryException {
+        return buildDataset(parentName, childrenPath);
     }
 
     @Nonnull

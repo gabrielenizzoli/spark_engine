@@ -3,6 +3,8 @@ package sparkengine.spark.sql.logicalplan.functionresolver;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.catalyst.analysis.FunctionRegistry;
 import org.apache.spark.sql.catalyst.analysis.UnresolvedFunction;
 import org.apache.spark.sql.catalyst.expressions.Expression;
@@ -12,8 +14,7 @@ import sparkengine.spark.sql.logicalplan.ExpressionMapper;
 import sparkengine.spark.sql.logicalplan.LogicalPlanMapper;
 import sparkengine.spark.sql.logicalplan.PlanMapperException;
 import sparkengine.spark.sql.udf.SqlFunction;
-import sparkengine.spark.sql.udf.UdafDefinition;
-import sparkengine.spark.sql.udf.UdfDefinition;
+import sparkengine.spark.sql.udf.context.GlobalUdfContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,44 +32,30 @@ public class FunctionResolver implements LogicalPlanMapper {
 
     public static class Builder {
 
-        public Builder udf(@Nullable UdfDefinition udfDefinition) {
-            if (udfDefinition == null)
-                return this;
-            return functionReplacer(udfDefinition.getName(), new UnresolvedUdfReplacer(udfDefinition));
-        }
-
-        public Builder udaf(@Nullable UdafDefinition udafDefinition) {
-            if (udafDefinition == null)
-                return this;
-            return functionReplacer(udafDefinition.getName(), new UnresolvedUdafReplacer(udafDefinition));
-        }
-
-        public Builder sqlFunction(@Nullable SqlFunction sqlFunction) {
+        public Builder sqlFunction(@Nonnull SparkSession sparkSession, @Nullable SqlFunction sqlFunction) {
             if (sqlFunction == null)
                 return this;
-            if (sqlFunction instanceof UdfDefinition)
-                return udf((UdfDefinition) sqlFunction);
-            if (sqlFunction instanceof UdafDefinition)
-                return udaf((UdafDefinition) sqlFunction);
-            throw new IllegalArgumentException("Sql function provided in not a Udf or a Udaf function: " + sqlFunction.getClass().getName());
+            var udfContext = GlobalUdfContext.get().map(sqlFunction::initUdfContext);
+            var broadcastUdfContext = udfContext.map(ctx -> new JavaSparkContext(sparkSession.sparkContext()).broadcast(ctx)).orElse(null);
+            return functionReplacer(sqlFunction.getName(), sqlFunction.asFunctionReplacer(broadcastUdfContext));
         }
 
-        public Builder sqlFunctions(SqlFunction... sqlFunctions) {
+        public Builder sqlFunctions(@Nonnull SparkSession sparkSession, SqlFunction... sqlFunctions) {
             if (sqlFunctions != null)
-                Arrays.stream(sqlFunctions).forEach(this::sqlFunction);
+                Arrays.stream(sqlFunctions).forEach(sqlFunction -> this.sqlFunction(sparkSession, sqlFunction));
             return this;
         }
 
-        public Builder sqlFunctions(@Nullable Collection<SqlFunction> sqlFunctionCollection) {
+        public Builder sqlFunctions(@Nonnull SparkSession sparkSession, @Nullable Collection<SqlFunction> sqlFunctionCollection) {
             if (sqlFunctionCollection != null)
-                sqlFunctionCollection.forEach(this::sqlFunction);
+                sqlFunctionCollection.forEach(sqlFunction -> this.sqlFunction(sparkSession, sqlFunction));
             return this;
         }
 
     }
 
-    public static FunctionResolver with(SqlFunction... sqlFunctions) {
-        return builder().sqlFunctions(sqlFunctions).build();
+    public static FunctionResolver with(SparkSession sparkSession, SqlFunction... sqlFunctions) {
+        return builder().sqlFunctions(sparkSession, sqlFunctions).build();
     }
 
     @Override

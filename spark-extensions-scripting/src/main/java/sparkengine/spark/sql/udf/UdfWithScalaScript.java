@@ -8,6 +8,8 @@ import org.apache.spark.sql.types.DataType;
 import scala.*;
 import scala.tools.reflect.ToolBoxError;
 import sparkengine.scala.scripting.ScriptEngine;
+import sparkengine.spark.sql.udf.context.UdfContext;
+import sparkengine.spark.sql.udf.context.UdfWithContext;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Value;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
@@ -15,5 +17,7 @@ public class UdfWithScalaScript implements Udf {
     String name;
     @Nonnull
     String scala;
+    @Nullable
+    Map<String, String> accumulators;
 
 }

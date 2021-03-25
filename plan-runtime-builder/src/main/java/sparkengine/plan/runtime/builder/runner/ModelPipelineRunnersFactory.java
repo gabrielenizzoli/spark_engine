@@ -28,6 +28,11 @@ public class ModelPipelineRunnersFactory {
     public static PipelineRunnersFactory ofPlan(@Nonnull SparkSession sparkSession,
                                                 @Nonnull Plan plan,
                                                 @Nullable Map<String, Dataset> predefinedDatasets) {
+
+        // find all accumulators
+        // create udf context
+        // store udfcontext in global place
+
         return SimplePipelineRunnersFactory.builder()
                 .pipelineDefinitions(getPipelineDefinitions(plan))
                 .datasetFactory(getDatasetFactory(sparkSession, plan, predefinedDatasets))

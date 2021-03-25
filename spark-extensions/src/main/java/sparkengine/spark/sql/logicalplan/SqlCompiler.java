@@ -9,6 +9,7 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.catalyst.parser.ParseException;
 import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 import sparkengine.spark.sql.logicalplan.functionresolver.FunctionResolver;
+import sparkengine.spark.sql.logicalplan.functionresolver.UnresolvedFunctionReplacer;
 import sparkengine.spark.sql.logicalplan.tableresolver.Table;
 import sparkengine.spark.sql.logicalplan.tableresolver.TableResolver;
 import sparkengine.spark.sql.udf.SqlFunction;
@@ -39,18 +40,18 @@ public class SqlCompiler {
             return planMapper(TableResolver.builder().tables(tables).build());
         }
 
-        public Builder functionResolver(SqlFunction... sqlFunctions) {
-            return planMapper(FunctionResolver.builder().sqlFunctions(sqlFunctions).build());
+        public Builder functionResolver(SparkSession sparkSession, SqlFunction... sqlFunctions) {
+            return planMapper(FunctionResolver.builder().sqlFunctions(sparkSession, sqlFunctions).build());
         }
 
-        public Builder functionResolver(Collection<SqlFunction> sqlFunctions) {
-            return planMapper(FunctionResolver.builder().sqlFunctions(sqlFunctions).build());
+        public Builder functionResolver(SparkSession sparkSession, Collection<SqlFunction> sqlFunctions) {
+            return planMapper(FunctionResolver.builder().sqlFunctions(sparkSession, sqlFunctions).build());
         }
 
     }
 
     public static SqlCompiler emptyCompiler() {
-        return SqlCompiler.builder().tableResolver().functionResolver().build();
+        return SqlCompiler.builder().build();
     }
 
     /**
@@ -70,7 +71,7 @@ public class SqlCompiler {
         var sqlCompiler = SqlCompiler.builder()
                 .sparkSession(sparkSession)
                 .tableResolver(tables)
-                .functionResolver(sqlFunctions)
+                .functionResolver(sparkSession, sqlFunctions)
                 .build();
 
         return sqlCompiler.sql(sql);
