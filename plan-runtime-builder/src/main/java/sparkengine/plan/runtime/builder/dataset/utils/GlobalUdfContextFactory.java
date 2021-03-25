@@ -31,5 +31,8 @@ public class GlobalUdfContextFactory {
         return UDF_CONTEXT_FACTORY;
     }
 
+    public static synchronized void reset() {
+        UDF_CONTEXT_FACTORY = null;
+    }
 
 }
