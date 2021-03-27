@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = BatchSink.Builder.class)
+@JsonDeserialize(builder = BatchSink.BatchSinkBuilder.class)
 public class BatchSink implements SinkWithFormat {
 
     public static final String TYPE_NAME = "batch";

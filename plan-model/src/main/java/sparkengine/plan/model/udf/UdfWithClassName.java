@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = UdfWithClassName.Builder.class)
+@JsonDeserialize(builder = UdfWithClassName.UdfWithClassNameBuilder.class)
 public class UdfWithClassName implements Udf {
 
     @Nonnull

@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = BatchComponent.Builder.class)
+@JsonDeserialize(builder = BatchComponent.BatchComponentBuilder.class)
 public class BatchComponent implements ComponentWithNoInput, ComponentWithEncoder {
 
     public static final String TYPE_NAME = "batch";

@@ -4,12 +4,16 @@ import lombok.Builder;
 import lombok.SneakyThrows;
 import lombok.Value;
 import org.apache.log4j.Logger;
+import org.apache.spark.SparkEnv;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import sparkengine.plan.model.builder.ModelFactory;
 import sparkengine.plan.model.builder.ModelFormatException;
 import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.plan.mapper.PlanMapperException;
+import sparkengine.plan.model.plan.visitor.DefaultPlanVisitor;
+import sparkengine.plan.model.plan.visitor.PlanVisitorException;
+import sparkengine.plan.model.sink.visitor.SinkVisitorForComponents;
 import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.builder.runner.ModelPipelineRunnersFactory;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumerException;
@@ -37,9 +41,9 @@ public class PlanRunner {
     @lombok.Builder.Default
     Logger log = Logger.getLogger(PlanRunner.class);
 
-    public static class Builder {
+    public static class PlanRunnerBuilder {
 
-        public Builder planLocation(String planLocation) {
+        public PlanRunnerBuilder planLocation(String planLocation) {
             return this.planInfo(PlanInfo.planLocation(planLocation));
         }
 
@@ -48,18 +52,29 @@ public class PlanRunner {
     public void run() throws
             IOException, // can't read plan
             ModelFormatException, // plan is bad
+            PlanVisitorException, // can't crawl a plan (to find information)
             PlanMapperException, // can't resolve plan
             PipelineRunnersFactoryException, // error creating a pipeline
             DatasetConsumerException // error during a pipeline run
     {
-        Plan plan = getPlan();
-        PipelineRunnersFactory pipelineRunnersFactory = getPipelineRunnersFactory(plan);
+        var plan = getPlan();
+        var runtimeContext = RuntimeContext.init(sparkSession);
+        inspectPlan(plan, runtimeContext);
+        PipelineRunnersFactory pipelineRunnersFactory = getPipelineRunnersFactory(plan, runtimeContext);
         if (runtimeArgs.isSkipRun()) {
             log.warn("skip run");
         } else {
             executePipelines(pipelineRunnersFactory);
             waitOnSpark();
         }
+    }
+
+    private void inspectPlan(Plan plan, RuntimeContext runtimeContext) throws PlanVisitorException {
+        var udfAccumulatorsFinder = new UdfAccumulatorsFinder();
+        var visitor = DefaultPlanVisitor.builder().componentVisitor(udfAccumulatorsFinder).sinkVisitor(new SinkVisitorForComponents(udfAccumulatorsFinder)).build();
+        visitor.visit(plan);
+        udfAccumulatorsFinder.getAccumulatorNames().forEach(runtimeContext::getOrCreateAccumulator);
+        SparkEnv.get().metricsSystem().registerSource(MetricSource.buildWithDefaults().withRuntimeAccumulators(runtimeContext));
     }
 
     @Nonnull
@@ -71,8 +86,9 @@ public class PlanRunner {
         return resolvedPlan;
     }
 
-    private PipelineRunnersFactory getPipelineRunnersFactory(@Nonnull Plan plan) throws IOException, PlanMapperException, ModelFormatException {
-        return ModelPipelineRunnersFactory.ofPlan(RuntimeContext.init(sparkSession), plan);
+    private PipelineRunnersFactory getPipelineRunnersFactory(@Nonnull Plan plan, @Nonnull RuntimeContext runtimeContext)
+            throws IOException, PlanMapperException, ModelFormatException {
+        return ModelPipelineRunnersFactory.ofPlan(plan, runtimeContext);
     }
 
     private void writeResolvedPlan(Plan resolvedPlan) throws IOException, ModelFormatException {
@@ -89,7 +105,7 @@ public class PlanRunner {
         }
     }
 
-    private void executePipelines(PipelineRunnersFactory pipelineRunnersFactory)
+    private void executePipelines(@Nonnull PipelineRunnersFactory pipelineRunnersFactory)
             throws PipelineRunnersFactoryException, DatasetConsumerException {
 
         var pipelinesDeclared = pipelineRunnersFactory.getPipelineNames();

@@ -16,20 +16,20 @@ public interface Trigger {
 
     @Value
     @Builder(setterPrefix = "with")
-    @JsonDeserialize(builder = TriggerIntervalMs.Builder.class)
+    @JsonDeserialize(builder = TriggerIntervalMs.TriggerIntervalMsBuilder.class)
     class TriggerIntervalMs implements Trigger {
         long milliseconds;
     }
 
     @Value
     @Builder(setterPrefix = "with")
-    @JsonDeserialize(builder = TriggerOnce.Builder.class)
+    @JsonDeserialize(builder = TriggerOnce.TriggerOnceBuilder.class)
     class TriggerOnce implements Trigger {
     }
 
     @Value
     @Builder(setterPrefix = "with")
-    @JsonDeserialize(builder = TriggerContinuousMs.Builder.class)
+    @JsonDeserialize(builder = TriggerContinuousMs.TriggerContinuousMsBuilder.class)
     class TriggerContinuousMs implements Trigger {
         long milliseconds;
     }

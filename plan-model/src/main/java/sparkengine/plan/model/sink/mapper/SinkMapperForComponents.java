@@ -1,8 +1,9 @@
-package sparkengine.plan.model.plan.mapper;
+package sparkengine.plan.model.sink.mapper;
 
 import lombok.AllArgsConstructor;
 import sparkengine.plan.model.common.Location;
 import sparkengine.plan.model.component.mapper.ComponentMapper;
+import sparkengine.plan.model.plan.mapper.DefaultPlanMapper;
 import sparkengine.plan.model.sink.Sink;
 import sparkengine.plan.model.sink.impl.ForeachSink;
 import sparkengine.plan.model.sink.mapper.SinkMapper;

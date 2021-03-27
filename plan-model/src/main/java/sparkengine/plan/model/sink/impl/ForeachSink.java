@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = ForeachSink.Builder.class)
+@JsonDeserialize(builder = ForeachSink.ForeachSinkBuilder.class)
 public class ForeachSink implements SinkForStream {
 
     public static final String TYPE_NAME = "foreach";

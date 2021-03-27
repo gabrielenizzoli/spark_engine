@@ -7,7 +7,7 @@ import lombok.Value;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = Pipeline.Builder.class)
+@JsonDeserialize(builder = Pipeline.PipelineBuilder.class)
 public class Pipeline {
     String component;
     String sink;

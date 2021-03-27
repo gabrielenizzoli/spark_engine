@@ -15,7 +15,7 @@ import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = FragmentComponent.Builder.class)
+@JsonDeserialize(builder = FragmentComponent.FragmentComponentBuilder.class)
 public class FragmentComponent implements ComponentWithMultipleInputs, ComponentWithChildren {
 
     public static final String TYPE_NAME = "fragment";

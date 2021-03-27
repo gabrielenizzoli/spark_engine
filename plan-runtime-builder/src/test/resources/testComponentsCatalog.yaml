@@ -20,7 +20,7 @@ tx:
   udfs:
     list:
       - { className: sparkengine.plan.runtime.builder.TestStrUdf }
-      - { type: scala, name: testIntUdf, scala: "(a:Int, b:Int) => a+b" }
+      - { type: scala, name: testIntUdf, scala: "(a:Int, b:Int) => { env.acc(\"in\",1); a+b }", accumulators: { in: 'out' } }
   sql: >
     select
       testStrUdf(s1.abc.str, "p1") as str,

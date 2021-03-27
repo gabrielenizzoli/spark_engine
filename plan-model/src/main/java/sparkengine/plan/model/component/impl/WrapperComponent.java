@@ -14,7 +14,7 @@ import java.util.List;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = WrapperComponent.Builder.class)
+@JsonDeserialize(builder = WrapperComponent.WrapperComponentBuilder.class)
 public class WrapperComponent implements ComponentWithMultipleInputs, ComponentWithChild {
 
     public static final String TYPE_NAME = "wrapper";

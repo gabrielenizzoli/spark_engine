@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = CounterSink.Builder.class)
+@JsonDeserialize(builder = CounterSink.CounterSinkBuilder.class)
 public class CounterSink implements Sink {
 
     public static final String TYPE_NAME = "counter";

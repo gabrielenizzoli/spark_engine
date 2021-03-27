@@ -9,7 +9,7 @@ import java.util.List;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = UdfList.Builder.class)
+@JsonDeserialize(builder = UdfList.UdfListBuilder.class)
 public class UdfList implements UdfLibrary {
 
     @Nonnull

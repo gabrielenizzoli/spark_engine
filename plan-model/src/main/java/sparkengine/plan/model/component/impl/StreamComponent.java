@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = StreamComponent.Builder.class)
+@JsonDeserialize(builder = StreamComponent.StreamComponentBuilder.class)
 public class StreamComponent implements ComponentWithNoInput, ComponentWithEncoder {
 
     public static final String TYPE_NAME = "stream";

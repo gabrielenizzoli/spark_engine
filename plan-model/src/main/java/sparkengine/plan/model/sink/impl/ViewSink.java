@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = ViewSink.Builder.class)
+@JsonDeserialize(builder = ViewSink.ViewSinkBuilder.class)
 public class ViewSink implements Sink {
 
     public static final String TYPE_NAME = "view";

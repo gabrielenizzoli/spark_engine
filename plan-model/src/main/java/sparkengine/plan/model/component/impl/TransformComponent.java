@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = TransformComponent.Builder.class)
+@JsonDeserialize(builder = TransformComponent.TransformComponentBuilder.class)
 public class TransformComponent implements ComponentWithMultipleInputs {
 
     public static final String TYPE_NAME = "transform";
