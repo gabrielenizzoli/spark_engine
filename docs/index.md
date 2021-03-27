@@ -9,8 +9,6 @@ permalink: /
 # Focus on the data, not the boring parts
 {: .no_toc }
 
-{: .fs-9 }
-
 Spark Engine let you focus on writing effective data pipelines. Everything else (all the scaffolding, application wiring, metrics collection, validation, source and sink definitions, etc) is managed.
 {: .fs-6 .fw-300 }
 
