@@ -23,17 +23,4 @@ class CommandLineTest {
         Assertions.assertEquals(1, GlobalCounterConsumer.COUNTER.get("app").get());
     }
 
-    @Test
-    void testMain2() throws Throwable {
-
-        // given
-        System.setProperty("spark.master", "local");
-        //System.setProperty("spark.metrics.conf.*.sink.console.class", "org.apache.spark.metrics.sink.ConsoleSink");
-        var args = new String[]{"-p", "/home/gabe/code/github/spark_engine/examples/plans/quickStartPlan.yaml", "-l", "INFO"};
-
-        // when
-        Start.main(args);
-
-    }
-
 }

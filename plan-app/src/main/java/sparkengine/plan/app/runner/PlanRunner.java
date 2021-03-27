@@ -24,6 +24,7 @@ import javax.annotation.Nonnull;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.function.Consumer;
 
 @Value
@@ -49,6 +50,11 @@ public class PlanRunner {
 
     }
 
+    @Value
+    public static class PlanInspection {
+        Set<String> accumulatorNames;
+    }
+
     public void run() throws
             IOException, // can't read plan
             ModelFormatException, // plan is bad
@@ -59,7 +65,10 @@ public class PlanRunner {
     {
         var plan = getPlan();
         var runtimeContext = RuntimeContext.init(sparkSession);
-        inspectPlan(plan, runtimeContext);
+
+        var planInspection = inspectPlan(plan, runtimeContext);
+        registerMetrics(planInspection, runtimeContext);
+
         PipelineRunnersFactory pipelineRunnersFactory = getPipelineRunnersFactory(plan, runtimeContext);
         if (runtimeArgs.isSkipRun()) {
             log.warn("skip run");
@@ -69,14 +78,6 @@ public class PlanRunner {
         }
     }
 
-    private void inspectPlan(Plan plan, RuntimeContext runtimeContext) throws PlanVisitorException {
-        var udfAccumulatorsFinder = new UdfAccumulatorsFinder();
-        var visitor = DefaultPlanVisitor.builder().componentVisitor(udfAccumulatorsFinder).sinkVisitor(new SinkVisitorForComponents(udfAccumulatorsFinder)).build();
-        visitor.visit(plan);
-        udfAccumulatorsFinder.getAccumulatorNames().forEach(runtimeContext::getOrCreateAccumulator);
-        SparkEnv.get().metricsSystem().registerSource(MetricSource.buildWithDefaults().withRuntimeAccumulators(runtimeContext));
-    }
-
     @Nonnull
     private Plan getPlan() throws IOException, ModelFormatException, PlanMapperException {
         var sourcePlan = ModelFactory.readPlanFromYaml(planInfo.getPlanInputStreamFactory());
@@ -84,6 +85,19 @@ public class PlanRunner {
         var resolvedPlan = PlanResolver.of(planInfo.getPlanLocation(), runtimeArgs, sparkSession, log).map(sourcePlan);
         writeResolvedPlan(resolvedPlan);
         return resolvedPlan;
+    }
+
+    private PlanInspection inspectPlan(Plan plan, RuntimeContext runtimeContext) throws PlanVisitorException {
+        var udfAccumulatorsFinder = new UdfAccumulatorsFinder();
+        var visitor = DefaultPlanVisitor.builder().componentVisitor(udfAccumulatorsFinder).sinkVisitor(new SinkVisitorForComponents(udfAccumulatorsFinder)).build();
+        visitor.visit(plan);
+        var planInspection = new PlanInspection(udfAccumulatorsFinder.getAccumulatorNames());
+        return planInspection;
+    }
+
+    private void registerMetrics(PlanInspection planInspection, RuntimeContext runtimeContext) {
+        planInspection.getAccumulatorNames().forEach(runtimeContext::getOrCreateAccumulator);
+        SparkEnv.get().metricsSystem().registerSource(MetricSource.buildWithDefaults().withRuntimeAccumulators(runtimeContext));
     }
 
     private PipelineRunnersFactory getPipelineRunnersFactory(@Nonnull Plan plan, @Nonnull RuntimeContext runtimeContext)
