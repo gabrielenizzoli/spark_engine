@@ -18,7 +18,7 @@ public class MetricSource implements Source {
     String sourceName = "plan";
     @Nonnull
     @Builder.Default
-    String fallbackMetricName = "fallback";
+    String fallbackMetricName = "unknown";
     @Nonnull
     @Builder.Default
     MetricRegistry metricRegistry = new MetricRegistry();
