@@ -22,6 +22,7 @@ Inputs is a list of other components, that will be used as a list of predefined 
 ## Examples
 
 Yaml example:
+
 ```yaml
 source1:
   ...
@@ -46,6 +47,7 @@ sqlComponent:
 ```
 
 It is also possible to have a sql generating data, without shaving to use any input component. In the following example the sql statements generates 2 rows:
+
 ```yaml
 sqlComponentThatGeneratesData:
   type: sql
@@ -69,7 +71,7 @@ sqlComponent:
   sql: select testIntUdf(value) from source
   udfs:
     list:
-      - { className: sparkengine.plan.runtime.builder.dataset.TestIntUdf }
+      - className: sparkengine.plan.runtime.builder.dataset.TestIntUdf
 ```
 
 ### Java UDF/UDAF
@@ -83,9 +85,10 @@ Fields:
 | ----- | -------- | -------------- |
 | `type` | no | If not provided, defaults to `java` |
 | `className` | yes | The java class that implements the udf. |
-| `accumulators` | no | A mapping between how an accumulator is used internally and how it is named globally. | 
+| `accumulators` | no | A mapping between how an accumulator is used internally and how it is named globally. |  
 
 A udf in Java may look like this:
+
 ```java
 package my.pack.name;
 
@@ -118,6 +121,7 @@ public class TestIntUdf implements UdfDefinition {
 ```
 
 Yaml example:
+
 ```yaml
 sqlComponent:
   type: sql
@@ -133,6 +137,7 @@ sqlComponent:
 
 A quicker way to provide an udf is to script it in java.
 An example is:
+
 ```yaml
 sqlComponent:
   sql: select testIntUdf(value) from source
@@ -159,13 +164,15 @@ An udf that implements `sparkengine.spark.sql.udf.UdfWithContext` will receive t
 
 In the context, accumulators are available using the `acc` method as follows: `acc(<accumulator name>, <increment value>)`.
 In this method call:
-* `<accumulator name>`: name of the accumulator
-* `<increment value>`: how much the accumulator should be incremented, dsecremented
 
-Note that the accumulator name used internally in the udf is not the global name of the accumulator. 
+* `<accumulator name>`: name of the accumulator
+* `<increment value>`: how much the accumulator should be incremented
+
+Note that the accumulator name used internally in the udf is not the global name of the accumulator.
 This mapping is specified in the `accumulators` map of the udf definition.
 This way the same udf can be used in multiple places, and the global accumulator name reported to  the metric system may be different.
-As an example, in the following the named used in the udf is `internal.name`, but for metric reporting purpose the name is `global.name`: 
+As an example, in the following the named used in the udf is `internal.name`, but for metric reporting purpose the name is `global.name`:
+
 ```yaml
 sqlComponent:
   sql: select testIntUdf(value) from source
@@ -178,4 +185,4 @@ sqlComponent:
           (in:Int) => { ctx.acc("internal.name", 1); in*2 }
 ```
 
-NOTE: if an accumulator name that is not mapped is incremented, a generic fallback accumulator will be used to collect the increment. 
+NOTE: if an accumulator name that is not mapped is incremented, a generic fallback accumulator will be used to collect the increment.
