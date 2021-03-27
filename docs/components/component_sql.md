@@ -5,17 +5,15 @@ nav_order: 7
 ---
 
 # Sql Component
-
 {: .no_toc }
 
 The sql component defines a sql transformation on a possible set of inputs.
 {: .fs-6 }
 
 ## Table of contents
-
 {: .no_toc .text-delta }
 
-1. TOC
+- TOC
 {:toc}
 
 ---
