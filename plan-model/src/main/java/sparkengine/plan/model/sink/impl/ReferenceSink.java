@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = ReferenceSink.Builder.class)
+@JsonDeserialize(builder = ReferenceSink.ReferenceSinkBuilder.class)
 public class ReferenceSink implements Sink, Reference {
 
     public static final String TYPE_NAME = "ref";

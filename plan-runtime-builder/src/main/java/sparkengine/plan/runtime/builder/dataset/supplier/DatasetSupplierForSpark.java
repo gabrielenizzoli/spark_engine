@@ -35,33 +35,33 @@ public class DatasetSupplierForSpark<T> implements DatasetSupplier<T> {
     @Nullable
     StructType schema;
 
-    public static class Builder<T> {
+    public static class DatasetSupplierForSparkBuilder<T> {
 
-        public Builder<T> stream() {
+        public DatasetSupplierForSparkBuilder<T> stream() {
             return type(SourceType.STREAM);
         }
 
-        public Builder<T> batch() {
+        public DatasetSupplierForSparkBuilder<T> batch() {
             return type(SourceType.BATCH);
         }
 
-        public Builder<Row> row() {
-            return (Builder<Row>) this;
+        public DatasetSupplierForSparkBuilder<Row> row() {
+            return (DatasetSupplierForSparkBuilder<Row>) this;
         }
 
-        public Builder<String> text(String path) {
-            return ((Builder<String>) this).format("text").encoder(Encoders.STRING()).path(path);
+        public DatasetSupplierForSparkBuilder<String> text(String path) {
+            return ((DatasetSupplierForSparkBuilder<String>) this).format("text").encoder(Encoders.STRING()).path(path);
         }
 
-        public Builder<Row> parquet(String path) {
+        public DatasetSupplierForSparkBuilder<Row> parquet(String path) {
             return row().format("parquet").path(path);
         }
 
-        public Builder<Row> json(String path) {
+        public DatasetSupplierForSparkBuilder<Row> json(String path) {
             return row().format("json").path(path);
         }
 
-        public Builder<T> path(String path) {
+        public DatasetSupplierForSparkBuilder<T> path(String path) {
             return option("path", path);
         }
 

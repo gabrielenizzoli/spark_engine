@@ -14,7 +14,7 @@ import java.util.List;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = SqlComponent.Builder.class)
+@JsonDeserialize(builder = SqlComponent.SqlComponentBuilder.class)
 public class SqlComponent implements ComponentWithMultipleInputs {
 
     public static final String TYPE_NAME = "sql";

@@ -11,7 +11,7 @@ import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = StreamSink.Builder.class)
+@JsonDeserialize(builder = StreamSink.StreamSinkBuilder.class)
 public class StreamSink implements SinkForStream {
 
     public static final String TYPE_NAME = "stream";

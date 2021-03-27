@@ -11,7 +11,7 @@ import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with", toBuilder = true)
-@JsonDeserialize(builder = Plan.Builder.class)
+@JsonDeserialize(builder = Plan.PlanBuilder.class)
 public class Plan {
 
     @With

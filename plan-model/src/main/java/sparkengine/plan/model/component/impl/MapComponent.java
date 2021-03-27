@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = MapComponent.Builder.class)
+@JsonDeserialize(builder = MapComponent.MapComponentBuilder.class)
 public class MapComponent implements ComponentWithSingleInput {
 
     public static final String TYPE_NAME = "map";

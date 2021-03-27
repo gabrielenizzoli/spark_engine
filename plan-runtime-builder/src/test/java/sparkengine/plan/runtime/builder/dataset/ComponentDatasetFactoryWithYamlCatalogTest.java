@@ -11,6 +11,7 @@ import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.builder.TestCatalog;
 import sparkengine.plan.runtime.builder.dataset.utils.UdfContextFactory;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
+import sparkengine.spark.sql.udf.context.UdfContext;
 import sparkengine.spark.test.SparkSessionManager;
 
 import java.util.Arrays;

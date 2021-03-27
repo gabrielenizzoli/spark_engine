@@ -6,18 +6,7 @@ import java.util.Map;
 
 public interface UdfContext extends Serializable {
 
-    UdfContext EMPTY_UDF_CONTEXT = new UdfContext() {
-
-        @Override
-        public void acc(String name, long value) {
-        }
-
-        @Override
-        public String toString() {
-            return "EMPTY";
-        }
-
-    };
+    UdfContext EMPTY_UDF_CONTEXT = new EmptyUdfContext();
 
     /**
      * Increase the accumulator value.

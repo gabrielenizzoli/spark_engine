@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = InlineComponent.Builder.class)
+@JsonDeserialize(builder = InlineComponent.InlineComponentBuilder.class)
 public class InlineComponent implements ComponentWithNoInput, ComponentWithSchema {
 
     public static final String TYPE_NAME = "inline";

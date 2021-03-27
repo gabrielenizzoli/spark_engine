@@ -17,7 +17,8 @@ import java.util.*;
 
 public class UdfUtils {
 
-    public static Collection<Function> buildSqlFunctionCollection(@Nullable UdfLibrary udfLibrary, @Nonnull RuntimeContext runtimeContext)
+    public static Collection<Function> buildSqlFunctionCollection(@Nullable UdfLibrary udfLibrary,
+                                                                  @Nonnull RuntimeContext runtimeContext)
             throws DatasetFactoryException {
         if (udfLibrary == null) {
             return null;

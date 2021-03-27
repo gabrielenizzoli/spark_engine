@@ -10,7 +10,7 @@ import java.util.List;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = UnionComponent.Builder.class)
+@JsonDeserialize(builder = UnionComponent.UnionComponentBuilder.class)
 public class UnionComponent implements ComponentWithMultipleInputs {
 
     public static final String TYPE_NAME = "union";

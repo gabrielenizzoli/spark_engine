@@ -9,7 +9,7 @@ import java.util.List;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = TupleEncoder.Builder.class)
+@JsonDeserialize(builder = TupleEncoder.TupleEncoderBuilder.class)
 public class TupleEncoder implements DataEncoder {
 
     @Nonnull

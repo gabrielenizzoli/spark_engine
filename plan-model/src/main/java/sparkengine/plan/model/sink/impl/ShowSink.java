@@ -7,7 +7,7 @@ import sparkengine.plan.model.sink.Sink;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = ShowSink.Builder.class)
+@JsonDeserialize(builder = ShowSink.ShowSinkBuilder.class)
 public class ShowSink implements Sink {
 
     public static final String TYPE_NAME = "show";

@@ -4,13 +4,14 @@ import org.apache.spark.sql.expressions.SparkUserDefinedFunction;
 import scala.*;
 import scala.tools.reflect.ToolBoxError;
 import sparkengine.scala.scripting.ScriptEngine;
+import sparkengine.spark.sql.udf.context.UdfContext;
 
 public class ScalaUdfCompiler {
 
     public static UdfDefinition compile(String name, String code) throws UdfCompilationException {
         try {
             var udfCode = String.format("org.apache.spark.sql.functions.udf({\n%s\n})", code);
-            var sparkUdf = (SparkUserDefinedFunction)ScriptEngine.evaluate(udfCode, Option.empty());
+            var sparkUdf = (SparkUserDefinedFunction)ScriptEngine.evaluate(udfCode, Option.apply(UdfContext.EMPTY_UDF_CONTEXT), Option.apply(UdfContext.class.getName()));
             var returnType = sparkUdf.dataType();
             int numberOfInputParameters = getNumberOfInputParameters(sparkUdf);
             return new UdfWithScalaScript(name, code, numberOfInputParameters, returnType);

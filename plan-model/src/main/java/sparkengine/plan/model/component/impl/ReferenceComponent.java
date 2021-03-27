@@ -13,7 +13,7 @@ import java.util.List;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = ReferenceComponent.Builder.class)
+@JsonDeserialize(builder = ReferenceComponent.ReferenceComponentBuilder.class)
 public class ReferenceComponent implements ComponentWithMultipleInputs, ComponentWithNoRuntime, Reference {
 
     public static final String TYPE_NAME = "ref";

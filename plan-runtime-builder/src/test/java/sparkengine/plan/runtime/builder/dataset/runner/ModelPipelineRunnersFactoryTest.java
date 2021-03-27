@@ -19,7 +19,7 @@ class ModelPipelineRunnersFactoryTest extends SparkSessionManager {
     void runWithYamlCatalogs() throws IOException, DatasetConsumerException, PipelineRunnersFactoryException {
 
         // given
-        var planFactory = ModelPipelineRunnersFactory.ofPlan(RuntimeContext.init(sparkSession), TestCatalog.getPlan("testPlan"));
+        var planFactory = ModelPipelineRunnersFactory.ofPlan(TestCatalog.getPlan("testPlan"), RuntimeContext.init(sparkSession));
 
         // then
         Assertions.assertEquals(1, planFactory.getPipelineNames().size());

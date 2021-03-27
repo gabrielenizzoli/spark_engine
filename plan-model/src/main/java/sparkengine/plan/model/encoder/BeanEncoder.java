@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = BeanEncoder.Builder.class)
+@JsonDeserialize(builder = BeanEncoder.BeanEncoderBuilder.class)
 public class BeanEncoder implements DataEncoder {
 
     @Nonnull

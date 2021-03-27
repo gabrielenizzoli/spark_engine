@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = EmptyComponent.Builder.class)
+@JsonDeserialize(builder = EmptyComponent.EmptyComponentBuilder.class)
 public class EmptyComponent implements ComponentWithNoInput, ComponentWithEncoder {
 
     public static final String TYPE_NAME = "empty";

@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = UdfWithScalaScript.Builder.class)
+@JsonDeserialize(builder = UdfWithScalaScript.UdfWithScalaScriptBuilder.class)
 public class UdfWithScalaScript implements Udf {
 
     @Nonnull

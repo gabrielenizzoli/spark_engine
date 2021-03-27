@@ -10,15 +10,15 @@ import java.io.InputStream;
 import java.util.Optional;
 
 @Value(staticConstructor = "of")
-public class PlanInfo {
+public class PlanDefinition {
 
     @Nullable
     InputStream planInputStream;
     @Nonnull
     String planLocation;
 
-    public static PlanInfo planLocation(String planLocation) {
-        return PlanInfo.of(null, planLocation);
+    public static PlanDefinition planLocation(String planLocation) {
+        return PlanDefinition.of(null, planLocation);
     }
 
     public InputStreamFactory getPlanInputStreamFactory() {

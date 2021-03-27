@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 import org.apache.log4j.Logger;
 import org.apache.spark.sql.SparkSession;
-import sparkengine.plan.app.runner.PlanInfo;
+import sparkengine.plan.app.runner.PlanDefinition;
 import sparkengine.plan.app.runner.PlanRunner;
 import sparkengine.plan.app.runner.RuntimeArgs;
 
@@ -34,12 +34,12 @@ public class Starter {
 
         try (var sparkSessionHolder = initializeSpark()) {
 
-            PlanInfo planInfo = getPlanInfo();
+            PlanDefinition planDefinition = getPlanInfo();
 
             PlanRunner.builder()
                     .log(log)
                     .sparkSession(sparkSessionHolder.getSparkSession())
-                    .planInfo(planInfo)
+                    .planDefinition(planDefinition)
                     .runtimeArgs(runtimeArgs)
                     .build()
                     .run();
@@ -58,13 +58,13 @@ public class Starter {
     }
 
     @Nonnull
-    private PlanInfo getPlanInfo() {
+    private PlanDefinition getPlanInfo() {
         var planLocationFallback = new File(new File(System.getProperty("user.dir")).getAbsolutePath(), "plan.yaml").getAbsolutePath();
 
         return Optional
                 .ofNullable(applicationArgs.getPlanLocation())
-                .map(PlanInfo::planLocation)
-                .orElse(PlanInfo.of(System.in, planLocationFallback));
+                .map(PlanDefinition::planLocation)
+                .orElse(PlanDefinition.of(System.in, planLocationFallback));
     }
 
     @Value

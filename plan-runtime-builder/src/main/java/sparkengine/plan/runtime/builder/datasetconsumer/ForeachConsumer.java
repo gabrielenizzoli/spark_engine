@@ -39,7 +39,7 @@ public class ForeachConsumer<T> implements DatasetConsumer<T> {
             var batchDataset = plan.getPipelines().size() > 1 ? ds.persist() : ds;
 
             try {
-                var planFactory = ModelPipelineRunnersFactory.ofPlan(runtimeContext, plan, Map.of(batchComponentName, (Dataset<Object>)ds));
+                var planFactory = ModelPipelineRunnersFactory.ofPlan(plan, runtimeContext, Map.of(batchComponentName, (Dataset<Object>)ds));
                 for (var pipelineName : planFactory.getPipelineNames()) {
                     planFactory.buildPipelineRunner(pipelineName).run();
                 }

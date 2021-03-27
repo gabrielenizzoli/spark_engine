@@ -2,7 +2,7 @@ package sparkengine.plan.model.mapper.sql;
 
 import sparkengine.plan.model.plan.mapper.DefaultPlanMapper;
 import sparkengine.plan.model.plan.mapper.PlanMapper;
-import sparkengine.plan.model.plan.mapper.SinkMapperForComponents;
+import sparkengine.plan.model.sink.mapper.SinkMapperForComponents;
 
 public class SqlPlanMapper {
 

@@ -21,17 +21,17 @@ import java.util.stream.Collectors;
 
 public class ModelPipelineRunnersFactory {
 
-    public static PipelineRunnersFactory ofPlan(RuntimeContext runtimeContext, Plan plan) {
-        return ofPlan(runtimeContext, plan, null);
+    public static PipelineRunnersFactory ofPlan(Plan plan, RuntimeContext runtimeContext) {
+        return ofPlan(plan, runtimeContext, null);
     }
 
-    public static PipelineRunnersFactory ofPlan(@Nonnull RuntimeContext runtimeContext,
-                                                @Nonnull Plan plan,
+    public static PipelineRunnersFactory ofPlan(@Nonnull Plan plan,
+                                                @Nonnull RuntimeContext runtimeContext,
                                                 @Nullable Map<String, Dataset> predefinedDatasets) {
 
         return SimplePipelineRunnersFactory.builder()
                 .pipelineDefinitions(getPipelineDefinitions(plan))
-                .datasetFactory(getDatasetFactory(runtimeContext, plan, predefinedDatasets))
+                .datasetFactory(getDatasetFactory(plan, runtimeContext, predefinedDatasets))
                 .datasetConsumerFactory(getConsumerFactory(runtimeContext, plan))
                 .build();
     }
@@ -46,8 +46,8 @@ public class ModelPipelineRunnersFactory {
                         e -> SimplePipelineRunnersFactory.PipelineDefinition.of(e.getValue().getComponent(), e.getValue().getSink())));
     }
 
-    private static DatasetFactory getDatasetFactory(@Nonnull RuntimeContext runtimeContext,
-                                                    @Nonnull Plan plan,
+    private static DatasetFactory getDatasetFactory(@Nonnull Plan plan,
+                                                    @Nonnull RuntimeContext runtimeContext,
                                                     @Nullable Map<String, Dataset> predefinedDatasets) {
         var componentCatalog = ComponentCatalog.ofMap(plan.getComponents());
         var datasetFactory = ComponentDatasetFactory.of(runtimeContext, componentCatalog);
