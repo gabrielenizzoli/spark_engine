@@ -81,6 +81,7 @@ These function should extend the `dataengine.spark.sql.udf.SqlFunction` interfac
 Utility interfaces are also available to help create udfs, they are `dataengine.spark.sql.udf.UdfDefinition` and `dataengine.spark.sql.udf.UdafDefinition`.
 
 Fields:
+
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
 | `type` | no | If not provided, defaults to `java` |
@@ -149,6 +150,7 @@ sqlComponent:
 The scala scriptlet may contain any kind of code, but note that the scala scriptlet must evaluate to a `Function*` for the script fragment to be valid.  
 
 Fields:
+
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
 | `type` | yes | `scala` |
