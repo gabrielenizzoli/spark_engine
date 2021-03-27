@@ -6,15 +6,26 @@ nav_order: 7
 
 # Sql Component
 
-Probably the most important component of all, the sql component allows to define a sql transformation on a possible set of inputs.
-Inputs is a list of other components, that will be used as a list of predefined tables to be referenced by the sql in the component.
+{: .no_toc }
+
+The sql component defines a sql transformation on a possible set of inputs.
+{: .fs-6 }
+
+## Table of contents
+
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## Fields
 
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
 | `type` | yes | `sql` |
-| `using` | no | An optional list of other components. These component swill be used as table names in the sql statement  |
+| `using` | no | An optional list of other component's names. These components will be used as table names in the sql statement. If this field is not present, the list of components will be extracted from the sql statement itself.  |
 | `sql` | yes | The sql statement |
 | `udfs` | no | An optional list of user provided functions (see below) |
 | `encodedAs` | no | An optional encoded specification |

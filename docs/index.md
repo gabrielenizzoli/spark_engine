@@ -7,115 +7,81 @@ permalink: /
 ---
 
 # Focus on the data, not the boring parts
+{: .no_toc }
+
 {: .fs-9 }
 
 Spark Engine let you focus on writing effective data pipelines. Everything else (all the scaffolding, application wiring, metrics collection, validation, source and sink definitions, etc) is managed.
 {: .fs-6 .fw-300 }
+
+[Get started now](/quickstart){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [View it on GitHub](https://github.com/gabrielenizzoli/spark_engine){: .btn .fs-5 .mb-4 .mb-md-0 }
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
 
 ---
 
 ## What is Spark Engine?
 
 This project aim is at simplifying the writing, maintenance and testing of complex [Apache Spark](https://spark.apache.org) pipelines (both in batch and streaming mode).
-While Spark is an optimal platform to express and implement data transformation and integration, teams collaborating on it may find it difficult to divide and organize work on different part of the pipeline.
-Moreover, many times these pipelines are wired and declared in different way, adding complexity where none is needed.
+Spark is an optimal platform to express and implement data transformation and integration, and this projects aim at making them declarative, not programmatic.
 
-## The Problem
+## Make it fast and easy to write Spark Pipelines
 
-Did you ever find yourself writing many (too many) datasets operations (map, flatmap, filter, join, etc etc) and then
-making a big data pipeline with them?
-How about joining different datasets?
-How about maintaining datasets sources configurations?
-
-Some of your operations are sql statements, others are dataset operations.
-Some are aggregations, some are joins or unions.
-Many engineers and teams may need to change alter test and modify pieces of a pipeline.
-Multiple pipelines may even have different configurations.
-
-Your software may be looking something like:
-
-```scala
-val df1 = spark.sql("select stuff from source1")
-df1.createOrReplaceTempView("table1")
-
-val df2 = spark.sql("select even more stuff from source 2")
-df2.createOrReplaceTempView("table2")
-
-val df3 = spark.sql("select things from table1 join table2 on some id")
-df3.createOrReplaceTempView("table3")
-
-val df4 = df3.join(df1).on(some_condition)
-
-\\ and so on ...
-df10.write.save
-```
-
-You find out that organizing your code like this adds to the complexity of the system, because it is:
-
-* ... hard to manage
-* ... difficult to compose
-* ... complex to debug
-* ... impossible to maintain and test in isolation
-* ... time-consuming to understand where a table is defined
-* ... what about the other pipeline down there, that is completely different?
-* ... and, do you even remember what the schema of a table is?
-
-## The Solution
-
-Having a **declarative way to describe the pieces of your pipeline** will provide an easier to manage structure, where every team or engineer can provide pieces for it, without interfering with other teams.
-With this organization the complexity of the system can be kept in check, because:
+Spark Engine provides a **declarative way to describe the pieces of the data pipeline**, in which every team or engineer can provide pieces for it.
+The system wil be easy to manage because:
 
 * ... every pipeline is organized the same way
 * ... each pipeline pieces can be tested in isolation
-* ... each piece declares its inputs and has a deterministic outcome (same input will yield same output)
+* ... each piece declares its inputs and has a deterministic outcome
 * ... there is a clear separation between the spark configuration (number of nodes, resources, execution environment) and what the pipeline is supposed to do
-* ... code extensions are possible, and they are isolated by providing an external piece of code that will be executed by a well-defined part of the pipeline
+* ... extensions are possible, and they are isolated as external packages
 
-So, for example, a pipeline might look like a yaml file like this:
+So, for example, a pipeline might look like a yaml file:
 
 ```yaml
 components:
-  source1:
+  sourceWithData:
     type: batch
     format: parquet
     options: { path: hdfs://... }
-  source2:
+  sourceDefinedSomewhereElse:
     type: ref
     ref: http://some/well/known/location.yaml
-  source3:
+  sourceWithInlineData:
     type: inline
     data:
       - { column1: "value1", column2: 10 }
       - { column1: "value2", column2: 20 }
     schema: "`column1` STRING,`column2` INT"
-    
-  transformation1:
-    type: sql
-    using: [ source1, source2 ]
-    sql: select * from source1 union all source 2
-  transformation2:
+  unionDifferentSources:
+    sql: select * from sourceWithData union all sourceDefinedSomewhereElse
+  transformDataWithCustomCode:
     type: transform
-    using: [ transformation1, source3 ]
+    using: [ unionDifferentSources, sourceWithInlineData ]
     transformWith: com.yourname.yourpackage.SomeTransformation
 
 sinks:
-  sink1:
+  sendYourDataToKafka:
     type: batch
     format: kafka
     options: { ... }
 
 pipelines:
-  samplePipeline: { component: transformation2, sink: sink1 }
+  yourPipelineNameHere: { component: transformDataWithCustomCode, sink: sendYourDataToKafka }
 ```
 
 Notice how:
 
 * ... a pipeline is declared to be a combination between a component and a sink
-* ... a component is used to create a dataset
-* ... components (and sinks) can be declared as external (they are referenced as external resources in http, hdfs, or jar files)
-* ... each component can generate a dataset, and with mock inputs, can be tested in isolation
+* ... a component is used to declare how a dataset is built
+* ... components (and sinks) definitions can be external (they are referenced as external resources in http, hdfs, or jar files)
+* ... each component has well defined inputs and outputs, and, with mock inputs, can be tested in isolation
 
-Executing this plan is [as easy as you might guess](/app/command_line):
+Executing this plan is [trivial](/app/command_line):
 
 ```shell
 cd spark/bin
@@ -123,16 +89,17 @@ cd spark/bin
   --class sparkengine.plan.app.Start spark-internal -p myPlan.yaml
 ```
 
-[An embedded option is also available](/app/embedded), so you can just jump start a plan everywhere in your code.
-Without coding any `main` code you can start your plan by using a pre-defined startup facility that is responsible for:
+A plan is started by a pre-defined startup facility (the `sparkengine.plan.app.Start` class) that is responsible for:
 
 * ... find all external references
 * ... importing all external code (from a maven repository)
-* ... validating your plan
+* ... validating the plan
+* ... export all accumulators as metrics to graphite/prometheus/etc etc
 * ... monitor its execution
 * ... release resources
 
-The same plan can be executed, locally, remotely (in yarn, mesos or k8s), in zeppelin or jupyter, with different inputs for testing or for production.
+[An embedded option is also available](/app/embedded), so a plan can be executed in any custom code.
+The same plan can be executed, locally, remotely (in yarn, mesos or k8s), in zeppelin or jupyter, with different inputs, for testing or for production.
 The final goal? reduce complexity, have better development workflow, simplify and unify the pipeline development, isolate pieces, and make engineers happier :)
 
 ## What's next?
