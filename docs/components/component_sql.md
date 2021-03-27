@@ -18,17 +18,15 @@ The sql component defines a sql transformation on a possible set of inputs.
 
 ---
 
-## Fields
+## Fields and Examples
 
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
-| `type` | yes | `sql` |
+| `type` | no | If no type is specified, the component is assumed to be a `sql` component. |
 | `using` | no | An optional list of other component's names. These components will be used as table names in the sql statement. If this field is not present, the list of components will be extracted from the sql statement itself.  |
 | `sql` | yes | The sql statement |
 | `udfs` | no | An optional list of user provided functions (see below) |
 | `encodedAs` | no | An optional encoded specification |
-
-## Examples
 
 Yaml example:
 
@@ -39,11 +37,9 @@ source2:
   ...
 
 sqlComponent:
-  type: sql
-  using: [ source1, source2 ]
   udfs:
     list:
-      - { className: sparkengine.plan.runtime.builder.dataset.TestUdf }
+      - className: sparkengine.plan.runtime.builder.dataset.TestUdf
   sql: >
     select 
       testUdf(t.value) as column 
@@ -55,11 +51,10 @@ sqlComponent:
       t.id = f.id
 ```
 
-It is also possible to have a sql generating data, without shaving to use any input component. In the following example the sql statements generates 2 rows:
+Input sources are not required. In the following example the sql statements generates 2 rows:
 
 ```yaml
 sqlComponentThatGeneratesData:
-  type: sql
   sql: >
     select explode(array(
       named_struct("num", 0, "str", "a"), 
