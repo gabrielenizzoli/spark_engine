@@ -34,7 +34,7 @@ public class PlanRunner {
     @Nonnull
     SparkSession sparkSession;
     @Nonnull
-    PlanInfo planInfo;
+    PlanDefinition planDefinition;
     @Nonnull
     @lombok.Builder.Default
     RuntimeArgs runtimeArgs = RuntimeArgs.builder().build();
@@ -45,7 +45,7 @@ public class PlanRunner {
     public static class PlanRunnerBuilder {
 
         public PlanRunnerBuilder planLocation(String planLocation) {
-            return this.planInfo(PlanInfo.planLocation(planLocation));
+            return this.planDefinition(PlanDefinition.planLocation(planLocation));
         }
 
     }
@@ -80,9 +80,9 @@ public class PlanRunner {
 
     @Nonnull
     private Plan getPlan() throws IOException, ModelFormatException, PlanMapperException {
-        var sourcePlan = ModelFactory.readPlanFromYaml(planInfo.getPlanInputStreamFactory());
+        var sourcePlan = ModelFactory.readPlanFromYaml(planDefinition.getPlanInputStreamFactory());
         log.trace(String.format("source plan [%s]", sourcePlan));
-        var resolvedPlan = PlanResolver.of(planInfo.getPlanLocation(), runtimeArgs, sparkSession, log).map(sourcePlan);
+        var resolvedPlan = PlanResolver.of(planDefinition.getPlanLocation(), runtimeArgs, sparkSession, log).map(sourcePlan);
         writeResolvedPlan(resolvedPlan);
         return resolvedPlan;
     }

@@ -4,7 +4,12 @@ components:
   sqlOnRate:
     using: [rate]
     udfs:
-      list: [ { type: scala, name: multiplyBy, scala: "(a:Long, b:Int) => { env.acc(\"acc\", 1); a+b }", accumulators: { acc: 'mapped.acc' } } ]
+      list:
+        - type: scala
+          name: multiplyBy
+          scala: >
+            (a:Long, b:Int) => { ctx.acc("acc", 1); a+b }
+          accumulators: { acc: 'mapped.acc' }
     sql: "select *, multiplyBy(value, 100) as bigValue from rate"
 
 sinks:

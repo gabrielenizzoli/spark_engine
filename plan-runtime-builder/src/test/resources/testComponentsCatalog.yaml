@@ -4,7 +4,7 @@ source1:
 source2:
   udfs:
     list:
-      - { className: sparkengine.plan.runtime.builder.TestIntUdf }
+      - className: sparkengine.plan.runtime.builder.TestIntUdf
   sql: >
     select explode(array(
       named_struct("zum", testIntUdf(1, 1), "stuff", "xxx"),
@@ -19,8 +19,12 @@ tx:
   using: [ source1, source2 ]
   udfs:
     list:
-      - { className: sparkengine.plan.runtime.builder.TestStrUdf }
-      - { type: scala, name: testIntUdf, scala: "(a:Int, b:Int) => { env.acc(\"in\",1); a+b }", accumulators: { in: 'out' } }
+      - className: sparkengine.plan.runtime.builder.TestStrUdf
+      - type: scala
+        name: testIntUdf
+        scala: >
+          (a:Int, b:Int) => { ctx.acc("in",1); a+b }
+        accumulators: { in: 'out' }
   sql: >
     select
       testStrUdf(s1.abc.str, "p1") as str,

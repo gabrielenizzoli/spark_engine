@@ -12,18 +12,22 @@ object ScriptEngine {
   val environments = new ConcurrentHashMap[String, Any]();
 
   @throws[ToolBoxError]
-  def evaluate(src: String, env: Option[Any] = None): Any = {
+  def evaluate(src: String, context: Option[Any] = None, contextClassName: Option[String] = None): Any = {
     val toolBox = universe.runtimeMirror(getClass.getClassLoader).mkToolBox()
     scriptCache.computeIfAbsent(src, code => {
 
-      val envId = UUID.randomUUID().toString;
+      val contextId = UUID.randomUUID().toString;
       try {
-        val parsedCode = env match {
-          case Some(envValue) => {
-            environments.put(envId, envValue)
+        val parsedCode = context match {
+          case Some(contextValue) => {
+            environments.put(contextId, contextValue)
+            val contextClass = contextClassName match {
+              case Some(name) => name
+              case None => contextValue.getClass.getName
+            }
             toolBox.parse(
               s"""
-                val env = sparkengine.scala.scripting.ScriptEngine.environments.get("$envId").asInstanceOf[${envValue.getClass.getName}]
+                val ctx = sparkengine.scala.scripting.ScriptEngine.environments.get("$contextId").asInstanceOf[$contextClass]
                 $code
               """)
           }
@@ -32,7 +36,7 @@ object ScriptEngine {
 
         toolBox.eval(parsedCode)
       } finally {
-        environments.remove(envId)
+        environments.remove(contextId)
       }
     })
   }
