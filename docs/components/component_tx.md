@@ -5,9 +5,21 @@ nav_order: 8
 ---
 
 # Transform Component
-{:.no_toc}
+{: .no_toc}
 
-The transform component allow for a specification of an external Java class to provide a user provided transformation.
+The transform component allow for an external Java class to define a user provoded dataset transformation.
+{: .fs-6 }
+
+## Table of contents
+{: .no_toc .text-delta }
+
+- TOC
+{:toc}
+
+---
+
+## Introduction
+
 There are two flavors of the transform component, depending on the number of inputs:
 
 * if the expected number of inputs is exactly 1, the the component os of type `map` and the expected Java class specified must implement `sparkengine.spark.transformation.DataTransformation`;
@@ -18,14 +30,6 @@ In this case the `param` map in the component is properly serialized to the requ
 
 Finally, if some additional framework facilities are needed (like accumulators), the transformation can extend `sparkengine.spark.transformation.context.DataTransformationWithContext`.
 In this case the transformation will be injected a `Broadcast<DataTransformationContext>` object via the `setTransformationContext(...)` method.
-
-## Table of contents
-{: .no_toc .text-delta }
-
-- TOC
-{:toc}
-
----
 
 ## Fields
 
