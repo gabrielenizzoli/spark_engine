@@ -5,6 +5,7 @@ nav_order: 8
 ---
 
 # Transform Component
+{:.no_toc}
 
 The transform component allow for a specification of an external Java class to provide a user provided transformation.
 There are two flavors of the transform component, depending on the number of inputs:
@@ -19,7 +20,6 @@ Finally, if some additional framework facilities are needed (like accumulators),
 In this case the transformation will be injected a `Broadcast<DataTransformationContext>` object via the `setTransformationContext(...)` method.
 
 ## Table of contents
-
 {: .no_toc .text-delta }
 
 - TOC
