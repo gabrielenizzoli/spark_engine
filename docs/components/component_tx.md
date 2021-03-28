@@ -15,6 +15,9 @@ There are two flavors of the transform component, depending on the number of inp
 If some parametrization is needed, the provided class must also implement `sparkengine.spark.transformation.DataTransformationWithParameters`.
 In this case the `param` map in the component is properly serialized to the requested Java bean.
 
+Finally, if some additional framework facilities are needed (like accumulators), the transformation can extend `sparkengine.spark.transformation.context.TransformationWithContext`.
+In this case the transformation will be injected a `Broadcast<TransformationContext>` object via the `setTransformationContext(...)` method.
+
 ## Table of contents
 
 {: .no_toc .text-delta }
@@ -32,6 +35,7 @@ In this case the `param` map in the component is properly serialized to the requ
 | `using` | no | An optional list of other components to be used as input to the transform component  |
 | `params` | no (see details) | A map that provides parameters. Note that parameters are required for a transformation that implements `sparkengine.spark.transformation.DataTransformationWithParameters`. |
 | `transformWith` | yes | A Java fully qualified name of a class that specifies an implementation of the `dataengine.spark.transformation.DataTransformation` or `dataengine.spark.transformation.DataTransformationN` interface. |
+| `accumulators` | no | A mapping between how an accumulator is used internally and how it is named globally. |
 | `encodedAs` | no | An optional encoded specification. |
 
 ## Single-input Transformation (component with `transform` type)

@@ -1,5 +1,6 @@
 package sparkengine.spark.transformation;
 
+import lombok.Value;
 import org.apache.spark.api.java.function.MapPartitionsFunction;
 import org.apache.spark.broadcast.Broadcast;
 import scala.Function1;
@@ -8,23 +9,18 @@ import scala.collection.JavaConverters;
 import scala.tools.reflect.ToolBoxError;
 import sparkengine.scala.scripting.ScriptEngine;
 import sparkengine.spark.transformation.context.TransformationContext;
-import sparkengine.spark.transformation.context.TransformationWithContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Iterator;
-import java.util.Objects;
 
-public class ScalaScriptPartitionMapper<T, U> implements TransformationWithContext, MapPartitionsFunction<T, U> {
+@Value
+public class ScalaScriptPartitionMapper<T, U> implements MapPartitionsFunction<T, U> {
 
     @Nonnull
-    private final String code;
+    String code;
     @Nullable
-    private Broadcast<TransformationContext> transformationContextBroadcast;
-
-    public ScalaScriptPartitionMapper(@Nonnull String code) {
-        this.code = Objects.requireNonNull(code);
-    }
+    Broadcast<TransformationContext> transformationContextBroadcast;
 
     @Override
     public Iterator<U> call(Iterator<T> input) throws Exception {
@@ -36,11 +32,6 @@ public class ScalaScriptPartitionMapper<T, U> implements TransformationWithConte
         } catch (ToolBoxError e) {
             throw new Exception("compilation error in scala code", e);
         }
-    }
-
-    @Override
-    public void setTransformationContext(@Nonnull Broadcast<TransformationContext> transformationContextBroadcast) {
-        this.transformationContextBroadcast = transformationContextBroadcast;
     }
 
     private Function1<scala.collection.Iterator<T>, scala.collection.Iterator<U>> getScalaScriptMapPartitionsFunction() throws ToolBoxError {

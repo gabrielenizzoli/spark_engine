@@ -19,11 +19,10 @@ public class ScalaScriptMapperTest extends SparkSessionManager {
         // given
         var strings = List.of("a", "ab", "abc", "a");
         var df = sparkSession.createDataset(strings, Encoders.STRING());
-        var mapper = new ScalaScriptMapper<String, Integer>("(i:String) => { ctx.acc(\"hi\"); i.length() }");
         var ctx = DefaultTransformationContext.builder()
                 .fallbackAccumulator(SparkUtils.longAnonymousAccumulator(sparkSession))
                 .build();
-        mapper.setTransformationContext(SparkUtils.broadcast(sparkSession, ctx));
+        var mapper = new ScalaScriptMapper<String, Integer>("(i:String) => { ctx.acc(\"hi\"); i.length() }", SparkUtils.broadcast(sparkSession, ctx));
 
         // when
         var output = df.map(mapper, Encoders.INT()).collectAsList();
@@ -40,7 +39,7 @@ public class ScalaScriptMapperTest extends SparkSessionManager {
         // given
         var strings = List.of("a", "ab", "abc", "a");
         var df = sparkSession.createDataset(strings, Encoders.STRING());
-        var mapper = new ScalaScriptMapper<String, Integer>("(i:String) => { ctx.acc(\"hi\"); i.length() }");
+        var mapper = new ScalaScriptMapper<String, Integer>("(i:String) => { ctx.acc(\"hi\"); i.length() }", null);
 
         // when
         var output = df.map(mapper, Encoders.INT()).collectAsList();

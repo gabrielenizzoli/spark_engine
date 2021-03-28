@@ -7,6 +7,8 @@ import org.apache.spark.util.LongAccumulator;
 import sparkengine.plan.runtime.builder.dataset.utils.UdfContextFactory;
 import sparkengine.spark.sql.udf.context.DefaultUdfContext;
 import sparkengine.spark.sql.udf.context.UdfContext;
+import sparkengine.spark.transformation.context.DefaultTransformationContext;
+import sparkengine.spark.transformation.context.TransformationContext;
 import sparkengine.spark.utils.SparkUtils;
 
 import javax.annotation.Nonnull;
@@ -42,8 +44,20 @@ public class RuntimeContext {
         return DefaultUdfContext.builder().fallbackAccumulator(fallbackAccumulator).accumulators(newAccumulatorMap).build();
     }
 
+    public TransformationContext buildTransformationContext(@Nullable Map<String, String> accumulatorNamesRemap) {
+        var newAccumulatorMap = new HashMap<String, LongAccumulator>();
+        Optional.ofNullable(accumulatorNamesRemap)
+                .orElse(Map.of())
+                .forEach((internalName, externalName) -> newAccumulatorMap.put(internalName, getOrCreateAccumulator(externalName)));
+        return DefaultTransformationContext.builder().fallbackAccumulator(fallbackAccumulator).accumulators(newAccumulatorMap).build();
+    }
+
     public Broadcast<UdfContext> buildBroadcastUdfContext(@Nullable Map<String, String> accumulatorNamesRemap) {
         return SparkUtils.broadcast(sparkSession, buildUdfContext(accumulatorNamesRemap));
+    }
+
+    public Broadcast<TransformationContext> buildBroadcastTransformationContext(@Nullable Map<String, String> accumulatorNamesRemap) {
+        return SparkUtils.broadcast(sparkSession, buildTransformationContext(accumulatorNamesRemap));
     }
 
 }

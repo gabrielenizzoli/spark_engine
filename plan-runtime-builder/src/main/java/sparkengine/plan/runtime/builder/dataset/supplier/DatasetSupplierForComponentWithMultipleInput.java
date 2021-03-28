@@ -15,6 +15,7 @@ import sparkengine.plan.runtime.builder.dataset.utils.TransformationUtils;
 import sparkengine.plan.runtime.builder.dataset.utils.UdfUtils;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.transformation.Transformations;
+import sparkengine.spark.transformation.context.TransformationWithContext;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -113,6 +114,11 @@ public class DatasetSupplierForComponentWithMultipleInput<T> implements DatasetS
     private Dataset<T> getTransformDataset(TransformComponent transformComponent) throws DatasetFactoryException {
         var dataTransformation = TransformationUtils.<T>getDataTransformationN(transformComponent.getTransformWith());
         TransformationUtils.injectTransformationParameters(dataTransformation, transformComponent.getParams());
+
+        if (dataTransformation instanceof TransformationWithContext) {
+            var txWithContext = (TransformationWithContext)dataTransformation;
+            txWithContext.setTransformationContext(runtimeContext.buildBroadcastTransformationContext(transformComponent.getAccumulators()));
+        }
 
         if (transformComponent.getEncodedAs() != null) {
             var encoder = (Encoder<T>) EncoderUtils.buildEncoder(transformComponent.getEncodedAs());

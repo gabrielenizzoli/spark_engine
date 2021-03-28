@@ -16,6 +16,7 @@ import sparkengine.plan.runtime.builder.dataset.utils.TransformationUtils;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.transformation.DataTransformation;
 import sparkengine.spark.transformation.Transformations;
+import sparkengine.spark.transformation.context.TransformationWithContext;
 
 import javax.annotation.Nonnull;
 
@@ -51,6 +52,11 @@ public class DatasetSupplierForComponentWithSingleInput<T> implements DatasetSup
     private Dataset<T> getMapDataset(MapComponent mapComponent) throws DatasetFactoryException {
         var dataTransformation = TransformationUtils.<T>getDataTransformation(mapComponent.getTransformWith());
         TransformationUtils.injectTransformationParameters(dataTransformation, mapComponent.getParams());
+
+        if (dataTransformation instanceof TransformationWithContext) {
+            var txWithContext = (TransformationWithContext)dataTransformation;
+            txWithContext.setTransformationContext(runtimeContext.buildBroadcastTransformationContext(mapComponent.getAccumulators()));
+        }
 
         if (mapComponent.getEncodedAs() != null) {
             var encoder = (Encoder<T>) EncoderUtils.buildEncoder(mapComponent.getEncodedAs());

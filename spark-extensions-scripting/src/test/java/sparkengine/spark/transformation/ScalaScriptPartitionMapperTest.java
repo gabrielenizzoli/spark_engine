@@ -19,11 +19,10 @@ public class ScalaScriptPartitionMapperTest extends SparkSessionManager {
         // given
         var strings = List.of("a", "ab", "abc", "a");
         var df = sparkSession.createDataset(strings, Encoders.STRING());
-        var mapper = new ScalaScriptPartitionMapper<String, Integer>("(i:Iterator[String]) => { ctx.acc(\"hi\"); i.map(_.length()) }");
         var ctx = DefaultTransformationContext.builder()
                 .fallbackAccumulator(SparkUtils.longAnonymousAccumulator(sparkSession))
                 .build();
-        mapper.setTransformationContext(SparkUtils.broadcast(sparkSession, ctx));
+        var mapper = new ScalaScriptPartitionMapper<String, Integer>("(i:Iterator[String]) => { ctx.acc(\"hi\"); i.map(_.length()) }", SparkUtils.broadcast(sparkSession, ctx));
 
         // when
         var output = df.mapPartitions(mapper, Encoders.INT()).collectAsList();
@@ -40,7 +39,7 @@ public class ScalaScriptPartitionMapperTest extends SparkSessionManager {
         // given
         var strings = List.of("a", "ab", "abc", "a");
         var df = sparkSession.createDataset(strings, Encoders.STRING());
-        var mapper = new ScalaScriptPartitionMapper<String, Integer>("(i:Iterator[String]) => { ctx.acc(\"hi\"); i.map(_.length()) }");
+        var mapper = new ScalaScriptPartitionMapper<String, Integer>("(i:Iterator[String]) => { ctx.acc(\"hi\"); i.map(_.length()) }", null);
         var ctx = DefaultTransformationContext.builder()
                 .fallbackAccumulator(SparkUtils.longAnonymousAccumulator(sparkSession))
                 .build();

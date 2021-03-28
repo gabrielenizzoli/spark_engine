@@ -5,6 +5,6 @@ import sparkengine.spark.sql.udf.context.UdfContext;
 
 public interface TransformationWithContext {
 
-    void setTransformationContext(Broadcast<TransformationContext> udfContext);
+    void setTransformationContext(Broadcast<TransformationContext> transformationContextBroadcast);
 
 }
