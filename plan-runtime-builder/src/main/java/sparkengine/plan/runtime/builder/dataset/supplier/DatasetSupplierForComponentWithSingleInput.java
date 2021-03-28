@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Value;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoder;
-import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
 import sparkengine.plan.model.component.ComponentWithSingleInput;
 import sparkengine.plan.model.component.impl.EncodeComponent;
@@ -14,9 +13,9 @@ import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.builder.dataset.utils.EncoderUtils;
 import sparkengine.plan.runtime.builder.dataset.utils.TransformationUtils;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
-import sparkengine.spark.transformation.DataTransformation;
+import sparkengine.spark.transformation.DataTransformationWithEncoder;
 import sparkengine.spark.transformation.Transformations;
-import sparkengine.spark.transformation.context.TransformationWithContext;
+import sparkengine.spark.transformation.context.DataTransformationWithContext;
 
 import javax.annotation.Nonnull;
 
@@ -53,14 +52,19 @@ public class DatasetSupplierForComponentWithSingleInput<T> implements DatasetSup
         var dataTransformation = TransformationUtils.<T>getDataTransformation(mapComponent.getTransformWith());
         TransformationUtils.injectTransformationParameters(dataTransformation, mapComponent.getParams());
 
-        if (dataTransformation instanceof TransformationWithContext) {
-            var txWithContext = (TransformationWithContext)dataTransformation;
+        if (dataTransformation instanceof DataTransformationWithContext) {
+            var txWithContext = (DataTransformationWithContext)dataTransformation;
             txWithContext.setTransformationContext(runtimeContext.buildBroadcastTransformationContext(mapComponent.getAccumulators()));
         }
 
         if (mapComponent.getEncodedAs() != null) {
             var encoder = (Encoder<T>) EncoderUtils.buildEncoder(mapComponent.getEncodedAs());
-            dataTransformation = dataTransformation.andThenEncode(encoder);
+            if (dataTransformation instanceof DataTransformationWithEncoder) {
+                var dataTransformationWithEncoder = (DataTransformationWithEncoder<T>)dataTransformation;
+                dataTransformationWithEncoder.setEncoder(encoder);
+            } else {
+                dataTransformation = dataTransformation.andThenEncode(encoder);
+            }
         }
 
         return dataTransformation.apply(inputDataset);

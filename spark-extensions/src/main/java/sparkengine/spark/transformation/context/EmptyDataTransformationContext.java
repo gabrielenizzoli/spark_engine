@@ -1,8 +1,6 @@
 package sparkengine.spark.transformation.context;
 
-import sparkengine.spark.sql.udf.context.UdfContext;
-
-public class EmptyTransformationContext implements TransformationContext {
+public class EmptyDataTransformationContext implements DataTransformationContext {
 
     @Override
     public void acc(String name, long value) {

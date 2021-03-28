@@ -8,19 +8,19 @@ import scala.Option;
 import scala.collection.JavaConverters;
 import scala.tools.reflect.ToolBoxError;
 import sparkengine.scala.scripting.ScriptEngine;
-import sparkengine.spark.transformation.context.TransformationContext;
+import sparkengine.spark.transformation.context.DataTransformationContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Iterator;
 
 @Value
-public class ScalaScriptPartitionMapper<T, U> implements MapPartitionsFunction<T, U> {
+public class ScalaScriptMapPartitionFunction<T, U> implements MapPartitionsFunction<T, U> {
 
     @Nonnull
     String code;
     @Nullable
-    Broadcast<TransformationContext> transformationContextBroadcast;
+    Broadcast<DataTransformationContext> transformationContextBroadcast;
 
     @Override
     public Iterator<U> call(Iterator<T> input) throws Exception {
@@ -35,8 +35,8 @@ public class ScalaScriptPartitionMapper<T, U> implements MapPartitionsFunction<T
     }
 
     private Function1<scala.collection.Iterator<T>, scala.collection.Iterator<U>> getScalaScriptMapPartitionsFunction() throws ToolBoxError {
-        var ctx = Option.<Object>apply(transformationContextBroadcast == null ? TransformationContext.EMPTY_UDF_CONTEXT : transformationContextBroadcast.getValue());
-        return ((Function1<scala.collection.Iterator<T>, scala.collection.Iterator<U>>) ScriptEngine.evaluate(code, false, ctx, Option.apply(TransformationContext.class.getName())));
+        var ctx = Option.<Object>apply(transformationContextBroadcast == null ? DataTransformationContext.EMPTY_UDF_CONTEXT : transformationContextBroadcast.getValue());
+        return ((Function1<scala.collection.Iterator<T>, scala.collection.Iterator<U>>) ScriptEngine.evaluate(code, false, ctx, Option.apply(DataTransformationContext.class.getName())));
     }
 
 }

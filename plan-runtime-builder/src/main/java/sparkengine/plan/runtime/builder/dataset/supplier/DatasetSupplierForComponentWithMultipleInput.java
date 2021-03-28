@@ -14,8 +14,9 @@ import sparkengine.plan.runtime.builder.dataset.utils.EncoderUtils;
 import sparkengine.plan.runtime.builder.dataset.utils.TransformationUtils;
 import sparkengine.plan.runtime.builder.dataset.utils.UdfUtils;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
+import sparkengine.spark.transformation.DataTransformationWithEncoder;
 import sparkengine.spark.transformation.Transformations;
-import sparkengine.spark.transformation.context.TransformationWithContext;
+import sparkengine.spark.transformation.context.DataTransformationWithContext;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -115,14 +116,19 @@ public class DatasetSupplierForComponentWithMultipleInput<T> implements DatasetS
         var dataTransformation = TransformationUtils.<T>getDataTransformationN(transformComponent.getTransformWith());
         TransformationUtils.injectTransformationParameters(dataTransformation, transformComponent.getParams());
 
-        if (dataTransformation instanceof TransformationWithContext) {
-            var txWithContext = (TransformationWithContext)dataTransformation;
+        if (dataTransformation instanceof DataTransformationWithContext) {
+            var txWithContext = (DataTransformationWithContext)dataTransformation;
             txWithContext.setTransformationContext(runtimeContext.buildBroadcastTransformationContext(transformComponent.getAccumulators()));
         }
 
         if (transformComponent.getEncodedAs() != null) {
             var encoder = (Encoder<T>) EncoderUtils.buildEncoder(transformComponent.getEncodedAs());
-            dataTransformation = dataTransformation.andThenEncode(encoder);
+            if (dataTransformation instanceof DataTransformationWithEncoder) {
+                var dataTransformationWithEncoder = (DataTransformationWithEncoder<T>)dataTransformation;
+                dataTransformationWithEncoder.setEncoder(encoder);
+            } else {
+                dataTransformation = dataTransformation.andThenEncode(encoder);
+            }
         }
 
         return dataTransformation.apply(inputDatasets.stream().map(m -> (Dataset<Object>) m).collect(Collectors.toList()));

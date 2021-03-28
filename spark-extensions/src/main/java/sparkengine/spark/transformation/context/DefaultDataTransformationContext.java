@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Value
 @Builder
-public class DefaultTransformationContext implements TransformationContext {
+public class DefaultDataTransformationContext implements DataTransformationContext {
 
     @Nonnull
     LongAccumulator fallbackAccumulator;

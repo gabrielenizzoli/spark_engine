@@ -3,7 +3,7 @@ package sparkengine.spark.transformation;
 import org.apache.spark.sql.Encoders;
 import org.junit.jupiter.api.Test;
 import sparkengine.spark.test.SparkSessionManager;
-import sparkengine.spark.transformation.context.DefaultTransformationContext;
+import sparkengine.spark.transformation.context.DefaultDataTransformationContext;
 import sparkengine.spark.utils.SparkUtils;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ScalaScriptMapperTest extends SparkSessionManager {
+public class ScalaScriptMapFunctionTest extends SparkSessionManager {
 
     @Test
     void testMapWithScalaScriptAndContext() {
@@ -19,10 +19,10 @@ public class ScalaScriptMapperTest extends SparkSessionManager {
         // given
         var strings = List.of("a", "ab", "abc", "a");
         var df = sparkSession.createDataset(strings, Encoders.STRING());
-        var ctx = DefaultTransformationContext.builder()
+        var ctx = DefaultDataTransformationContext.builder()
                 .fallbackAccumulator(SparkUtils.longAnonymousAccumulator(sparkSession))
                 .build();
-        var mapper = new ScalaScriptMapper<String, Integer>("(i:String) => { ctx.acc(\"hi\"); i.length() }", SparkUtils.broadcast(sparkSession, ctx));
+        var mapper = new ScalaScriptMapFunction<String, Integer>("(i:String) => { ctx.acc(\"hi\"); i.length() }", SparkUtils.broadcast(sparkSession, ctx));
 
         // when
         var output = df.map(mapper, Encoders.INT()).collectAsList();
@@ -39,7 +39,7 @@ public class ScalaScriptMapperTest extends SparkSessionManager {
         // given
         var strings = List.of("a", "ab", "abc", "a");
         var df = sparkSession.createDataset(strings, Encoders.STRING());
-        var mapper = new ScalaScriptMapper<String, Integer>("(i:String) => { ctx.acc(\"hi\"); i.length() }", null);
+        var mapper = new ScalaScriptMapFunction<String, Integer>("(i:String) => { ctx.acc(\"hi\"); i.length() }", null);
 
         // when
         var output = df.map(mapper, Encoders.INT()).collectAsList();

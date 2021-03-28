@@ -15,8 +15,8 @@ There are two flavors of the transform component, depending on the number of inp
 If some parametrization is needed, the provided class must also implement `sparkengine.spark.transformation.DataTransformationWithParameters`.
 In this case the `param` map in the component is properly serialized to the requested Java bean.
 
-Finally, if some additional framework facilities are needed (like accumulators), the transformation can extend `sparkengine.spark.transformation.context.TransformationWithContext`.
-In this case the transformation will be injected a `Broadcast<TransformationContext>` object via the `setTransformationContext(...)` method.
+Finally, if some additional framework facilities are needed (like accumulators), the transformation can extend `sparkengine.spark.transformation.context.DataTransformationWithContext`.
+In this case the transformation will be injected a `Broadcast<DataTransformationContext>` object via the `setTransformationContext(...)` method.
 
 ## Table of contents
 
