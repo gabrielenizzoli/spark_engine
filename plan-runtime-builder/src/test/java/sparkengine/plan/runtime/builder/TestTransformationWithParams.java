@@ -4,13 +4,14 @@ import lombok.Data;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.functions;
+import sparkengine.spark.transformation.DataTransformationN;
 import sparkengine.spark.transformation.DataTransformationWithParameters;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class TestTransformationWithParams implements DataTransformationWithParameters<Row, Row, TestTransformationWithParams.Params> {
+public class TestTransformationWithParams implements DataTransformationN<Row, Row>, DataTransformationWithParameters<TestTransformationWithParams.Params> {
 
     private Params params;
 

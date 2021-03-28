@@ -1,7 +1,6 @@
 package sparkengine.plan.runtime.builder.dataset.utils;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import sparkengine.plan.model.component.impl.TransformComponent;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.transformation.DataTransformation;
 import sparkengine.spark.transformation.DataTransformationN;
