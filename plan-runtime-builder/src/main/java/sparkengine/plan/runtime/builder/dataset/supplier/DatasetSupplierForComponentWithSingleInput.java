@@ -12,6 +12,7 @@ import sparkengine.plan.model.component.impl.MapComponent;
 import sparkengine.plan.model.component.impl.SchemaValidationComponent;
 import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.builder.dataset.utils.EncoderUtils;
+import sparkengine.plan.runtime.builder.dataset.utils.TransformationUtils;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
 import sparkengine.spark.transformation.DataTransformation;
 import sparkengine.spark.transformation.Transformations;
@@ -47,21 +48,16 @@ public class DatasetSupplierForComponentWithSingleInput<T> implements DatasetSup
         return null;
     }
 
-    private Dataset<T> getMapDataset(MapComponent txComponent) throws DatasetFactoryException {
-        DataTransformation<Object, T> dxTransformation = null;
+    private Dataset<T> getMapDataset(MapComponent mapComponent) throws DatasetFactoryException {
+        var dataTransformation = TransformationUtils.<T>getDataTransformation(mapComponent.getTransformWith());
+        TransformationUtils.injectTransformationParameters(dataTransformation, mapComponent.getParams());
 
-        try {
-            dxTransformation = (DataTransformation<Object, T>) Class.forName(txComponent.getTransformWith()).getDeclaredConstructor().newInstance();
-        } catch (Throwable e) {
-            throw new DatasetFactoryException("unable to instantiate map with class: [" + txComponent.getTransformWith() + "]");
+        if (mapComponent.getEncodedAs() != null) {
+            var encoder = (Encoder<T>) EncoderUtils.buildEncoder(mapComponent.getEncodedAs());
+            dataTransformation = dataTransformation.andThenEncode(encoder);
         }
 
-        if (txComponent.getEncodedAs() != null) {
-            var encoder = (Encoder<T>) EncoderUtils.buildEncoder(txComponent.getEncodedAs());
-            dxTransformation = dxTransformation.andThenEncode(encoder);
-        }
-
-        return dxTransformation.apply(inputDataset);
+        return dataTransformation.apply(inputDataset);
     }
 
 }

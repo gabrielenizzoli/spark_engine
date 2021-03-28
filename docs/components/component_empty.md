@@ -19,9 +19,10 @@ This component specifies an empty dataset. It is optionally possible to specify 
 ## Examples
 
 Yaml example:
+
 ```yaml
 # example of an encoded empty component 
-emptyComponet:
+emptyComponent:
   type: empty
   encodedAs: { value: STRING }
 ```

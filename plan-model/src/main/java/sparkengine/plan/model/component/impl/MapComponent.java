@@ -8,6 +8,7 @@ import sparkengine.plan.model.encoder.DataEncoder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Map;
 
 @Value
 @Builder(setterPrefix = "with")
@@ -18,6 +19,8 @@ public class MapComponent implements ComponentWithSingleInput {
 
     @Nullable
     String using;
+    @Nullable
+    Map<String, Object> params;
     @Nonnull
     String transformWith;
     @Nullable

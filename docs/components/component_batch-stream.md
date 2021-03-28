@@ -21,6 +21,7 @@ This component allows for defining one of such sources.
 ## Examples
 
 Yaml examples:
+
 ```yaml
 # parquet
 parquetSource:
@@ -42,6 +43,7 @@ Note that if a dataset need to be of streaming variety, then the type need to be
 All the other fields are the same.
 
 Yaml examples:
+
 ```yaml
 # kafka
 parquetSource:

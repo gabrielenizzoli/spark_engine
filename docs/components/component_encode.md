@@ -18,12 +18,13 @@ A encode components applies an encoding to its input. The input is specified usi
 ## Examples
 
 Yaml example:
+
   ```yaml
 someComponent:
   ...
 
 # example of an encoded component 
-encodeComponet:
+encodeComponent:
   type: encode
   using: someComponent
   encodedAs: { value: STRING }

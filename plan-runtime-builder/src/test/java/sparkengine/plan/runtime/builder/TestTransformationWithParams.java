@@ -6,6 +6,7 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.functions;
 import sparkengine.spark.transformation.DataTransformationWithParameters;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -20,12 +21,13 @@ public class TestTransformationWithParams implements DataTransformationWithParam
     }
 
     @Override
-    public Dataset<Row> apply(List<Dataset<Row>> datasets) {
+    public Dataset<Row> apply(@Nonnull List<Dataset<Row>> datasets) {
         return datasets.stream().reduce(Dataset::union)
                 .map(ds -> ds.withColumn(params.getValue(), functions.lit(params.isFlag())))
                 .orElseThrow(IllegalStateException::new);
     }
 
+    @Nonnull
     @Override
     public Class<Params> getParametersType() {
         return Params.class;
