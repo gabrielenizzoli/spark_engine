@@ -25,18 +25,18 @@ Spark Engine let you focus on writing effective data pipelines. Everything else 
 ## What is Spark Engine?
 
 This project aim is at simplifying the writing, maintenance and testing of complex [Apache Spark](https://spark.apache.org) pipelines (both in batch and streaming mode).
-Spark is an optimal platform to express and implement data transformation and integration, and this projects aim at making them declarative, not programmatic.
+Spark is an optimal platform to express and implement data transformation and integration, and this projects makes them declarative, not programmatic.
 
 ## Make it fast and easy to write Spark Pipelines
 
-Spark Engine provides a **declarative way to describe the pieces of the data pipeline**, in which every team or engineer can provide pieces for it.
-The system wil be easy to manage because:
+Spark Engine provides a **declarative way to describe the pieces of the data pipeline**.
+A n execution plan declared this way will be easy to manage because:
 
-* ... every pipeline is organized the same way
-* ... each pipeline pieces can be tested in isolation
-* ... each piece declares its inputs and has a deterministic outcome
-* ... there is a clear separation between the spark configuration (number of nodes, resources, execution environment) and what the pipeline is supposed to do
-* ... extensions are possible, and they are isolated as external packages
+* ... every pipeline in the plan is structured in the same way;
+* ... each pipeline piece can be tested in isolation;
+* ... each piece declares its inputs, provides an output, and has a deterministic outcome;
+* ... there is a clear separation between the spark configuration (number of nodes, resources, execution environment) and what the pipeline is supposed to do;
+* ... extensions are possible, and they are isolated as external packages.
 
 So, for example, a pipeline might look like a yaml file:
 
@@ -89,12 +89,12 @@ cd spark/bin
 
 A plan is started by a pre-defined startup facility (the `sparkengine.plan.app.Start` class) that is responsible for:
 
-* ... find all external references
+* ... finding all external references
 * ... importing all external code (from a maven repository)
 * ... validating the plan
-* ... export all accumulators as metrics to graphite/prometheus/etc etc
-* ... monitor its execution
-* ... release resources
+* ... exporting all accumulators as metrics to graphite/prometheus/etc etc
+* ... monitoring its execution
+* ... releasing resources
 
 [An embedded option is also available](/app/embedded), so a plan can be executed in any custom code.
 The same plan can be executed, locally, remotely (in yarn, mesos or k8s), in zeppelin or jupyter, with different inputs, for testing or for production.

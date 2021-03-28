@@ -20,9 +20,10 @@ The inline component allow to do that, by reading a json like structure and pars
 ## Examples
 
 Yaml example:
+
 ```yaml
 # kafka
-inlineComponend:
+inlineComponent:
   type: inline
   data: 
     - { column1: "value1", column2: 10 }

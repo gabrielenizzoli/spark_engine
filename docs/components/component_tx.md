@@ -6,25 +6,88 @@ nav_order: 8
 
 # Transform Component
 
-The most generic component of them all, the transform component, allow for a specification of an external Java class to provide a user provided transformation.
-The provided class must extend `sparkengine.spark.transformation.DataTransformationN`.
+The transform component allow for a specification of an external Java class to provide a user provided transformation.
+There are two flavors of the transform component, depending on the number of inputs:
 
-If some parametrization is needed, the class `sparkengine.spark.transformation.DataTransformationWithParameters` is the right one.
-In this case the `param` map in the component is properly serialized to the proper Java bean. 
+* if the expected number of inputs is exactly 1, the the component os of type `map` and the expected Java class specified must implement `sparkengine.spark.transformation.DataTransformation`;
+* if the expected number of inputs is variable, the the component os of type `transform` and the expected Java class specified must implement `sparkengine.spark.transformation.DataTransformationN`.
+
+If some parametrization is needed, the provided class must also implement `sparkengine.spark.transformation.DataTransformationWithParameters`.
+In this case the `param` map in the component is properly serialized to the requested Java bean.
+
+Finally, if some additional framework facilities are needed (like accumulators), the transformation can extend `sparkengine.spark.transformation.context.DataTransformationWithContext`.
+In this case the transformation will be injected a `Broadcast<DataTransformationContext>` object via the `setTransformationContext(...)` method.
+
+## Table of contents
+
+{: .no_toc .text-delta }
+
+- TOC
+{:toc}
+
+---
 
 ## Fields
 
 | Field | Required | Possible Value |
 | ----- | -------- | -------------- |
-| `type` | yes | `transform` |
-| `using` | no | An optional list of other components to be passed as input to the transform component  |
-| `params` | yes (see details) | A map to provide parameters. Note that parameters are required for a transformation that supports parameters. |
-| `transformWith` | yes | A Java fully qualified name of a class that specifies an implementation of the `dataengine.spark.transformation.DataTransformationN` interface |
-| `encodedAs` | no | An optional encoded specification |
+| `type` | yes | `map` (exactly one source) or `transform` (variable number of input sources) |
+| `using` | no | An optional list of other components to be used as input to the transform component  |
+| `params` | no (see details) | A map that provides parameters. Note that parameters are required for a transformation that implements `sparkengine.spark.transformation.DataTransformationWithParameters`. |
+| `transformWith` | yes | A Java fully qualified name of a class that specifies an implementation of the `dataengine.spark.transformation.DataTransformation` or `dataengine.spark.transformation.DataTransformationN` interface. |
+| `accumulators` | no | A mapping between how an accumulator is used internally and how it is named globally. |
+| `encodedAs` | no | An optional encoded specification. |
 
-## Example (without parameters)
+## Single-input Transformation (component with `transform` type)
+
+## Examples
 
 Yaml example:
+
+```yaml
+source:
+  type: inline
+  data:
+    - { key: "a", value: 1 }
+    - { key: "a", value: 1 }
+    - { key: "a", value: 1 }
+    - { key: "b", value: 100 }
+    - { key: "b", value: 200 }
+    - { key: "c", value: 1 }
+
+tx:
+  type: map
+  using: source
+  transformWith: sparkengine.plan.runtime.builder.dataset.MapTransformation
+```
+
+Java code for transformation:
+
+```java
+package sparkengine.plan.runtime.builder.dataset;
+
+import dataengine.spark.transformation.DataTransformation;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
+import java.util.List;
+
+public class MapTransformation implements DataTransformation<Row, Row> {
+
+    @Override
+    public Dataset<Row> apply(Dataset<Row> dataset) {
+        return dataset.cache();
+    }
+
+}
+```
+
+## Multi-input Transformation (component with `transform` type)
+
+### Example (without parameters)
+
+Yaml example:
+
 ```yaml
 source1:
   type: inline
@@ -51,6 +114,7 @@ tx:
 ```
 
 Java code for transformation:
+
 ```java
 package sparkengine.plan.runtime.builder.dataset;
 
@@ -70,9 +134,10 @@ public class TestTransformation implements DataTransformationN<Row, Row> {
 }
 ```
 
-## Example (with parameters)
+### Example (with parameters)
 
 Yaml example:
+
 ```yaml
 source1:
   type: inline
@@ -100,6 +165,7 @@ txWithParams:
 ```
 
 Java code for transformation:
+
 ```java
 package sparkengine.plan.runtime.builder;
 
@@ -113,7 +179,7 @@ import sparkengine.spark.transformation.DataTransformationWithParameters;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class TestTransformationWithParams implements DataTransformationWithParameter<Row, Row, TestTransformationWithParams.Params> {
+public class TestTransformationWithParams implements DataTransformationN<Row, Row>, DataTransformationWithParameter<TestTransformationWithParams.Params> {
 
     private Params params;
 

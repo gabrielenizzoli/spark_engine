@@ -187,8 +187,6 @@ class TransformationsTest extends SparkSessionManager {
         var src = sparkSession.createDataFrame(List.of(), schema);
         var tx = Transformations.<Row>verifySchemaWith(schema);
 
-        System.out.println(schema.toDDL());
-
         // when
         var dst = tx.apply(src);
 

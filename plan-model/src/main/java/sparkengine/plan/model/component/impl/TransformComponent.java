@@ -21,6 +21,8 @@ public class TransformComponent implements ComponentWithMultipleInputs {
     @Nullable
     List<String> using;
     @Nullable
+    Map<String, String> accumulators;
+    @Nullable
     Map<String, Object> params;
     @Nonnull
     String transformWith;

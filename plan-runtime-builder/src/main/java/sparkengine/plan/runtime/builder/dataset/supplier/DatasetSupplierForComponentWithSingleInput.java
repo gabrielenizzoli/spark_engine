@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Value;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoder;
-import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
 import sparkengine.plan.model.component.ComponentWithSingleInput;
 import sparkengine.plan.model.component.impl.EncodeComponent;
@@ -12,9 +11,11 @@ import sparkengine.plan.model.component.impl.MapComponent;
 import sparkengine.plan.model.component.impl.SchemaValidationComponent;
 import sparkengine.plan.runtime.builder.RuntimeContext;
 import sparkengine.plan.runtime.builder.dataset.utils.EncoderUtils;
+import sparkengine.plan.runtime.builder.dataset.utils.TransformationUtils;
 import sparkengine.plan.runtime.datasetfactory.DatasetFactoryException;
-import sparkengine.spark.transformation.DataTransformation;
+import sparkengine.spark.transformation.DataTransformationWithEncoder;
 import sparkengine.spark.transformation.Transformations;
+import sparkengine.spark.transformation.context.DataTransformationWithContext;
 
 import javax.annotation.Nonnull;
 
@@ -47,21 +48,26 @@ public class DatasetSupplierForComponentWithSingleInput<T> implements DatasetSup
         return null;
     }
 
-    private Dataset<T> getMapDataset(MapComponent txComponent) throws DatasetFactoryException {
-        DataTransformation<Object, T> dxTransformation = null;
+    private Dataset<T> getMapDataset(MapComponent mapComponent) throws DatasetFactoryException {
+        var dataTransformation = TransformationUtils.<T>getDataTransformation(mapComponent.getTransformWith());
+        TransformationUtils.injectTransformationParameters(dataTransformation, mapComponent.getParams());
 
-        try {
-            dxTransformation = (DataTransformation<Object, T>) Class.forName(txComponent.getTransformWith()).getDeclaredConstructor().newInstance();
-        } catch (Throwable e) {
-            throw new DatasetFactoryException("unable to instantiate map with class: [" + txComponent.getTransformWith() + "]");
+        if (dataTransformation instanceof DataTransformationWithContext) {
+            var txWithContext = (DataTransformationWithContext)dataTransformation;
+            txWithContext.setTransformationContext(runtimeContext.buildBroadcastTransformationContext(mapComponent.getAccumulators()));
         }
 
-        if (txComponent.getEncodedAs() != null) {
-            var encoder = (Encoder<T>) EncoderUtils.buildEncoder(txComponent.getEncodedAs());
-            dxTransformation = dxTransformation.andThenEncode(encoder);
+        if (mapComponent.getEncodedAs() != null) {
+            var encoder = (Encoder<T>) EncoderUtils.buildEncoder(mapComponent.getEncodedAs());
+            if (dataTransformation instanceof DataTransformationWithEncoder) {
+                var dataTransformationWithEncoder = (DataTransformationWithEncoder<T>)dataTransformation;
+                dataTransformationWithEncoder.setEncoder(encoder);
+            } else {
+                dataTransformation = dataTransformation.andThenEncode(encoder);
+            }
         }
 
-        return dxTransformation.apply(inputDataset);
+        return dataTransformation.apply(inputDataset);
     }
 
 }

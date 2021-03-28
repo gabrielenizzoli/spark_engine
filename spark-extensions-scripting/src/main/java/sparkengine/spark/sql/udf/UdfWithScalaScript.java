@@ -100,7 +100,7 @@ class ScriptUDF0<R> implements UDF0<R>, UdfWithContext {
     public R call() throws Exception {
         try {
             return (R) ((Function0<R>) ScriptEngine
-                    .evaluate(code, udfContext == null ? Option.empty() : Option.apply(udfContext), Option.apply(UdfContext.class.getName())))
+                    .evaluate(code, true, udfContext == null ? Option.empty() : Option.apply(udfContext), Option.apply(UdfContext.class.getName())))
                     .apply();
         } catch (ToolBoxError e) {
             throw new Exception("compilation error in scala code", e);
@@ -128,7 +128,7 @@ class ScriptUDF1<T1, R> implements UDF1<T1, R>, UdfWithContext {
     public R call(T1 o) throws Exception {
         try {
             return (R) ((Function1<T1, R>) ScriptEngine
-                    .evaluate(code, udfContext == null ? Option.empty() : Option.apply(udfContext), Option.apply(UdfContext.class.getName())))
+                    .evaluate(code, true, udfContext == null ? Option.empty() : Option.apply(udfContext), Option.apply(UdfContext.class.getName())))
                     .apply(o);
         } catch (ToolBoxError e) {
             throw new Exception(e);
@@ -156,7 +156,7 @@ class ScriptUDF2<T1, T2, R> implements UDF2<T1, T2, R>, UdfWithContext {
     public R call(T1 o1, T2 o2) throws Exception {
         try {
             return (R) ((Function2<T1, T2, R>) ScriptEngine
-                    .evaluate(code, udfContext == null ? Option.empty() : Option.apply(udfContext.getValue()), Option.apply(UdfContext.class.getName())))
+                    .evaluate(code, true, udfContext == null ? Option.empty() : Option.apply(udfContext.getValue()), Option.apply(UdfContext.class.getName())))
                     .apply(o1, o2);
         } catch (ToolBoxError e) {
             throw new Exception("compilation error in scala code", e);
@@ -184,7 +184,7 @@ class ScriptUDF3<T1, T2, T3, R> implements UDF3<T1, T2, T3, R>, UdfWithContext {
     public R call(T1 o1, T2 o2, T3 o3) throws Exception {
         try {
             return (R) ((Function3<T1, T2, T3, R>) ScriptEngine
-                    .evaluate(code, udfContext == null ? Option.empty() : Option.apply(udfContext), Option.apply(UdfContext.class.getName())))
+                    .evaluate(code, true, udfContext == null ? Option.empty() : Option.apply(udfContext), Option.apply(UdfContext.class.getName())))
                     .apply(o1, o2, o3);
         } catch (ToolBoxError e) {
             throw new Exception("compilation error in scala code", e);
@@ -212,7 +212,7 @@ class ScriptUDF4<T1, T2, T3, T4, R> implements UDF4<T1, T2, T3, T4, R>, UdfWithC
     public R call(T1 o1, T2 o2, T3 o3, T4 o4) throws Exception {
         try {
             return (R) ((Function4<T1, T2, T3, T4, R>) ScriptEngine
-                    .evaluate(code, udfContext == null ? Option.empty() : Option.apply(udfContext), Option.apply(UdfContext.class.getName())))
+                    .evaluate(code, true, udfContext == null ? Option.empty() : Option.apply(udfContext), Option.apply(UdfContext.class.getName())))
                     .apply(o1, o2, o3, o4);
         } catch (ToolBoxError e) {
             throw new Exception("compilation error in scala code", e);
@@ -240,7 +240,7 @@ class ScriptUDF5<T1, T2, T3, T4, T5, R> implements UDF5<T1, T2, T3, T4, T5, R>, 
     public R call(T1 o1, T2 o2, T3 o3, T4 o4, T5 o5) throws Exception {
         try {
             return (R) ((Function5<T1, T2, T3, T4, T5, R>) ScriptEngine
-                    .evaluate(code, udfContext == null ? Option.empty() : Option.apply(udfContext), Option.apply(UdfContext.class.getName())))
+                    .evaluate(code, true, udfContext == null ? Option.empty() : Option.apply(udfContext), Option.apply(UdfContext.class.getName())))
                     .apply(o1, o2, o3, o4, o5);
         } catch (ToolBoxError e) {
             throw new Exception("compilation error in scala code", e);
