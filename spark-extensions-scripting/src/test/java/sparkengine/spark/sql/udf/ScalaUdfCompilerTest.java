@@ -18,7 +18,7 @@ class ScalaUdfCompilerTest extends SparkSessionManager {
 
     @Test
     void testScriptManager() throws Throwable {
-        var f = (Function1)ScriptEngine.evaluate("(i:Int) => i+ctx.getValue()", Option.apply(TestBean.of(100)), Option.empty());
+        var f = (Function1)ScriptEngine.evaluate("(i:Int) => i+ctx.getValue()", true, Option.apply(TestBean.of(100)), Option.empty());
         System.out.println(f.apply(1));
     }
 

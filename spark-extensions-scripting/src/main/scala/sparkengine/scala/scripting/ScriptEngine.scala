@@ -12,33 +12,41 @@ object ScriptEngine {
   val environments = new ConcurrentHashMap[String, Any]();
 
   @throws[ToolBoxError]
-  def evaluate(src: String, context: Option[Any] = None, contextClassName: Option[String] = None): Any = {
+  def evaluate(src: String, cache: Boolean, context: Option[Any] = None, contextClassName: Option[String] = None): Any = {
+    if (cache)
+      scriptCache.computeIfAbsent(src, code => evalCode(code, context, contextClassName))
+    else
+      evalCode(src, context, contextClassName)
+  }
+
+  private def evalCode(code: String, context: Option[Any], contextClassName: Option[String]): Any = {
     val toolBox = universe.runtimeMirror(getClass.getClassLoader).mkToolBox()
-    scriptCache.computeIfAbsent(src, code => {
+    val contextId = UUID.randomUUID().toString;
+    try {
+      val enrichedCode = enrichCode(contextId, code, context, contextClassName)
+      val parsedCode = toolBox.parse(enrichedCode)
+      toolBox.eval(parsedCode)
+    } finally {
+      environments.remove(contextId)
+    }
+  }
 
-      val contextId = UUID.randomUUID().toString;
-      try {
-        val parsedCode = context match {
-          case Some(contextValue) => {
-            environments.put(contextId, contextValue)
-            val contextClass = contextClassName match {
-              case Some(name) => name
-              case None => contextValue.getClass.getName
-            }
-            toolBox.parse(
-              s"""
-                val ctx = sparkengine.scala.scripting.ScriptEngine.environments.get("$contextId").asInstanceOf[$contextClass]
-                $code
-              """)
-          }
-          case None => toolBox.parse(code)
+  private def enrichCode(contextId: String, src: String, context: Option[Any], contextClassName: Option[String]): String = {
+    val contextId = UUID.randomUUID().toString;
+    context match {
+      case Some(contextValue) => {
+        environments.put(contextId, contextValue)
+        val contextClass = contextClassName match {
+          case Some(name) => name
+          case None => contextValue.getClass.getName
         }
-
-        toolBox.eval(parsedCode)
-      } finally {
-        environments.remove(contextId)
+        s"""
+        val ctx = sparkengine.scala.scripting.ScriptEngine.environments.get("$contextId").asInstanceOf[$contextClass]
+        $src
+        """
       }
-    })
+      case None => src
+    }
   }
 
 }
