@@ -38,9 +38,9 @@ In this case the transformation will be injected a `Broadcast<DataTransformation
 | `accumulators` | no | A mapping between how an accumulator is used internally and how it is named globally. |
 | `encodedAs` | no | An optional encoded specification. |
 
-## Single-input Transformation (component with `transform` type)
+## Single-input Transformation (`map`)
 
-## Examples
+### Examples
 
 Yaml example:
 
@@ -82,7 +82,7 @@ public class MapTransformation implements DataTransformation<Row, Row> {
 }
 ```
 
-## Multi-input Transformation (component with `transform` type)
+## Multi-input Transformation (`transform`)
 
 ### Example (without parameters)
 
