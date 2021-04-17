@@ -17,6 +17,8 @@ public class SparkSessionManager {
         windowsNoisyLogsWorkaround();
         sparkSession = SparkSession.builder().master("local")
                 .config("spark.sql.streaming.forceDeleteTempCheckpointLocation", true)
+                .config("spark.driver.host", "127.0.0.1")
+                .config("spark.driver.bindAddress", "127.0.0.1")
                 .config("spark.ui.enabled", false)
                 .config("spark.ui.port", 8080)
                 .config("spark.port.maxRetries", 160)
