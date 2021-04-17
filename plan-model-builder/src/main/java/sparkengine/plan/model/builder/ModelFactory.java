@@ -12,6 +12,7 @@ import sparkengine.plan.model.sink.Sink;
 import sparkengine.plan.model.sink.catalog.SinkCatalog;
 
 import javax.annotation.Nonnull;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -74,7 +75,9 @@ public class ModelFactory {
     }
 
     public static void writePlanAsYaml(@Nonnull Plan plan, @Nonnull OutputStream outputStream) throws IOException, ModelFormatException {
-        YAML_OBJECT_MAPPER.writeValue(outputStream, plan);
+        var out = new ByteArrayOutputStream();
+        YAML_OBJECT_MAPPER.writeValue(out, plan);
+        outputStream.write(out.toByteArray());
     }
 
 }

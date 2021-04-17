@@ -2,14 +2,14 @@ package sparkengine.plan.runtime.builder.datasetconsumer;
 
 import lombok.Builder;
 import lombok.Value;
+import lombok.extern.log4j.Log4j;
 import org.apache.spark.sql.Dataset;
+import scala.Console;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumer;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 @Value
 @Builder
+@Log4j
 public class ShowConsumer<T> implements DatasetConsumer<T> {
 
     int count;
@@ -18,6 +18,7 @@ public class ShowConsumer<T> implements DatasetConsumer<T> {
     @Override
     public void readFrom(Dataset<T> dataset) {
         dataset.show(count, truncate);
+        Console.out().flush();
     }
 
 }
