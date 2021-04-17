@@ -5,6 +5,7 @@ import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.catalyst.analysis.UnresolvedFunction;
 import org.apache.spark.sql.catalyst.expressions.Expression;
 import org.apache.spark.sql.catalyst.expressions.ScalaUDF;
+import scala.None;
 import scala.Option;
 import scala.collection.JavaConverters;
 import sparkengine.scala.compat.*;
@@ -34,6 +35,7 @@ public class UnresolvedUdfReplacer implements UnresolvedFunctionReplacer {
                 udfDefinition.getReturnType(),
                 unresolvedFunction.children(),
                 JavaConverters.asScalaBuffer(Collections.emptyList()),
+                Option.empty(),
                 Option.apply(unresolvedFunction.name().funcName()),
                 true,
                 true);
