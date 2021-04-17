@@ -16,8 +16,8 @@ public class UdfWithInjectedContext implements UdfDefinition, UdfWithContext, UD
     private Broadcast<UdfContext> udfContext;
 
     @Override
-    public void setUdfContext(@Nonnull Broadcast<UdfContext> udfContext) {
-        this.udfContext = Objects.requireNonNull(udfContext);
+    public void setUdfContextBroadcast(@Nonnull Broadcast<UdfContext> udfContextBroadcast) {
+        this.udfContext = Objects.requireNonNull(udfContextBroadcast);
     }
 
     @Nonnull

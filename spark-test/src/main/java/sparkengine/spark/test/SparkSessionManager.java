@@ -7,17 +7,24 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 public class SparkSessionManager {
+
+    public static Map<String, String> SPARK_TEST_PROPERTIES = Map.ofEntries(
+            Map.entry("spark.sql.streaming.forceDeleteTempCheckpointLocation", "true"),
+            Map.entry("spark.driver.host", "127.0.0.1"),
+            Map.entry("spark.driver.bindAddress", "127.0.0.1")
+    );
 
     protected static SparkSession sparkSession;
 
     @BeforeAll
     static void init() throws IOException {
         windowsNoisyLogsWorkaround();
-        sparkSession = SparkSession.builder().master("local")
-                .config("spark.sql.streaming.forceDeleteTempCheckpointLocation", true)
-                .getOrCreate();
+        var builder = SparkSession.builder().master("local");
+        SPARK_TEST_PROPERTIES.forEach((k,v) -> builder.config(k, v));
+        sparkSession = builder.getOrCreate();
     }
 
     private static void windowsNoisyLogsWorkaround() {

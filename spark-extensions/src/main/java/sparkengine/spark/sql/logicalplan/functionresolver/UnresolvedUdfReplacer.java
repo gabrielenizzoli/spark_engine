@@ -58,7 +58,7 @@ public class UnresolvedUdfReplacer implements UnresolvedFunctionReplacer {
 
     protected <T> T injectUdfContext(T udf) {
         if (udfContext != null && udf instanceof UdfWithContext)
-            ((UdfWithContext)udf).setUdfContext(udfContext);
+            ((UdfWithContext)udf).setUdfContextBroadcast(udfContext);
         return udf;
     }
 
