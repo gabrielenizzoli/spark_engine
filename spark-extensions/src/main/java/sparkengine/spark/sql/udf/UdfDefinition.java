@@ -80,6 +80,7 @@ public interface UdfDefinition extends SqlFunction {
 
     }
 
+    @Nonnull
     @Override
     default UnresolvedFunctionReplacer asFunctionReplacer(@Nullable Broadcast<UdfContext> udfContextBroadcast) {
         return new UnresolvedUdfReplacer(this, udfContextBroadcast);
