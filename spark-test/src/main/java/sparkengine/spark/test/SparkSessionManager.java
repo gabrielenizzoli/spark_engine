@@ -18,6 +18,8 @@ public class SparkSessionManager {
         sparkSession = SparkSession.builder().master("local")
                 .config("spark.sql.streaming.forceDeleteTempCheckpointLocation", true)
                 .config("spark.ui.enabled", false)
+                .config("spark.ui.port", 8080)
+                .config("spark.port.maxRetries", 160)
                 .getOrCreate();
     }
 
