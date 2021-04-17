@@ -45,7 +45,7 @@
     </developers>
 
     <properties>
-        <revision>0.11.2</revision>
+        <revision>0.12.0</revision>
 
         <!-- params -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -56,7 +56,7 @@
 
         <!-- packages -->
         <jsr305.version>3.0.2</jsr305.version>
-        <spark.version>3.0.1</spark.version>
+        <spark.version>3.1.1</spark.version>
         <scala.binary.version>2.12</scala.binary.version>
         <scala.version>2.12.10</scala.version>
         <fasterxml.jackson.version>2.10.0</fasterxml.jackson.version>

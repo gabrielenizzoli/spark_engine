@@ -9,7 +9,7 @@ permalink: /quickstart
 
 ## Get Java + Spark
 
-* Download and unpack [Apache Spark, version 3+](https://spark.apache.org/downloads.html).
+* Download and unpack [Apache Spark, version 3.1.*](https://spark.apache.org/downloads.html).
 * Also, you should also have [Java 11+ installed](https://aws.amazon.com/corretto/).
 
 ## Use an execution plan

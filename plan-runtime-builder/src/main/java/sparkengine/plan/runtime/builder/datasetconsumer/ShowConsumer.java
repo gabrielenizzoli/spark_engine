@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.log4j.Log4j;
 import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.functions;
 import scala.Console;
 import sparkengine.plan.runtime.datasetconsumer.DatasetConsumer;
 
