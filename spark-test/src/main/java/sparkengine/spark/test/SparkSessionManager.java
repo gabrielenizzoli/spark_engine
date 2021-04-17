@@ -17,6 +17,7 @@ public class SparkSessionManager {
         windowsNoisyLogsWorkaround();
         sparkSession = SparkSession.builder().master("local")
                 .config("spark.sql.streaming.forceDeleteTempCheckpointLocation", true)
+                .config("spark.ui.enabled", false)
                 .getOrCreate();
     }
 
