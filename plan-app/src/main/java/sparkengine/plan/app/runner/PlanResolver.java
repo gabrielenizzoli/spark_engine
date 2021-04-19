@@ -60,7 +60,7 @@ public class PlanResolver implements PlanMapper {
             try {
                 return TableListExplorer.findTableListInSql(sparkSession, sql);
             } catch (PlanExplorerException e) {
-                throw new PlanMapperException(String.format("error resolving sql tables in sql [%s]", sql));
+                throw new PlanMapperException(String.format("error resolving sql tables in sql [%s]", sql), e);
             }
         });
     }

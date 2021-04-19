@@ -1,0 +1,22 @@
+components:
+
+  config:
+    type: inline
+    data:
+      - { fileDumpLocation: "/mnt/data/tmp" }
+  wikipediaConfig:
+    type: inline
+    data:
+      - { language: "hi", date: "20210401" }
+      - { language: "it", date: "20210401" }
+
+  wikipediaInfo:
+    type: ref
+  wikipediaDownload:
+    type: ref
+
+sinks:
+  show: { type: show, truncate: 500 }
+
+pipelines:
+  showData: { component: wikipediaDownload, sink: show }
