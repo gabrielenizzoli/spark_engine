@@ -6,10 +6,8 @@ components:
     sql: |
       select 
         /*+ REPARTITION(4) */
-        fileUrl,
-        concat((select fileDumpLocation from config), "/", language, "_", date, "_", fileName) as fileDumpLocation,
-        language, 
-        date
+        *,
+        concat((select fileDumpLocation from config), "/", language, "_", date, "_", fileName) as fileLocation
       from 
         wikipediaInfo
   download:
@@ -20,9 +18,9 @@ components:
           scala: |
             (url:String, location:String) => {
               try {
-                val u = new java.net.URL(url)
-                val f = new java.io.File(location)
-                org.apache.commons.io.FileUtils.copyURLToFile(u, f)
+                val url = new java.net.URL(url)
+                val file = new java.io.File(location)
+                org.apache.commons.io.FileUtils.copyURLToFile(url, file)
                 true
               } catch {
                 case _: Throwable  => false
@@ -30,10 +28,7 @@ components:
             }
     sql: |
       select 
-        fileUrl,
-        fileDumpLocation,
-        downloadUrl(fileUrl, fileDumpLocation) as downloadOutcome,
-        language, 
-        date
+        *,
+        downloadUrl(fileUrl, fileLocation) as downloadOutcome
       from 
         downloadLocation

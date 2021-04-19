@@ -24,7 +24,6 @@ components:
     sql: |
       select 
         explode(fileNames) as fileName,
-        size(fileNames) as filesCount,
         language,
         date
       from 
@@ -34,7 +33,6 @@ components:
       select 
         fileName,
         concat("http://dumps.wikimedia.your.org/", language, "wiki/", date, "/", fileName) as fileUrl,
-        filesCount,
         language,
         date
       from 
