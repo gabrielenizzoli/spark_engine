@@ -46,7 +46,7 @@ class SimplePipelineRunnersFactoryTest extends SparkSessionManager {
                 .build();
 
         var factory = SimplePipelineRunnersFactory.builder()
-                .pipelineDefinitions(Map.of("pipe", SimplePipelineRunnersFactory.PipelineDefinition.of("sql", "get")))
+                .pipelineDefinitions(List.of(SimplePipelineRunnersFactory.PipelineDefinition.of("pipe", "sql", "get")))
                 .datasetFactory(datasetFactory)
                 .datasetConsumerFactory(datasetConsumerFactory)
                 .build();

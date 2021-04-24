@@ -7,18 +7,17 @@ import sparkengine.plan.model.plan.mapper.DefaultPlanMapper;
 import sparkengine.plan.model.plan.mapper.PipelineMapper;
 import sparkengine.plan.model.sink.Sink;
 import sparkengine.plan.model.sink.impl.ForeachSink;
-import sparkengine.plan.model.sink.mapper.SinkMapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @AllArgsConstructor
-public class SinkMapperForComponents implements SinkMapper {
+public class SinkMapperForPipelines implements SinkMapper {
 
     public static final String PLAN = "plan";
 
     @Nonnull
-    protected final ComponentMapper componentMapper;
+    protected final PipelineMapper pipelineMapper;
 
     @Override
     public final Sink mapForeachSink(Location location, ForeachSink sink) throws Exception {
@@ -26,8 +25,8 @@ public class SinkMapperForComponents implements SinkMapper {
         var plan = sink.getPlan();
 
         var planMapper = DefaultPlanMapper.builder()
-                .componentMapper(componentMapper)
                 .sinkMapper(this)
+                .pipelineMapper(pipelineMapper)
                 .location(location.push(PLAN))
                 .build();
 

@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.apache.spark.sql.SparkSession;
 import sparkengine.plan.model.builder.ResourceLocationBuilder;
 import sparkengine.plan.model.builder.input.AppResourceLocator;
+import sparkengine.plan.model.mapper.pipeline.PipelinesReorderingPlanMapper;
 import sparkengine.plan.model.mapper.reference.PlanMapperThatReplacesReferences;
 import sparkengine.plan.model.mapper.sql.SqlPlanMapper;
 import sparkengine.plan.model.plan.Plan;
@@ -39,7 +40,8 @@ public class PlanResolver implements PlanMapper {
         var resolvedPlan = PlanMappers
                 .ofMappers(
                         getReferencePlanResolver(),
-                        getSqlResolver())
+                        getSqlResolver(),
+                        PipelinesReorderingPlanMapper.of())
                 .map(sourcePlan);
 
         if (log.isTraceEnabled()) {

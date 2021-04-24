@@ -1,5 +1,5 @@
 type: fragment
-using: [ wikipediaConfig ]
+using: [ wikipediaConfig, config ]
 providing: fileUrls
 components:
   statusJson:
@@ -32,7 +32,7 @@ components:
     sql: |
       select 
         fileName,
-        concat("http://dumps.wikimedia.your.org/", language, "wiki/", date, "/", fileName) as fileUrl,
+        concat((select wikipediaUrl from config), "/", language, "wiki/", date, "/", fileName) as fileUrl,
         language,
         date
       from 

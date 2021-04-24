@@ -69,7 +69,8 @@ sinks:
     options: { ... }
 
 pipelines:
-  yourPipelineNameHere: { component: transformDataWithCustomCode, sink: sendYourDataToKafka }
+  yourPipelineNameHere: 
+    layout: { component: transformDataWithCustomCode, sink: sendYourDataToKafka }
 ```
 
 Notice how:

@@ -3,7 +3,7 @@ components:
   config:
     type: inline
     data:
-      - { fileDumpLocation: "/mnt/data/tmp" }
+      - { wikipediaUrl: "http://dumps.wikimedia.your.org", fileDumpLocation: "/mnt/data/tmp" }
   wikipediaConfig:
     type: inline
     data:
@@ -19,4 +19,5 @@ sinks:
   show: { type: show, truncate: 500 }
 
 pipelines:
-  showData: { component: wikipediaDownload, sink: show }
+  showData: 
+    layout: { component: wikipediaDownload, sink: show }

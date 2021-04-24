@@ -2,20 +2,21 @@ package sparkengine.plan.model.plan;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
-import lombok.With;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 @Value
+@AllArgsConstructor
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = Pipeline.PipelineBuilder.class)
-public class Pipeline {
-    @Nullable
-    @With
-    Integer order;
+@JsonDeserialize(builder = PipelineLayout.PipelineLayoutBuilder.class)
+public class PipelineLayout {
+
     @Nonnull
-    PipelineLayout layout;
+    String component;
+    @Nonnull
+    String sink;
+
 }
