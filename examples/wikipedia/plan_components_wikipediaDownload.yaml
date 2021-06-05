@@ -7,7 +7,7 @@ components:
       select 
         /*+ REPARTITION(4) */
         *,
-        concat((select fileDumpLocation from config), "/", language, "_", date, "_", fileName) as fileLocation
+        concat((select fileDumpLocation from config), "/lang=", language, "/date=", date, "/", fileName) as fileLocation
       from 
         wikipediaInfo
   download:
@@ -18,9 +18,10 @@ components:
           scala: |
             (url:String, location:String) => {
               try {
-                val url = new java.net.URL(url)
+                val javaUrl = new java.net.URL(url)
                 val file = new java.io.File(location)
-                org.apache.commons.io.FileUtils.copyURLToFile(url, file)
+                file.getParentFile().mkdirs()
+                org.apache.commons.io.FileUtils.copyURLToFile(javaUrl, file)
                 true
               } catch {
                 case _: Throwable  => false

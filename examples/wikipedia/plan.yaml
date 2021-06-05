@@ -3,21 +3,35 @@ components:
   config:
     type: inline
     data:
-      - { wikipediaUrl: "http://dumps.wikimedia.your.org", fileDumpLocation: "/mnt/data/tmp" }
+      - { wikipediaUrl: "http://dumps.wikimedia.your.org", fileDumpLocation: "/opt/spark/work-dir" }
   wikipediaConfig:
     type: inline
     data:
       - { language: "hi", date: "20210401" }
-      - { language: "it", date: "20210401" }
 
   wikipediaInfo:
     type: ref
   wikipediaDownload:
     type: ref
 
+  xmlSource:
+    type: batch
+    format: xml
+    options:
+      path: /mnt/data/tmp/lang=hi/date=20210401
+      rowTag: page
+      samplingRatio: 0.05
+
+  xml:
+    sql: select * from xmlSource where ns = 0 and redirect._title is null
+
 sinks:
   show: { type: show, truncate: 500 }
 
 pipelines:
-  showData: 
+  downloadXml:
+    order: 1
     layout: { component: wikipediaDownload, sink: show }
+  readXml:
+    order: 2
+    layout: { component: xml, sink: show }
