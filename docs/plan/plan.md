@@ -18,13 +18,20 @@ In yaml term, an execution plan can be represented by a document divided in 3 pa
 * a list of _sinks_ - this will define dataset consumers
 * a list of _pipelines_ - to pair a component with a sink
 
-## Fields
+## Execution Plan Fields
 
 | Field | Possible Value |
 | ----- | -------------- |
 | `components` | A set of named components. |
 | `sinks` | A set of named sinks.  |
 | `pipelines` | A list of pipelines, where each pipeline names a component to provide a dataset and a sink to consume the dataset. The pipeline is a yaml object with a `component` field and a `sink` field. |
+
+## Pipeline Fields
+
+| Field | Required | Possible Value |
+| ----- | -------- | -------------- |
+| `layout` | yes | The pipeline layout is an object with a `component` field and a `sink` field.  |
+| `order` | no | An integer value that enforces a predefined relative execution order. By default this value is set to be 0. |
 
 ## Examples
 
@@ -50,8 +57,10 @@ sinks:
     ...
 
 pipelines:
-  pipe1: { component: component1, sink: consumer1 }
-  pipe2: { component: component2, sink: consumer2 }
+  pipe1: 
+    layout: { component: component1, sink: consumer1 }
+  pipe2: 
+    layout: { component: component2, sink: consumer2 }
 ```
 
 A practical example:
@@ -72,8 +81,12 @@ sinks:
     trigger: { milliseconds: 1000 }
 
 pipelines:
-  batch: { component: sql, sink: showTable }
-  stream: { component: sqlOnRate, sink: showRate }
+  batch: 
+    layout: { component: sql, sink: showTable }
+    order: 1
+  stream: 
+    layout: { component: sqlOnRate, sink: showRate }
+    order: 2
 ```
 
 Notes:
@@ -81,5 +94,5 @@ Notes:
 * a sink or component that is not used in a pipeline will simply not be utilized,
 * a pipeline with the same component and sink can be repeated multiple times,
 * a plan with no pipelines will do nothing,
-* pipelines are executed in non-deterministic order,
+* pipelines are executed in an order determined by the `order` field.
 * a missing sink or component will cause the pipeline (and eventually the plan) to fail.

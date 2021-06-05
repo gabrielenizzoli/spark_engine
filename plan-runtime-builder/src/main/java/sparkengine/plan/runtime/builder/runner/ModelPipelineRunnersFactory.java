@@ -2,6 +2,7 @@ package sparkengine.plan.runtime.builder.runner;
 
 import org.apache.spark.sql.Dataset;
 import sparkengine.plan.model.component.catalog.ComponentCatalog;
+import sparkengine.plan.model.plan.PipelineSorter;
 import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.sink.catalog.SinkCatalogFromMap;
 import sparkengine.plan.runtime.builder.RuntimeContext;
@@ -15,6 +16,7 @@ import sparkengine.plan.runtime.runner.impl.SimplePipelineRunnersFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,13 +39,14 @@ public class ModelPipelineRunnersFactory {
     }
 
     @Nonnull
-    private static Map<String, SimplePipelineRunnersFactory.PipelineDefinition> getPipelineDefinitions(@Nonnull Plan plan) {
-        return plan.getPipelines()
-                .entrySet()
+    private static List<SimplePipelineRunnersFactory.PipelineDefinition> getPipelineDefinitions(@Nonnull Plan plan) {
+        return PipelineSorter.orderPipelines(plan.getPipelines())
                 .stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        e -> SimplePipelineRunnersFactory.PipelineDefinition.of(e.getValue().getComponent(), e.getValue().getSink())));
+                .map(e -> SimplePipelineRunnersFactory.PipelineDefinition.of(
+                        e.getKey(),
+                        e.getValue().getLayout().getComponent(),
+                        e.getValue().getLayout().getSink()))
+                .collect(Collectors.toList());
     }
 
     private static DatasetFactory getDatasetFactory(@Nonnull Plan plan,

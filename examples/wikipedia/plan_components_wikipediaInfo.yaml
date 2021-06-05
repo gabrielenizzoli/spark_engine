@@ -1,0 +1,39 @@
+type: fragment
+using: [ wikipediaConfig, config ]
+providing: fileUrls
+components:
+  statusJson:
+    udfs:
+      list: [ { type: scala, name: readUrl, scala: "(url:String) => scala.io.Source.fromURL(url).mkString" } ]
+    sql: |
+      select 
+        readUrl(concat("http://dumps.wikimedia.your.org/", language, "wiki/", date, "/dumpstatus.json")) as json,
+        language,
+        date
+      from 
+        wikipediaConfig
+  fileNamesByLanguage:
+    sql: |
+      select 
+        json_object_keys(get_json_object(json, "$.jobs.articlesdump.files")) as fileNames,
+        language,
+        date
+      from 
+        statusJson
+  fileNames:
+    sql: |
+      select 
+        explode(fileNames) as fileName,
+        language,
+        date
+      from 
+        fileNamesByLanguage
+  fileUrls:
+    sql: |
+      select 
+        fileName,
+        concat((select wikipediaUrl from config), "/", language, "wiki/", date, "/", fileName) as fileUrl,
+        language,
+        date
+      from 
+        fileNames

@@ -81,9 +81,13 @@ sinks:
         sinks:
           out: { type: batch, format: parquet, options: { path: 'abc' }, mode: OVERWRITE }
         pipelines:
-          pipe1: { component: tx, sink: out }
+          pipe1:
+            layout: { component: tx, sink: out }
 
 pipelines:
-  pipe1: { component: tx, sink: out1 }
-  pipe2: { component: tx, sink: out2 }
-  pipe3: { component: tx, sink: out3 }
+  pipe1:
+    layout: { component: tx, sink: out1 }
+  pipe2:
+    layout: { component: tx, sink: out2 }
+  pipe3:
+    layout: { component: tx, sink: out3 }

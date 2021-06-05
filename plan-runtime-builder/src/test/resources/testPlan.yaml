@@ -5,4 +5,5 @@ sinks:
   view: { type: view, name: tmpView }
 
 pipelines:
-  pipe1: { component: sql, sink: view }
+  pipe1:
+    layout: { component: sql, sink: view }

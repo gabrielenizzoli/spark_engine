@@ -6,6 +6,7 @@ import sparkengine.plan.model.common.Location;
 import sparkengine.plan.model.component.Component;
 import sparkengine.plan.model.component.mapper.ComponentMapper;
 import sparkengine.plan.model.component.mapper.ComponentsMapper;
+import sparkengine.plan.model.plan.Pipeline;
 import sparkengine.plan.model.plan.Plan;
 import sparkengine.plan.model.sink.Sink;
 import sparkengine.plan.model.sink.mapper.SinkMapper;
@@ -26,6 +27,8 @@ public class DefaultPlanMapper implements PlanMapper {
     ComponentMapper componentMapper;
     @Nullable
     SinkMapper sinkMapper;
+    @Nullable
+    PipelineMapper pipelineMapper;
     @Nonnull
     @lombok.Builder.Default
     Location location = Location.empty();
@@ -33,11 +36,10 @@ public class DefaultPlanMapper implements PlanMapper {
     @Override
     public @Nonnull
     Plan map(@Nonnull Plan plan) throws PlanMapperException {
-        var components = mapAllComponents(plan.getComponents());
-        var sinks = mapAllSinks(plan.getSinks());
         return plan.toBuilder()
-                .withComponents(components)
-                .withSinks(sinks)
+                .withComponents(mapAllComponents(plan.getComponents()))
+                .withSinks(mapAllSinks(plan.getSinks()))
+                .withPipelines(mapPipelines(plan.getPipelines()))
                 .build();
     }
 
@@ -50,7 +52,8 @@ public class DefaultPlanMapper implements PlanMapper {
         try {
             return ComponentsMapper.mapComponents(location.push(COMPONENTS), componentMapper, components);
         } catch (Exception | ComponentsMapper.InternalMapperError e) {
-            throw new PlanMapperException("exception resolving plan with resolver " + this.getClass().getName(), e);
+            throw new PlanMapperException(String.format("exception mapping components with plan mapper %s, component mapper %s",
+                    this.getClass().getName(), componentMapper.getClass().getName()), e);
         }
     }
 
@@ -63,7 +66,22 @@ public class DefaultPlanMapper implements PlanMapper {
         try {
             return SinksMapper.mapSinks(location.push(SINKS), sinkMapper, sinks);
         } catch (Exception | SinksMapper.InternalMapperError e) {
-            throw new PlanMapperException("exception resolving plan with resolver " + this.getClass().getName(), e);
+            throw new PlanMapperException(String.format("exception mapping sinks with plan mapper %s, sink mapper %s",
+                    this.getClass().getName(), sinkMapper.getClass().getName()), e);
+        }
+    }
+
+    private Map<String, Pipeline> mapPipelines(Map<String, Pipeline> pipelines)
+            throws PlanMapperException {
+
+        if (pipelineMapper == null)
+            return pipelines;
+
+        try {
+            return pipelineMapper.mapPipelines(pipelines);
+        } catch (Exception e) {
+            throw new PlanMapperException(String.format("exception mapping pipelines with plan mapper %s, pipeline mapper %s",
+                    this.getClass().getName(), pipelineMapper.getClass().getName()), e);
         }
     }
 

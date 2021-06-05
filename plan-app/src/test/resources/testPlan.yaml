@@ -5,4 +5,5 @@ sinks:
   count: { type: counter, key: app }
 
 pipelines:
-  pipe: { component: sql, sink: count }
+  pipe:
+    layout: { component: sql, sink: count }

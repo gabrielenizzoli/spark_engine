@@ -74,12 +74,9 @@ sinks:
           mode: "OVERWRITE"
       pipelines:
         pipe1:
-          component: "tx"
-          sink: "out"
+          layout: { component: "tx", sink: "out" }
 pipelines:
   pipe1:
-    component: "reference"
-    sink: "view"
+    layout: { component: "reference", sink: "view" }
   pipe2:
-    component: "reference2"
-    sink: "view"
+    layout: { component: "reference2", sink: "view" }

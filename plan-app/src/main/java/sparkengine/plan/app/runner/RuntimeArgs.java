@@ -5,6 +5,7 @@ import lombok.*;
 import sparkengine.plan.model.mapper.sql.ResolverMode;
 
 import java.util.List;
+import java.util.Set;
 
 @ToString
 @EqualsAndHashCode
@@ -19,9 +20,9 @@ public class RuntimeArgs {
     private ResolverMode sqlResolutionMode = ResolverMode.VALIDATE;
 
     @Getter
-    @Parameter(names = {"--pipelines"}, order = 3, description = "Provide an list of pipelines to execute (if pipeline is not in plan, it will be ignored)")
+    @Parameter(names = {"--pipelines"}, order = 3, description = "Provide a subset of pipelines to execute (if pipeline name provided is not in plan, it will be ignored)")
     @lombok.Builder.Default
-    private List<String> pipelines = null;
+    private Set<String> pipelines = null;
 
     @Getter
     @Parameter(names = {"--skipRun"}, order = 3, description = "Do everything, but do not run the pipelines")

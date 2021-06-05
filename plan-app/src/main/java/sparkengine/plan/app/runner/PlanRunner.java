@@ -23,9 +23,11 @@ import sparkengine.plan.runtime.runner.PipelineRunnersFactoryException;
 import javax.annotation.Nonnull;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Value
 @Builder
@@ -122,13 +124,13 @@ public class PlanRunner {
     private void executePipelines(@Nonnull PipelineRunnersFactory pipelineRunnersFactory)
             throws PipelineRunnersFactoryException, DatasetConsumerException {
 
-        var pipelinesDeclared = pipelineRunnersFactory.getPipelineNames();
-        var pipelinesToExecute = new LinkedList<>(pipelinesDeclared);
+        var pipelinesToExecute = pipelineRunnersFactory.getPipelineNames();
         if (runtimeArgs.getPipelines() != null) {
-            pipelinesToExecute = new LinkedList<>(runtimeArgs.getPipelines());
-            pipelinesToExecute.retainAll(pipelinesDeclared);
+            pipelinesToExecute = pipelinesToExecute.stream()
+                    .filter(name -> runtimeArgs.getPipelines().contains(name))
+                    .collect(Collectors.toList());
         }
-        log.info(String.format("found pipelines [%s] (user override: %b; parallel execution: %b)",
+        log.info(String.format("pipelines [%s] (user filter: %b; parallel execution: %b)",
                 pipelinesToExecute,
                 runtimeArgs.getPipelines() != null,
                 runtimeArgs.isParallelPipelineExecution()));

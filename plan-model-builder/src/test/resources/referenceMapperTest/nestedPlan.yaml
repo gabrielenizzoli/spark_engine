@@ -22,8 +22,11 @@ sinks:
       sinks:
         out: { type: ref }
       pipelines:
-        pipe1: { component: tx, sink: out }
+        pipe1:
+          layout: { component: tx, sink: out }
 
 pipelines:
-  pipe1: { component: reference, sink: view }
-  pipe2: { component: reference2, sink: view }
+  pipe1:
+    layout: { component: reference, sink: view }
+  pipe2:
+    layout: { component: reference2, sink: view }

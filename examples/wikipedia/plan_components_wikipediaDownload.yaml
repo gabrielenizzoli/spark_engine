@@ -1,0 +1,35 @@
+type: fragment
+using: [ wikipediaInfo, config ]
+providing: download
+components:
+  downloadLocation:
+    sql: |
+      select 
+        /*+ REPARTITION(4) */
+        *,
+        concat((select fileDumpLocation from config), "/lang=", language, "/date=", date, "/", fileName) as fileLocation
+      from 
+        wikipediaInfo
+  download:
+    udfs:
+      list: 
+        - type: scala
+          name: downloadUrl
+          scala: |
+            (url:String, location:String) => {
+              try {
+                val javaUrl = new java.net.URL(url)
+                val file = new java.io.File(location)
+                file.getParentFile().mkdirs()
+                org.apache.commons.io.FileUtils.copyURLToFile(javaUrl, file)
+                true
+              } catch {
+                case _: Throwable  => false
+              }
+            }
+    sql: |
+      select 
+        *,
+        downloadUrl(fileUrl, fileLocation) as downloadOutcome
+      from 
+        downloadLocation
