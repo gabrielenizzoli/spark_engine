@@ -7,7 +7,7 @@ components:
   wikipediaConfig:
     type: inline
     data:
-      - { language: "hi", date: "20210401" }
+      - { language: "hi", date: "20210501" }
 
   wikipediaInfo:
     type: ref
