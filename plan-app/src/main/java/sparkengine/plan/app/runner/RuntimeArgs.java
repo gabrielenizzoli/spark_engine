@@ -1,10 +1,13 @@
 package sparkengine.plan.app.runner;
 
+import com.beust.jcommander.DynamicParameter;
 import com.beust.jcommander.Parameter;
 import lombok.*;
 import sparkengine.plan.model.mapper.sql.ResolverMode;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @ToString
@@ -45,7 +48,7 @@ public class RuntimeArgs {
     private boolean parallelPipelineExecution = false;
 
     @Getter
-    @Parameter(names = {"--writeResolvedPlan"}, description = "Write the resolved plan (to standard output)")
+    @Parameter(names = {"--writeResolvedPlanToStdout"}, description = "Write the resolved plan to standard output")
     @lombok.Builder.Default
     private boolean writeResolvedPlan = false;
 
@@ -53,5 +56,15 @@ public class RuntimeArgs {
     @Parameter(names = {"--writeResolvedPlanToFile"}, description = "Write the resolved plan to the specified plan")
     @lombok.Builder.Default
     private String writeResolvedPlanToFile = null;
+
+    @Getter
+    @DynamicParameter(names = { "-P", "--parameter" }, description = "<key>=<value> list of zero or more parameters to be replaced in an inline component dataset")
+    @lombok.Builder.Default
+    private Map<String, String> parameters = new HashMap<>();
+
+    @Getter
+    @Parameter(names = {"--parametersFromEnvironment"}, description = "Add to the parameter list any environment variable")
+    @lombok.Builder.Default
+    private boolean parametersFromEnvironment = false;
 
 }
