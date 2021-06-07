@@ -34,14 +34,25 @@ cd spark/bin
 ## Run in docker
 
 This will also work in docker: just use a prebuilt spark image.
-If you have a standard spark image, all you need to do is just run your `spark-sumbit` command. 
+If you have a standard spark image, all you need to do is just run your `spark-submit` command.
 Here is a sample:
 
 ```shell
-docker run spark:latest /opt/spark/bin/spark-submit --master local 
-  --packages com.spark-engine:plan-app:x.x.x --conf spark.jars.ivy=/tmp/ivy2 --class sparkengine.plan.app.Start spark-internal 
+docker run \
+  --rm datamechanics/spark:jvm-only-3.1.1-latest /opt/spark/bin/spark-submit \
+  --master local --packages com.spark-engine:plan-app:0.13.0 --class sparkengine.plan.app.Start spark-internal \
   -p https://raw.githubusercontent.com/gabrielenizzoli/spark_engine/master/examples/plans/quickStartPlan.yaml
 ```
+
+## More complicated examples
+
+More complex examples (like a wikipedia downloader) may be found in the [GitHub repository](https://github.com/gabrielenizzoli/spark_engine/tree/master/examples).
+
+## Parameters
+
+The inline component may be configured by providing a parameter map using the command line (using the `-P` option).
+The parameter map will be used to replace values in the inline dataset of the component.
+If `--parametersFromEnvironment` is also specified, all the environment variables will also be imported in the parameter map as well.
 
 ## Command line help
 
@@ -60,8 +71,8 @@ Usage: <main class> [options]
       Default: VALIDATE
       Possible Values: [SKIP, VALIDATE, INFER]
     --pipelines
-      Provide an list of pipelines to execute (if pipeline is not in plan, it 
-      will be ignored)
+      Provide a subset of pipelines to execute (if pipeline name provided is 
+      not in plan, it will be ignored)
     --skipRun
       Do everything, but do not run the pipelines
       Default: false
@@ -71,6 +82,14 @@ Usage: <main class> [options]
       Default: INFO
     --parallelPipelineExecution
       Executes the pipelines of the plan in parallel (instead of sequentially)
+      Default: false
+    -P, --parameter
+      <key>=<value> list of zero or more parameters to be replaced in an 
+      inline component dataset
+      Syntax: -Pkey=value
+      Default: {}
+    --parametersFromEnvironment
+      Add to the parameter list any environment variable
       Default: false
     --skipFaultyPipelines
       Skip a faulty pipeline (instead of exiting the application)
@@ -84,10 +103,9 @@ Usage: <main class> [options]
     --sparkSessionReuse
       Reuse spark session if already defined
       Default: false
-    --writeResolvedPlan
-      write the resolved plan (to standard output)
-      Default: false
     --writeResolvedPlanToFile
-      write the resolved plan (to a temporary location)
+      Write the resolved plan to the specified plan
+    --writeResolvedPlanToStdout
+      Write the resolved plan to standard output
       Default: false
 ```

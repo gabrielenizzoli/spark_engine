@@ -25,4 +25,17 @@ class CommandLineTest {
         Assertions.assertEquals(1, GlobalCounterConsumer.COUNTER.get("app").get());
     }
 
+    @Test
+    void testHelp() throws Throwable {
+
+        // given
+        System.setProperty("spark.master", "local[1]");
+        SparkSessionManager.SPARK_TEST_PROPERTIES.forEach(System::setProperty);
+        var args = new String[]{"--help"};
+
+        // when
+        Start.main(args);
+    }
+
+
 }

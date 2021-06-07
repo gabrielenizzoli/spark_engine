@@ -6,8 +6,26 @@ nav_order: 6
 
 # Inline Component
 
-Sometimes it is useful to have a hardcoded dataset to inject into an execution plan.
-The inline component allow to do that, by reading a json like structure and parsing it using a user-provided schema.
+The inline component is an inline dataset where the data is specified directly into the plan.
+The data is provided as a json-like structure.
+It can be use for testing or for configuration.
+
+## Parameters
+
+An inline dataset can have some of its data replaced by command like parameters or environment variables.
+If a value in the dataset is a name enclosed between a `${` and a `}` the it will be replaced by a provided parameter.
+If a replacement is not present, an error will be thrown.
+Parameter can be passed on the command line at start time and can be optionally read from the environment.
+
+As an example, in the following component the `${NAME}` string will be replaced by the value of the `NAME` parameter.
+
+```yaml
+# kafka
+inlineComponent:
+  type: inline
+  data: 
+    - { name: "${COLUMN_NAME}" }
+```
 
 ## Fields
 
