@@ -10,6 +10,15 @@ The inline component is an inline dataset where the data is specified directly i
 The data is provided as a json-like structure.
 It can be use for testing or for configuration.
 
+## Fields
+
+| Field | Required | Possible Value |
+| ----- | -------- | -------------- |
+| `type` | yes | `inline` |
+| `data` | no | A list of json rows. If not provided it will be an empty dataset |
+| `schema` | no | An optional schema string (spark documentation). If undefined it will be inferred from the `data` field. |
+
+
 ## Parameters
 
 An inline dataset can have some of its data replaced by command-line parameters or environment variables.
@@ -31,14 +40,6 @@ inlineComponent:
   data: 
     - { col: "${n:NAME:100}" }
 ```
-
-## Fields
-
-| Field | Required | Possible Value |
-| ----- | -------- | -------------- |
-| `type` | yes | `inline` |
-| `data` | no | A list of json rows. If not provided it will be an empty dataset |
-| `schema` | no | An optional schema string (spark documentation). If undefined it will be inferred from the `data` field. |
 
 ## Examples
 
