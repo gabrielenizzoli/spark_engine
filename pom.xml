@@ -45,7 +45,7 @@
     </developers>
 
     <properties>
-        <revision>0.14.0</revision>
+        <revision>0.14.1</revision>
 
         <!-- params -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
