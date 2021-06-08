@@ -1,6 +1,7 @@
 package sparkengine.plan.model.mapper.parameters;
 
 import org.junit.jupiter.api.Test;
+import sparkengine.plan.model.component.impl.BatchComponent;
 import sparkengine.plan.model.component.impl.InlineComponent;
 
 import java.util.List;
@@ -46,6 +47,44 @@ class ParameterReplacerComponentMapperTest {
 
         // when
         assertThrows(NullPointerException.class, () -> mapper.mapInlineComponent(null, component));
+
+    }
+
+    @Test
+    void testBatchComponent() throws Exception {
+
+        // given
+        var params = Map.of("KEY1", "file_1.txt", "KEY3", "text here", "KEY4", "false");
+        var mapper = ParameterReplacerComponentMapper.of(params, "${", "}");
+        var component = BatchComponent.builder()
+                .withFormat("txt")
+                .withOptions(Map.of("source", "/mnt/dir/${KEY1:file.txt}",
+                        "nodes", "${KEY100:200}")).build();
+
+        // when
+        var outComponent = mapper.mapBatchComponent(null, component);
+
+        // then
+        assertTrue(outComponent instanceof BatchComponent);
+        var batchComponent = (BatchComponent) outComponent;
+        assertEquals(
+                Map.of("source", "/mnt/dir/file_1.txt", "nodes", "200"),
+                batchComponent.getOptions());
+    }
+
+    @Test
+    void testBatchComponent_missingParam() throws Exception {
+
+        // given
+        var params = Map.of("KEY1", "file_1.txt", "KEY3", "text here", "KEY4", "false");
+        var mapper = ParameterReplacerComponentMapper.of(params, "${", "}");
+        var component = BatchComponent.builder()
+                .withFormat("txt")
+                .withOptions(Map.of("source", "/mnt/dir/${KEY1:file.txt}",
+                        "nodes", "${KEY100}")).build();
+
+        // then
+        assertThrows(NullPointerException.class, () -> mapper.mapBatchComponent(null, component));
 
     }
 

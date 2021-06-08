@@ -3,6 +3,7 @@ package sparkengine.plan.model.sink.impl;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Value;
+import lombok.With;
 import sparkengine.plan.model.sink.SinkForStream;
 
 import javax.annotation.Nonnull;
@@ -23,6 +24,7 @@ public class StreamSink implements SinkForStream {
     @Nullable
     String checkpointLocation;
     @Nullable
+    @With
     Map<String, String> options;
     @Nullable
     Trigger trigger;

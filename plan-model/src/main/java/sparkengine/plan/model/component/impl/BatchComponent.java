@@ -3,6 +3,7 @@ package sparkengine.plan.model.component.impl;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Value;
+import lombok.With;
 import sparkengine.plan.model.component.ComponentWithEncoder;
 import sparkengine.plan.model.component.ComponentWithNoInput;
 import sparkengine.plan.model.encoder.DataEncoder;
@@ -21,6 +22,7 @@ public class BatchComponent implements ComponentWithNoInput, ComponentWithEncode
     @Nonnull
     String format;
     @Nullable
+    @With
     Map<String, String> options;
     @Nullable
     DataEncoder encodedAs;
