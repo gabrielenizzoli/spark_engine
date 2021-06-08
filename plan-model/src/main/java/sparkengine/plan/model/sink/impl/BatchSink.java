@@ -3,6 +3,7 @@ package sparkengine.plan.model.sink.impl;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Value;
+import lombok.With;
 import sparkengine.plan.model.sink.SinkWithFormat;
 
 import javax.annotation.Nonnull;
@@ -20,6 +21,7 @@ public class BatchSink implements SinkWithFormat {
     @Nonnull
     String format;
     @Nullable
+    @With
     Map<String, String> options;
     @Nullable
     List<String> partitionColumns;

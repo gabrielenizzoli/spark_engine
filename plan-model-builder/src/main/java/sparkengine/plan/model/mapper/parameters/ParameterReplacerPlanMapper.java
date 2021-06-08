@@ -10,9 +10,10 @@ public class ParameterReplacerPlanMapper {
 
     public static PlanMapper of(Map<String, String> params, String prefix, String postfix) {
         var parameterReplacerComponentMapper = ParameterReplacerComponentMapper.of(params, prefix, postfix);
+        var parameterReplaceSinkMapper = new ParameterReplacerSinkMapper(parameterReplacerComponentMapper, params, prefix, postfix);
         return DefaultPlanMapper.builder()
                 .componentMapper(parameterReplacerComponentMapper)
-                .sinkMapper(new SinkMapperForComponents(parameterReplacerComponentMapper))
+                .sinkMapper(parameterReplaceSinkMapper)
                 .build();
     }
 

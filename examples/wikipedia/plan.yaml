@@ -3,11 +3,11 @@ components:
   config:
     type: inline
     data:
-      - { wikipediaUrl: "http://dumps.wikimedia.your.org", fileDumpLocation: "/opt/spark/work-dir" }
+      - { wikipediaUrl: "http://dumps.wikimedia.your.org", fileDumpLocation: "${WIKIPEDIA_DOWNLOAD_LOCATION}" }
   wikipediaConfig:
     type: inline
     data:
-      - { language: "hi", date: "20210501" }
+      - { language: "hi", date: "${WIKIPEDIA_DATE}" }
 
   wikipediaInfo:
     type: ref
