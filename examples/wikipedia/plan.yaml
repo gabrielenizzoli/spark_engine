@@ -7,7 +7,7 @@ components:
   wikipediaConfig:
     type: inline
     data:
-      - { language: "hi", date: "${WIKIPEDIA_DATE}" }
+      - { language: "${WIKIPEDIA_LANG}", date: "${WIKIPEDIA_DATE}" }
 
   wikipediaInfo:
     type: ref
@@ -18,7 +18,7 @@ components:
     type: batch
     format: xml
     options:
-      path: /mnt/data/tmp/lang=hi/date=20210401
+      path: ${WIKIPEDIA_DOWNLOAD_LOCATION}/lang=${WIKIPEDIA_LANG}/date=${WIKIPEDIA_DATE}
       rowTag: page
       samplingRatio: 0.05
 

@@ -31,16 +31,28 @@ public class ParameterReplacerComponentMapper implements ComponentMapper {
         }
 
         var replacementKeyParser = new ReplacementKeyParser(prefix, postfix);
+        var replacementTemplateParser = new ReplacementTemplateParser(prefix, postfix);
+
         var newData = new ArrayList<Map<String, Object>>(component.getData().size());
         for (var row : component.getData()) {
             var newRow = new HashMap<>(row);
             for (var e : row.entrySet()) {
+
+                // attempt key replacement
                 var replacementKey = replacementKeyParser.getReplacementKey(e.getValue());
-                if (replacementKey == null) {
+                if (replacementKey != null) {
+                    var replacementValue = replacementKey.getValueOrDefault(parameters.get(replacementKey.getName()));
+                    newRow.replace(e.getKey(), replacementValue);
                     continue;
                 }
-                var replacementValue = replacementKey.getValueOrDefault(parameters.get(replacementKey.getName()));
-                newRow.replace(e.getKey(), replacementValue);
+
+                // attempt template replacement
+                var template = e.getValue() instanceof CharSequence ? (CharSequence)e.getValue(): null;
+                if (template != null) {
+                    var replacementTemplate = replacementTemplateParser.replaceTemplate(template.toString(), parameters);
+                    newRow.replace(e.getKey(), replacementTemplate);
+                }
+
             }
             newData.add(newRow);
         }
