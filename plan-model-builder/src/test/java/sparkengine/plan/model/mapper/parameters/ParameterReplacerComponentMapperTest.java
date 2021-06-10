@@ -21,7 +21,8 @@ class ParameterReplacerComponentMapperTest {
                 .of("column1", "${n:KEY1:100}",
                         "column2", "${n:KEY2:200}",
                         "column3", "${KEY3}",
-                        "column4", "${b:KEY4}"))).build();
+                        "column4", "${b:KEY4}",
+                        "column5", "this is a ${KEY4} statement, ${KEY5:right?}"))).build();
 
         // when
         var outComponent = mapper.mapInlineComponent(null, component);
@@ -31,7 +32,11 @@ class ParameterReplacerComponentMapperTest {
         var inlineComponent = (InlineComponent) outComponent;
         assertEquals(1, inlineComponent.getData().size());
         assertEquals(
-                Map.of("column1", 1, "column2", 200, "column3", "text here", "column4", false),
+                Map.of("column1", 1,
+                        "column2", 200,
+                        "column3", "text here",
+                        "column4", false,
+                        "column5", "this is a false statement, right?"),
                 inlineComponent.getData().get(0));
 
     }

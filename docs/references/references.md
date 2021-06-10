@@ -1,6 +1,6 @@
 ---
 layout: default
-title: References
+title: References (Sinks and Components)
 nav_order: 5
 has_children: true
 permalink: /references
