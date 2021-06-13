@@ -1,0 +1,1 @@
+This file is an adaptation from https://raw.githubusercontent.com/delta-io/delta-sharing/main/server/src/main/scala/io/delta/standalone/internal/DeltaSharedTableLoader.scala

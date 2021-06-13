@@ -59,6 +59,7 @@
         <spark.version>3.1.2</spark.version>
         <scala.binary.version>2.12</scala.binary.version>
         <scala.version>2.12.10</scala.version>
+        <delta.version>1.0.0</delta.version>
         <fasterxml.jackson.version>2.10.5</fasterxml.jackson.version> <!--See CVE-2020-25649 -->
         <junit.version>5.6.2</junit.version>
         <lombok.version>1.18.18</lombok.version>
@@ -74,6 +75,7 @@
         <module>plan-runtime</module>
         <module>plan-runtime-builder</module>
         <module>plan-app</module>
+        <module>delta-sharing-core</module>
     </modules>
 
     <distributionManagement>
@@ -122,6 +124,12 @@
                 <artifactId>plan-app</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>delta-sharing-utils</groupId>
+                <artifactId>plan-app</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- packages -->
             <dependency>
                 <groupId>com.google.code.findbugs</groupId>
@@ -141,10 +149,16 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <groupId>io.delta</groupId>
+                <artifactId>delta-core_${scala.binary.version}</artifactId>
+                <version>${delta.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.beust</groupId>
                 <artifactId>jcommander</artifactId>
                 <version>${jcmd.version}</version>
             </dependency>
+
             <!-- packages: fasterxml -->
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -156,6 +170,7 @@
                 <artifactId>jackson-databind</artifactId>
                 <version>${fasterxml.jackson.version}</version>
             </dependency>
+
             <!-- scala -->
             <dependency>
                 <groupId>org.scala-lang</groupId>
@@ -167,6 +182,7 @@
                 <artifactId>scala-reflect</artifactId>
                 <version>${scala.version}</version>
             </dependency>
+
             <!-- packages: testing -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
