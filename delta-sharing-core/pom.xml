@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>delta-sharing-utils</artifactId>
+    <artifactId>delta-sharing-core</artifactId>
 
     <parent>
         <groupId>com.spark-engine</groupId>
@@ -33,6 +33,7 @@
             <groupId>io.delta</groupId>
             <artifactId>delta-core_${scala.binary.version}</artifactId>
         </dependency>
+
         <!-- test -->
         <dependency>
             <groupId>com.spark-engine</groupId>
