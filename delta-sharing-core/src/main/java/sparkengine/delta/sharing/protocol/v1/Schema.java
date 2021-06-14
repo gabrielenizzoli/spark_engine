@@ -12,8 +12,8 @@ import javax.annotation.Nonnull;
 public class Schema {
 
     @Nonnull
-    String name;
+    String share;
     @Nonnull
-    String schema;
+    String name;
 
 }

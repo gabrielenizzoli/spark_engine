@@ -62,6 +62,7 @@
         <delta.version>1.0.0</delta.version>
 
         <spring.boot.version>2.5.1</spring.boot.version>
+        <springdoc.version>1.5.2</springdoc.version>
         <hsqldb.version>2.4.1</hsqldb.version>
         <flyway.version>5.2.4</flyway.version>
 
@@ -186,6 +187,16 @@
                 <groupId>org.hsqldb</groupId>
                 <artifactId>hsqldb</artifactId>
                 <version>${hsqldb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-ui</artifactId>
+                <version>${springdoc.version}</version>
             </dependency>
 
             <!-- packages: fasterxml -->

@@ -5,17 +5,17 @@ import lombok.Builder;
 import lombok.Value;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
 
 @Value
 @Builder(setterPrefix = "with")
-@JsonDeserialize(builder = Table.TableBuilder.class)
-public class Table {
+@JsonDeserialize(builder = Schemas.SchemasBuilder.class)
+public class Schemas {
 
     @Nonnull
-    String share;
-    @Nonnull
-    String schema;
-    @Nonnull
-    String name;
+    List<Schema> items;
+    @Nullable
+    String nextPageToken;
 
 }
