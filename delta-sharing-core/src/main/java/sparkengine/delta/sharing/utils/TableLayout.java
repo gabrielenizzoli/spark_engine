@@ -2,35 +2,49 @@ package sparkengine.delta.sharing.utils;
 
 import com.google.common.hash.Hashing;
 import io.delta.standalone.internal.date20210612.PartitionFilterUtils;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.hadoop.fs.Path;
 import org.apache.spark.sql.delta.DeltaLog;
 import scala.Tuple2;
 import scala.collection.JavaConverters;
 import sparkengine.delta.sharing.protocol.v1.*;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-@Value
-public class TableProtocolLoader {
+@AllArgsConstructor
+public class TableLayout {
 
     @Nonnull
     DeltaLog deltaLog;
 
-    public TableProtocolLoader update() {
+    public TableLayout update() {
         deltaLog.update(false);
         return this;
     }
 
-    public List<Wrapper> loadTableProtocol() {
-        return loadTableProtocol(true, List.of());
+    public Stream<Wrapper> streamTableMetadataProtocol() {
+        return streamTableProtocol(false, null);
     }
 
-    public List<Wrapper> loadTableProtocol(boolean includeFiles,
-                                           List<String> predicateHits) {
+    public Stream<Wrapper> streamTableFilesProtocol() {
+        return streamTableProtocol(true, null);
+    }
+
+    public long getTableVersion() {
+        return deltaLog.snapshot().version();
+    }
+
+    public Stream<Wrapper> streamTableProtocol(boolean includeFiles,
+                                               @Nullable List<String> predicateHits) {
         var snapshot = deltaLog.snapshot();
 
         var protocol = Protocol.builder().withMinReaderVersion(snapshot.protocol().minReaderVersion()).build();
@@ -43,9 +57,9 @@ public class TableProtocolLoader {
                 .withPartitionColumns(new ArrayList<>(JavaConverters.asJavaCollection(snapshot.metadata().partitionColumns())))
                 .build();
 
-        var wrappers = new ArrayList<Wrapper>();
-        wrappers.add(Wrapper.builder().withProtocol(protocol).build());
-        wrappers.add(Wrapper.builder().withMetaData(metadata).build());
+        var wrappers = Stream.of(
+                Wrapper.builder().withProtocol(protocol).build(),
+                Wrapper.builder().withMetaData(metadata).build());
 
         if (includeFiles) {
             var addFiles = snapshot.allFiles().collectAsList();
@@ -53,7 +67,7 @@ public class TableProtocolLoader {
                 var newFiles = PartitionFilterUtils.evaluatePredicate(
                         snapshot.metadata().schemaString(),
                         snapshot.metadata().partitionColumns(),
-                        JavaConverters.asScalaBuffer(predicateHits),
+                        JavaConverters.asScalaBuffer(Optional.ofNullable(predicateHits).orElse(List.of())),
                         JavaConverters.asScalaBuffer(addFiles)
                 );
                 addFiles = JavaConverters.seqAsJavaList(newFiles);
@@ -62,16 +76,26 @@ public class TableProtocolLoader {
             var files = addFiles.stream()
                     .map(addFile -> File.builder()
                             .withId(Hashing.md5().hashString(addFile.path(), StandardCharsets.UTF_8).toString())
-                            .withUrl(addFile.path())
+                            .withUrl(absolutePath(deltaLog.dataPath(), addFile.path()).toString())
                             .withSize(addFile.size())
                             .withPartitionValues(JavaConverters.asJavaCollection(addFile.partitionValues()).stream().collect(Collectors.toMap(Tuple2::_1, Tuple2::_2)))
                             .withStats(addFile.stats())
                             .build())
-                    .collect(Collectors.toList());
-            wrappers.addAll(files.stream().map(file -> Wrapper.builder().withFile(file).build()).collect(Collectors.toList()));
+                    .map(file -> Wrapper.builder().withFile(file).build());
+
+            wrappers = Stream.concat(wrappers, files);
         }
 
         return wrappers;
+    }
+
+    @SneakyThrows
+    private Path absolutePath(Path path, String child) {
+        var p = new Path(new URI(child));
+        if (p.isAbsolute()) {
+            throw new IllegalStateException("table containing absolute paths cannot be shared");
+        }
+        return new Path(path, p);
     }
 
 }

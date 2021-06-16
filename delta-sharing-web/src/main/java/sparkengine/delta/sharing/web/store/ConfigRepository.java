@@ -4,10 +4,11 @@ import org.jooq.DSLContext;
 import org.jooq.ResultQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import sparkengine.delta.sharing.db.hsqldb.jooq.tables.records.SchemaConfigRecord;
 import sparkengine.delta.sharing.db.hsqldb.jooq.tables.records.ShareConfigRecord;
 import sparkengine.delta.sharing.db.hsqldb.jooq.tables.records.TableConfigRecord;
+import sparkengine.delta.sharing.model.TableMetadata;
+import sparkengine.delta.sharing.model.TableName;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -77,6 +78,15 @@ public class ConfigRepository {
                         .and(TABLE_CONFIG.SCHEMA_NAME.eq(schemaName)
                                 .and(TABLE_CONFIG.NAME.eq(tableName))));
         return dsl.fetchExists(query);
+    }
+
+    public TableMetadata getTableMetadata(TableName tableName) {
+        var condition = TABLE_CONFIG.SHARE_NAME.eq(tableName.getShare())
+                .and(TABLE_CONFIG.SCHEMA_NAME.eq(tableName.getSchema())
+                        .and(TABLE_CONFIG.NAME.eq(tableName.getTable())));
+        var data = dsl.fetchOne(TABLE_CONFIG, condition);
+
+        return new TableMetadata(data.getLocation());
     }
 
     public boolean addTable(String shareName, String schemaName, String tableName) {

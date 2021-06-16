@@ -7,21 +7,20 @@ import sparkengine.delta.sharing.model.TableName;
 import sparkengine.spark.test.SparkSessionManager;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 
-class TableProtocolLoaderTest extends SparkSessionManager {
+class TableLayoutTest extends SparkSessionManager {
 
     @Test
-    void load() throws ExecutionException {
+    void load() throws TableLayoutLoaderException {
 
         var table = new Table(new TableName("a", "b", "c"), new TableMetadata("/mnt/data/datasets/wiki/lake"));
 
-        var store = TableProtocolLoaderStore.builder().sparkSession(sparkSession).build();
+        var store = TableLayoutStore.builder().sparkSession(sparkSession).build();
 
-        var loader = store.getTableProtocolLoader(table);
+        var loader = store.getTableLayout(table);
 
-        loader.loadTableProtocol(true, List.of("lang='it'")).forEach(System.out::println);
+        loader.streamTableProtocol(true, List.of("lang='it'")).forEach(System.out::println);
     }
 
 }

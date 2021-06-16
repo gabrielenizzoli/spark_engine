@@ -3,13 +3,23 @@ package sparkengine.delta.sharing.web;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.apache.commons.net.util.Base64;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
+import sparkengine.delta.sharing.model.TableName;
 import sparkengine.delta.sharing.protocol.v1.*;
+import sparkengine.delta.sharing.utils.TableLayoutLoaderException;
+import sparkengine.delta.sharing.utils.TableLayoutStore;
 import sparkengine.delta.sharing.web.store.ConfigRepository;
 import sparkengine.delta.sharing.web.store.Page;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,7 +30,20 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(onConstructor_ = {@Autowired})
 public class DeltaSharingController {
 
+    public static final String DELTA_TABLE_VERSION = "Delta-Table-Version";
+    @Autowired
     ConfigRepository configRepository;
+
+    @Autowired
+    TableLayoutStore tableLayoutStore;
+
+    private static final ObjectMapper OBJECT_MAPPER_DNJSON;
+
+    static {
+        OBJECT_MAPPER_DNJSON = new ObjectMapper();
+        OBJECT_MAPPER_DNJSON.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+        OBJECT_MAPPER_DNJSON.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
 
     @GetMapping("/shares")
     Shares getShares(@RequestParam(value = "maxResults", defaultValue = "500") int maxResults,
@@ -66,6 +89,67 @@ public class DeltaSharingController {
                 .collect(Collectors.toList());
         var nextPage = items.size() < page.getSize() ? null : pageToToken(page);
         return Tables.builder().withItems(items).withNextPageToken(nextPage).build();
+    }
+
+    @RequestMapping(method = RequestMethod.HEAD, path = "/shares/{share}/schemas/{schema}/tables/{table}")
+    public ResponseEntity<String> getTableVersion(@PathVariable("share") String shareName,
+                                                  @PathVariable("schema") String schemaName,
+                                                  @PathVariable("table") String tableName) throws TableLayoutLoaderException {
+
+
+        var tableLayout = tableLayoutStore.getTableLayout(new TableName(shareName, schemaName, tableName), configRepository::getTableMetadata);
+
+        return ResponseEntity.ok().header(DELTA_TABLE_VERSION, Long.toString(tableLayout.getTableVersion())).build();
+    }
+
+    @GetMapping(value = "/shares/{share}/schemas/{schema}/tables/{table}/metadata", produces = MediaType.APPLICATION_NDJSON_VALUE)
+    public ResponseEntity<ResponseBodyEmitter> getTableMetadata(@PathVariable("share") String shareName,
+                                                                @PathVariable("schema") String schemaName,
+                                                                @PathVariable("table") String tableName) throws TableLayoutLoaderException, IOException {
+
+        var tableLayout = tableLayoutStore.getTableLayout(new TableName(shareName, schemaName, tableName), configRepository::getTableMetadata);
+
+        ResponseBodyEmitter responseBodyEmitter = new ResponseBodyEmitter();
+        try {
+            for (var wrapper : tableLayout.streamTableMetadataProtocol().collect(Collectors.toList())) {
+                responseBodyEmitter.send(OBJECT_MAPPER_DNJSON.writeValueAsString(wrapper));
+                responseBodyEmitter.send("\n");
+            }
+        } finally {
+            responseBodyEmitter.complete();
+        }
+
+        return ResponseEntity.ok()
+                .header(DELTA_TABLE_VERSION, Long.toString(tableLayout.getTableVersion()))
+                .contentType(MediaType.APPLICATION_NDJSON)
+                .body(responseBodyEmitter);
+    }
+
+    @PostMapping(value = "/shares/{share}/schemas/{schema}/tables/{table}/query",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_NDJSON_VALUE)
+    public ResponseEntity<ResponseBodyEmitter> getTableQuery(
+            @RequestBody TableQuery tableQuery,
+            @PathVariable("share") String shareName,
+            @PathVariable("schema") String schemaName,
+            @PathVariable("table") String tableName) throws TableLayoutLoaderException, IOException {
+
+        var tableLayout = tableLayoutStore.getTableLayout(new TableName(shareName, schemaName, tableName), configRepository::getTableMetadata);
+
+        ResponseBodyEmitter responseBodyEmitter = new ResponseBodyEmitter();
+        try {
+            for (var wrapper : tableLayout.streamTableProtocol(true, tableQuery.getPredicateHints()).collect(Collectors.toList())) {
+                responseBodyEmitter.send(OBJECT_MAPPER_DNJSON.writeValueAsString(wrapper));
+                responseBodyEmitter.send("\n");
+            }
+        } finally {
+            responseBodyEmitter.complete();
+        }
+
+        return ResponseEntity.ok()
+                .header(DELTA_TABLE_VERSION, Long.toString(tableLayout.getTableVersion()))
+                .contentType(MediaType.APPLICATION_NDJSON)
+                .body(responseBodyEmitter);
     }
 
     @Nonnull
