@@ -21,6 +21,7 @@
 
 # other stuff
 .idea
+target/*
 */target/*
 *.iml
 
