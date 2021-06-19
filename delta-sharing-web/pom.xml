@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -18,7 +18,26 @@
     <properties>
         <codegen.db.hsqldb.migration>db/hsqldb/migration</codegen.db.hsqldb.migration>
         <codegen.db.hsqldb.url>jdbc:hsqldb:file:target/codegen-jooq/db/hsqldb;shutdown=true</codegen.db.hsqldb.url>
+        <janino.override.version>3.0.14</janino.override.version>
+        <jackson.override.version>2.12.3</jackson.override.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
 
@@ -34,17 +53,25 @@
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-log4j12</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.codehaus.janino</groupId>
+                    <artifactId>janino</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.12.3</version>
+            <version>${jackson.override.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.janino</groupId>
             <artifactId>janino</artifactId>
-            <version>3.0.14</version>
+            <version>${janino.override.version}</version>
         </dependency>
 
         <!-- web -->
@@ -90,19 +117,19 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.5.0</version>
             </plugin>
 
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
-                <version>7.10.0</version>
+                <version>${flyway-maven-plugin.version}</version>
                 <configuration>
                     <url>${codegen.db.hsqldb.url}</url>
                     <user>sa</user>
                     <failOnMissingLocations>true</failOnMissingLocations>
                     <locations>
-                        <location>filesystem:${project.basedir}/src/main/resources/${codegen.db.hsqldb.migration}</location>
+                        <location>filesystem:${project.basedir}/src/main/resources/${codegen.db.hsqldb.migration}
+                        </location>
                     </locations>
                 </configuration>
 
@@ -127,7 +154,6 @@
             <plugin>
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq-codegen-maven</artifactId>
-                <version>3.14.11</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
