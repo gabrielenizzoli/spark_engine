@@ -401,7 +401,7 @@
                     <detail>false</detail>
                     <failOnError>true</failOnError>
                     <failOnWarnings>false</failOnWarnings>
-                    <sourcepath>${project.build.directory}/${generated.javadocsources.folder}</sourcepath>
+                    <sourcepath>${project.build.directory}/${generated.javadocsources.folder};${project.build.directory}/generated-sources</sourcepath>
                 </configuration>
             </plugin>
             <plugin>
