@@ -62,7 +62,7 @@
         <delta.version>1.0.0</delta.version>
         <lombok.version>1.18.18</lombok.version>
         <jcommander.version>1.78</jcommander.version>
-        <fasterxml.jackson.base.version>2.10.5</fasterxml.jackson.version> 
+        <fasterxml.jackson.base.version>2.10.5</fasterxml.jackson.base.version> 
         <fasterxml.jackson.version>2.10.5.1</fasterxml.jackson.version> <!--See CVE-2020-25649 -->
 
         <!-- db -->
