@@ -1,0 +1,13 @@
+spring.flyway.locations: classpath:db/hsqldb/migration
+springdoc.api-docs.path: /api-docs
+springdoc.swagger-ui.path: /api.html
+
+spark:
+  name: "app"
+  master: "local[4]"
+  memory: "1G"
+
+---
+spring.config.activate.on-profile: test
+spring.datasource.url: jdbc:hsqldb:mem:devDb
+spring.datasource.driver-class-name: org.hsqldb.jdbc.JDBCDriver

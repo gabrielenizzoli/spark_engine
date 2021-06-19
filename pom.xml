@@ -45,7 +45,7 @@
     </developers>
 
     <properties>
-        <revision>0.14.1</revision>
+        <revision>0.14.2</revision>
 
         <!-- params -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -54,15 +54,41 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <generated.javadocsources.folder>javadoc-sources</generated.javadocsources.folder>
 
-        <!-- packages -->
+        <!-- spark -->
         <jsr305.version>3.0.2</jsr305.version>
         <spark.version>3.1.2</spark.version>
         <scala.binary.version>2.12</scala.binary.version>
         <scala.version>2.12.10</scala.version>
-        <fasterxml.jackson.version>2.10.5</fasterxml.jackson.version> <!--See CVE-2020-25649 -->
-        <junit.version>5.6.2</junit.version>
+        <delta.version>1.0.0</delta.version>
         <lombok.version>1.18.18</lombok.version>
-        <jcmd.version>1.78</jcmd.version>
+        <jcommander.version>1.78</jcommander.version>
+        <fasterxml.jackson.version>2.10.5</fasterxml.jackson.version> <!--See CVE-2020-25649 -->
+
+        <!-- db -->
+        <hsqldb.version>2.4.1</hsqldb.version>
+        <flyway.version>5.2.4</flyway.version>
+
+        <!-- spring -->
+        <spring-boot.version>2.5.1</spring-boot.version>
+        <springdoc.version>1.5.2</springdoc.version>
+
+        <!-- junit -->
+        <junit.version>5.6.2</junit.version>
+
+        <!-- plugins -->
+        <flyway-maven-plugin.version>7.10.0</flyway-maven-plugin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <scala-maven-plugin.version>4.4.0</scala-maven-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <flatten-maven-plugin.version>1.2.2</flatten-maven-plugin.version>
+        <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
+        <spring-boot-maven-plugin.version>2.1.2.RELEASE</spring-boot-maven-plugin.version>
+        <lombok-maven-plugin.version>1.18.18.0</lombok-maven-plugin.version>
+        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+        <maven-deploy-plugin.version>2.7</maven-deploy-plugin.version>
+        <nexus-staging-maven-plugin.version>1.6.7</nexus-staging-maven-plugin.version>
+        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+        <jooq-codegen-maven.version>3.14.11</jooq-codegen-maven.version>
     </properties>
 
     <modules>
@@ -74,6 +100,8 @@
         <module>plan-runtime</module>
         <module>plan-runtime-builder</module>
         <module>plan-app</module>
+        <module>delta-sharing-core</module>
+        <module>delta-sharing-web</module>
     </modules>
 
     <distributionManagement>
@@ -122,6 +150,17 @@
                 <artifactId>plan-app</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.spark-engine</groupId>
+                <artifactId>delta-sharing-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.spark-engine</groupId>
+                <artifactId>delta-sharing-web</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- packages -->
             <dependency>
                 <groupId>com.google.code.findbugs</groupId>
@@ -141,21 +180,44 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <groupId>io.delta</groupId>
+                <artifactId>delta-core_${scala.binary.version}</artifactId>
+                <version>${delta.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.beust</groupId>
                 <artifactId>jcommander</artifactId>
-                <version>${jcmd.version}</version>
+                <version>${jcommander.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${flyway.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hsqldb</groupId>
+                <artifactId>hsqldb</artifactId>
+                <version>${hsqldb.version}</version>
+            </dependency>
+
             <!-- packages: fasterxml -->
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-yaml</artifactId>
-                <version>${fasterxml.jackson.version}</version>
+                <version>2.10.5</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-databind</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${fasterxml.jackson.version}</version>
+                <version>2.10.5.1</version>
             </dependency>
+
             <!-- scala -->
             <dependency>
                 <groupId>org.scala-lang</groupId>
@@ -167,6 +229,7 @@
                 <artifactId>scala-reflect</artifactId>
                 <version>${scala.version}</version>
             </dependency>
+
             <!-- packages: testing -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -189,7 +252,7 @@
                 <plugin>
                     <groupId>net.alchim31.maven</groupId>
                     <artifactId>scala-maven-plugin</artifactId>
-                    <version>4.4.0</version>
+                    <version>${scala-maven-plugin.version}</version>
                     <configuration>
                         <args>
                             <arg>-P:genjavadoc:out=${project.build.directory}/${generated.javadocsources.folder}</arg>
@@ -206,17 +269,22 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <version>${maven-compiler-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot-maven-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.2.1</version>
+                    <version>${maven-source-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>flatten-maven-plugin</artifactId>
-                    <version>1.2.2</version>
+                    <version>${flatten-maven-plugin.version}</version>
                     <configuration>
                         <flattenMode>ossrh</flattenMode>
                     </configuration>
@@ -224,32 +292,32 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>${maven-javadoc-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.projectlombok</groupId>
                     <artifactId>lombok-maven-plugin</artifactId>
-                    <version>1.18.18.0</version>
+                    <version>${lombok-maven-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.22.2</version>
+                    <version>${maven-surefire-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.7</version>
+                    <version>${maven-deploy-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.6.7</version>
+                    <version>${nexus-staging-maven-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.6</version>
+                    <version>${maven-gpg-plugin.version}</version>
                     <configuration>
                         <!-- Prevent gpg from using pinentry programs -->
                         <gpgArguments>
@@ -257,6 +325,16 @@
                             <arg>loopback</arg>
                         </gpgArguments>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.flywaydb</groupId>
+                    <artifactId>flyway-maven-plugin</artifactId>
+                    <version>${flyway-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jooq</groupId>
+                    <artifactId>jooq-codegen-maven</artifactId>
+                    <version>${jooq-codegen-maven.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -323,7 +401,7 @@
                     <detail>false</detail>
                     <failOnError>true</failOnError>
                     <failOnWarnings>false</failOnWarnings>
-                    <sourcepath>${project.build.directory}/${generated.javadocsources.folder}</sourcepath>
+                    <sourcepath>${project.build.directory}/${generated.javadocsources.folder};${project.build.directory}/generated-sources</sourcepath>
                 </configuration>
             </plugin>
             <plugin>
