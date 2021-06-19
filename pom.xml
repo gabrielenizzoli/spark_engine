@@ -62,7 +62,8 @@
         <delta.version>1.0.0</delta.version>
         <lombok.version>1.18.18</lombok.version>
         <jcommander.version>1.78</jcommander.version>
-        <fasterxml.jackson.version>2.10.5</fasterxml.jackson.version> <!--See CVE-2020-25649 -->
+        <fasterxml.jackson.base.version>2.10.5</fasterxml.jackson.version> 
+        <fasterxml.jackson.version>2.10.5.1</fasterxml.jackson.version> <!--See CVE-2020-25649 -->
 
         <!-- db -->
         <hsqldb.version>2.4.1</hsqldb.version>
@@ -204,7 +205,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-yaml</artifactId>
-                <version>2.10.5</version>
+                <version>${fasterxml.jackson.base.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>com.fasterxml.jackson.core</groupId>
@@ -215,7 +216,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.10.5.1</version>
+                <version>${fasterxml.jackson.version}</version>
             </dependency>
 
             <!-- scala -->
