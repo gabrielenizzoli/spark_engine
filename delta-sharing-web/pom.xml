@@ -19,7 +19,7 @@
         <codegen.db.hsqldb.migration>db/hsqldb/migration</codegen.db.hsqldb.migration>
         <codegen.db.hsqldb.url>jdbc:hsqldb:file:target/codegen-jooq/db/hsqldb;shutdown=true</codegen.db.hsqldb.url>
         <janino.override.version>3.0.14</janino.override.version>
-        <jackson.override.version>2.12.3</jackson.override.version>
+        <jackson.override.version>2.12.6.1</jackson.override.version>
     </properties>
 
     <dependencyManagement>
