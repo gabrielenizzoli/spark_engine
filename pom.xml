@@ -63,7 +63,7 @@
         <lombok.version>1.18.18</lombok.version>
         <jcommander.version>1.78</jcommander.version>
         <fasterxml.jackson.base.version>2.10.5</fasterxml.jackson.base.version> 
-        <fasterxml.jackson.version>2.10.5.1</fasterxml.jackson.version> <!--See CVE-2020-25649 -->
+        <fasterxml.jackson.version>2.12.7.1</fasterxml.jackson.version> <!--See CVE-2020-25649 -->
 
         <!-- db -->
         <hsqldb.version>2.4.1</hsqldb.version>
